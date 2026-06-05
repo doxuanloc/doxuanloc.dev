@@ -65,6 +65,7 @@ const n = items.length;
       {items.map((m, i) => (
         <article class={`panel kind-${m.kind}${i === 0 ? ' is-active' : ''}`} data-panel={i} style={`--c1:${m.meta.c1};--c2:${m.meta.c2}`}>
           <div class="panel-text">
+            {m.codename && <span class="panel-code mono">{m.codename}</span>}
             <span class="panel-num mono">{m.num} / {String(n).padStart(2, '0')}</span>
             <span class="panel-year">{m.year}</span>
             <h2 class="panel-title">{m.title}</h2>
@@ -75,7 +76,8 @@ const n = items.length;
             <div class="chips">{(m.tags ?? []).map((t: string) => <span class="chip">{t}</span>)}</div>
           </div>
 
-          <div class="panel-visual">
+          <div class="panel-visual" style={`--c1:${m.meta.c1}`}>
+            <span class="hud-bracket tl"></span><span class="hud-bracket br"></span>
             {m.photo ? (
               <img src={m.photo} alt={m.photoAlt ?? m.title} loading="lazy" decoding="async" width="640" height="640" />
             ) : m.img ? (
@@ -122,6 +124,12 @@ const n = items.length;
 
   .panel-visual { position: relative; border-radius: 12px; overflow: hidden; min-height: 220px; }
   .panel-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* HUD */
+  .panel-code { display: block; color: var(--c1); font-size: 0.72rem; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.9; }
+  .hud-bracket { position: absolute; width: 24px; height: 24px; z-index: 2; pointer-events: none; opacity: 0.85; }
+  .hud-bracket.tl { top: 10px; left: 10px; border-top: 2px solid var(--c1); border-left: 2px solid var(--c1); }
+  .hud-bracket.br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--c1); border-right: 2px solid var(--c1); }
   .visual-gen {
     position: absolute; inset: 0;
     background:
@@ -178,7 +186,8 @@ const n = items.length;
     }
     .panel::before { display: none; }
     .panel.is-active { opacity: 1; transform: none; pointer-events: auto; }
-    .panel-visual { min-height: 60vh; max-height: 70vh; border: 1px solid var(--border); box-shadow: var(--shadow-lg); }
+    .panel-visual { min-height: 60vh; max-height: 70vh; border: 1px solid var(--border); box-shadow: var(--shadow-lg); transition: border-color 0.5s var(--ease), box-shadow 0.5s var(--ease); }
+    .panel.is-active .panel-visual { border-color: color-mix(in srgb, var(--c1) 55%, var(--border)); box-shadow: 0 0 44px color-mix(in srgb, var(--c1) 22%, transparent), var(--shadow-lg); }
     .panel-title { font-size: clamp(2rem, 3.4vw, 2.8rem); }
   }
 

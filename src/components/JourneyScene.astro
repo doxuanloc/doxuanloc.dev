@@ -1,0 +1,124 @@
+---
+// Nền pseudo-3D starfield full-screen cho /journey.
+// Cuộn = bay xuyên không gian (camera dolly theo scroll progress). Đổi màu theo mốc.
+// Lazy + IO pause + fallback tĩnh cho mobile/reduced-motion. ~0KB lib.
+---
+<div class="journey-scene" aria-hidden="true">
+  <canvas id="journey-stars"></canvas>
+  <div class="scene-fallback"></div>
+</div>
+
+<style>
+  .journey-scene { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  #journey-stars { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .scene-fallback {
+    position: absolute; inset: 0; opacity: 0;
+    background:
+      radial-gradient(900px 600px at 75% 18%, rgba(91,140,255,0.12), transparent 60%),
+      radial-gradient(700px 500px at 20% 80%, rgba(54,214,195,0.10), transparent 60%),
+      radial-gradient(600px 500px at 55% 50%, rgba(181,140,255,0.08), transparent 60%);
+  }
+  /* vignette để chữ luôn rõ */
+  .journey-scene::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(120% 100% at 50% 50%, transparent 35%, rgba(10,14,26,0.55) 100%);
+  }
+  @media (max-width: 768px), (prefers-reduced-motion: reduce) {
+    #journey-stars { display: none; }
+    .scene-fallback { opacity: 1; }
+  }
+</style>
+
+<script>
+  function initStars() {
+    const canvas = document.getElementById('journey-stars') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    if ((canvas as any)._init) return;
+    if (window.matchMedia('(max-width: 768px)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    (canvas as any)._init = true;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Palette theo 6 mốc (xanh → teal → tím → xanh → tím-teal → đa sắc)
+    const PAL = [
+      [91,140,255], [54,214,195], [181,140,255], [91,140,255], [150,170,255], [120,200,230],
+    ];
+    const journey = document.querySelector<HTMLElement>('[data-journey]');
+    const N = 320, DEPTH = 1000;
+    let w = 0, h = 0, cx = 0, cy = 0, focal = 700;
+    let stars: { x: number; y: number; z: number; o: number }[] = [];
+    let camZ = 0, targetCol = PAL[0].slice(), curCol = PAL[0].slice();
+    let raf = 0, running = false, drift = 0;
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = canvas.clientWidth; h = canvas.clientHeight; cx = w / 2; cy = h / 2;
+      focal = Math.max(500, w * 0.6);
+      canvas.width = Math.floor(w * dpr); canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function seed() {
+      stars = Array.from({ length: N }, () => ({
+        x: (Math.random() - 0.5) * w * 1.6,
+        y: (Math.random() - 0.5) * h * 1.6,
+        z: Math.random() * DEPTH,
+        o: 0.35 + Math.random() * 0.65,
+      }));
+    }
+    function progress() {
+      if (!journey) return 0;
+      const r = journey.getBoundingClientRect();
+      const total = journey.offsetHeight - window.innerHeight;
+      return total > 0 ? Math.min(Math.max(-r.top, 0), total) / total : 0;
+    }
+    function frame() {
+      if (!running) return;
+      drift += 0.6;
+      const p = progress();
+      // camera bay theo scroll (mạnh) + trôi nhẹ tự thân
+      camZ = p * DEPTH * 5 + drift;
+      // palette mốc hiện tại
+      const idx = Math.min(PAL.length - 1, Math.floor(p * PAL.length));
+      targetCol = PAL[idx];
+      for (let k = 0; k < 3; k++) curCol[k] += (targetCol[k] - curCol[k]) * 0.04;
+      const [r, g, b] = curCol.map(Math.round);
+
+      ctx.clearRect(0, 0, w, h);
+      for (const s of stars) {
+        let z = s.z - (camZ % DEPTH);
+        if (z <= 1) z += DEPTH;
+        const sx = cx + (s.x / z) * focal;
+        const sy = cy + (s.y / z) * focal;
+        if (sx < -50 || sx > w + 50 || sy < -50 || sy > h + 50) continue;
+        const depthT = 1 - z / DEPTH;            // gần = 1
+        const size = Math.max(0.4, depthT * 2.6);
+        const alpha = s.o * depthT * depthT;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fill();
+        // vệt sáng nhẹ cho sao gần (cảm giác tốc độ)
+        if (depthT > 0.82) {
+          const pz = z + 60;
+          const px = cx + (s.x / pz) * focal, py = cy + (s.y / pz) * focal;
+          ctx.strokeStyle = `rgba(${r},${g},${b},${(alpha * 0.5).toFixed(3)})`;
+          ctx.lineWidth = size * 0.7;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy); ctx.stroke();
+        }
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; cancelAnimationFrame(raf); }
+
+    resize(); seed();
+    window.addEventListener('resize', () => { resize(); seed(); }, { passive: true });
+    document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
+    // chỉ chạy khi /journey trong tầm nhìn
+    if (journey) {
+      const io = new IntersectionObserver((e) => e[0].isIntersecting ? start() : stop(), { threshold: 0 });
+      io.observe(journey);
+    } else { start(); }
+  }
+  document.addEventListener('astro:page-load', initStars);
+</script>

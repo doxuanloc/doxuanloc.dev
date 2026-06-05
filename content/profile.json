@@ -1,7 +1,6 @@
 {
   "$comment": "Du lieu profile that, trich tu CV + LinkedIn cua Do Xuan Loc. Nguon cho trang Home + Experience. Claude render, Grok co the bo sung.",
   "version": 1,
-
   "identity": {
     "name": "Đỗ Xuân Lộc",
     "nameEn": "Do Xuan Loc",
@@ -18,48 +17,112 @@
       "github": null
     }
   },
-
   "summary": "Full-Stack Engineer với 3 năm kinh nghiệm, hiện làm AI & System Optimization Engineer / Solutions Architect tại MarketEnterprise Vietnam. Mạnh về NestJS, Next.js, ReactJS và kiến trúc microservices trên AWS. Đang mở rộng sang AI/ML (RAG, LLM deployment) và DevSecOps. Tập trung vào hệ thống hiệu năng cao, bảo mật, dễ bảo trì.",
-
   "$comment_solves": "Bài toán giải quyết được + cách tiếp cận, tổng quát từ kinh nghiệm thật. Không số liệu nội bộ.",
   "solves": [
     {
       "problem": "Hệ thống lớn khó scale & bảo trì",
       "approach": "Tách microservices trong NX Monorepo, API ranh giới rõ ràng, CI/CD tự động theo từng môi trường (dev/staging/prod).",
-      "stack": ["NestJS", "NX Monorepo", "AWS", "CI/CD"]
+      "stack": [
+        "NestJS",
+        "NX Monorepo",
+        "AWS",
+        "CI/CD"
+      ]
     },
     {
       "problem": "Đồng bộ & xử lý dữ liệu đa nguồn realtime",
       "approach": "Kiến trúc event-driven serverless — hàng đợi và lịch tự động tách rời các service, dễ scale theo tải.",
-      "stack": ["AWS Lambda", "EventBridge", "SAM", "SQS"]
+      "stack": [
+        "AWS Lambda",
+        "EventBridge",
+        "SAM",
+        "SQS"
+      ]
     },
     {
       "problem": "Đưa LLM vào sản phẩm mà vẫn chính xác & an toàn",
       "approach": "RAG neo câu trả lời vào tài liệu thật, embeddings + LLM deploy nội bộ để kiểm soát dữ liệu và giảm hallucination.",
-      "stack": ["RAG", "Embeddings", "LLM (Ollama)", "Python"]
+      "stack": [
+        "RAG",
+        "Embeddings",
+        "LLM (Ollama)",
+        "Python"
+      ]
     },
     {
       "problem": "Hệ thống chậm & tốn chi phí vận hành",
       "approach": "Tối ưu query/index, tách tải, thiết kế hạ tầng cloud hợp lý theo hướng tiết kiệm chi phí.",
-      "stack": ["MySQL", "AWS", "Docker", "Monitoring"]
+      "stack": [
+        "MySQL",
+        "AWS",
+        "Docker",
+        "Monitoring"
+      ]
     }
   ],
-
   "languages": [
-    { "name": "Tiếng Việt", "level": "Bản ngữ" },
-    { "name": "English", "level": "Professional Working" },
-    { "name": "日本語", "level": "Limited Working" }
+    {
+      "name": "Tiếng Việt",
+      "level": "Bản ngữ"
+    },
+    {
+      "name": "English",
+      "level": "Professional Working"
+    },
+    {
+      "name": "日本語",
+      "level": "Limited Working"
+    }
   ],
-
   "skills": {
-    "frontend": ["ReactJS", "Next.js", "Redux", "TailwindCSS", "VueJS", "Vuex", "Vuetify", "HTML/CSS", "TypeScript"],
-    "backend": ["Node.js", "NestJS", "Express", "Socket.io", "SSE", "Three.js"],
-    "database": ["MySQL", "MongoDB", "Strapi"],
-    "cloud_devops": ["AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline)", "Docker", "GitHub Actions", "NX Monorepo", "CI/CD"],
-    "ai_ml": ["RAG", "Word2Vec embeddings", "LLM (Ollama)", "Fine-tuning", "AI pipelines"],
-    "practices": ["Microservices", "Event-Driven Architecture", "DevSecOps", "Scrum/Agile", "Monitoring", "Business Intelligence"]
+    "frontend": [
+      "ReactJS",
+      "Next.js",
+      "Redux",
+      "TailwindCSS",
+      "VueJS",
+      "Vuex",
+      "Vuetify",
+      "HTML/CSS",
+      "TypeScript"
+    ],
+    "backend": [
+      "Node.js",
+      "NestJS",
+      "Express",
+      "Socket.io",
+      "SSE",
+      "Three.js"
+    ],
+    "database": [
+      "MySQL",
+      "MongoDB",
+      "Strapi"
+    ],
+    "cloud_devops": [
+      "AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline)",
+      "Docker",
+      "GitHub Actions",
+      "NX Monorepo",
+      "CI/CD"
+    ],
+    "ai_ml": [
+      "RAG",
+      "Word2Vec embeddings",
+      "LLM (Ollama)",
+      "Fine-tuning",
+      "AI pipelines"
+    ],
+    "practices": [
+      "Microservices",
+      "Event-Driven Architecture",
+      "DevSecOps",
+      "Scrum/Agile",
+      "Monitoring",
+      "Business Intelligence"
+    ]
   },
-
   "experience": [
     {
       "company": "MarketEnterprise Vietnam",
@@ -78,7 +141,14 @@
             "Deploy AWS EC2 với CI/CD tự động (dev/staging/prod)",
             "Tích hợp SendGrid + SMS Media qua AWS SQS & Lambda"
           ],
-          "stack": ["NX Monorepo", "NestJS", "Next.js", "TailwindCSS", "AWS (EC2, ECR, SQS, Lambda, CodePipeline)", "MySQL"]
+          "stack": [
+            "NX Monorepo",
+            "NestJS",
+            "Next.js",
+            "TailwindCSS",
+            "AWS (EC2, ECR, SQS, Lambda, CodePipeline)",
+            "MySQL"
+          ]
         },
         {
           "name": "Message Management Tool (MMT)",
@@ -89,7 +159,15 @@
             "NestJS quản lý workflow messaging, cron jobs, MongoDB",
             "ReactJS dashboard cho operator + webhook realtime, multi-platform (SMS, Gmail, Slack, Line)"
           ],
-          "stack": ["NestJS", "ReactJS", "MongoDB", "AWS SAM", "Lambda", "EventBridge", "Webhooks"]
+          "stack": [
+            "NestJS",
+            "ReactJS",
+            "MongoDB",
+            "AWS SAM",
+            "Lambda",
+            "EventBridge",
+            "Webhooks"
+          ]
         },
         {
           "name": "Chatbot RAG cho dự án công nghệ",
@@ -99,7 +177,15 @@
             "LLM (Ollama) deploy local an toàn, fine-tune theo domain công ty",
             "AI pipeline scalable, modular; tối ưu inference low-latency"
           ],
-          "stack": ["RAG", "Word2Vec", "LLM (Ollama)", "Python", "MongoDB", "ReactJS", "Docker"]
+          "stack": [
+            "RAG",
+            "Word2Vec",
+            "LLM (Ollama)",
+            "Python",
+            "MongoDB",
+            "ReactJS",
+            "Docker"
+          ]
         }
       ]
     },
@@ -114,8 +200,18 @@
         {
           "name": "Bucco",
           "summary": "Ứng dụng cho thị trường nha khoa Pháp — kết nối phòng khám & khách hàng, đặt lịch & trao đổi thông tin với nha sĩ.",
-          "highlights": ["Fix bug & nâng cấp UI/UX", "Full-stack NestJS + Vue.js"],
-          "stack": ["NestJS", "Vue.js", "Vuetify", "Vuex", "Docker", "Git"]
+          "highlights": [
+            "Fix bug & nâng cấp UI/UX",
+            "Full-stack NestJS + Vue.js"
+          ],
+          "stack": [
+            "NestJS",
+            "Vue.js",
+            "Vuetify",
+            "Vuex",
+            "Docker",
+            "Git"
+          ]
         },
         {
           "name": "Synode",
@@ -125,7 +221,13 @@
             "Thiết kế API business logic, dựng UI theo Figma",
             "Three.js + Strapi + NestJS"
           ],
-          "stack": ["NestJS", "Three.js", "Vuetify", "Strapi", "Docker"]
+          "stack": [
+            "NestJS",
+            "Three.js",
+            "Vuetify",
+            "Strapi",
+            "Docker"
+          ]
         }
       ]
     },
@@ -145,19 +247,27 @@
             "Cải thiện UI/UX hướng người dùng",
             "Nâng cấp e-learning: nội dung tương tác, progress tracking, navigation"
           ],
-          "stack": ["React", "UI/UX", "Responsive Web"]
+          "stack": [
+            "React",
+            "UI/UX",
+            "Responsive Web"
+          ]
         }
       ]
     }
   ],
-
   "personalProjects": [
     {
       "name": "Bartending Course — NauPhaChe",
       "period": "2022-10 — 2023-11",
       "teamSize": 2,
       "summary": "Nền tảng khoá học pha chế: login/register, thanh toán nhận code kích hoạt, giỏ hàng, admin quản lý khoá học & doanh thu.",
-      "stack": ["Next.js", "Bootstrap", "NestJS", "MongoDB"],
+      "stack": [
+        "Next.js",
+        "Bootstrap",
+        "NestJS",
+        "MongoDB"
+      ],
       "links": {
         "client": "https://course-tiktok-9ge7.vercel.app/",
         "admin": "https://dashboard-admin-course.vercel.app/"
@@ -168,87 +278,189 @@
       "period": "2023-03 — 2023-05",
       "teamSize": 7,
       "summary": "Nền tảng xem phim: thanh toán qua SMS, đăng nhập OTP qua nhà mạng Mytel Myanmar.",
-      "stack": ["HTML5", "CSS", "ExpressJS", "TypeScript"],
-      "links": { "site": "https://myreview.asia" }
+      "stack": [
+        "HTML5",
+        "CSS",
+        "ExpressJS",
+        "TypeScript"
+      ],
+      "links": {
+        "site": "https://myreview.asia"
+      }
     }
   ],
-
   "education": [
-    { "school": "University of Information Technology", "degree": "Computer Engineering", "period": "2018 — 2021" },
-    { "school": "FPT University (BTEC FPT)", "degree": "Software Engineering", "period": "2021 — 2024" }
+    {
+      "school": "University of Information Technology",
+      "degree": "Computer Engineering",
+      "period": "2018 — 2021"
+    },
+    {
+      "school": "FPT University (BTEC FPT)",
+      "degree": "Software Engineering",
+      "period": "2021 — 2024"
+    }
   ],
-
   "roadmap": [
-    { "phase": "2022", "label": "Frontend Foundation", "focus": "React, UI/UX, responsive web", "status": "done" },
-    { "phase": "2022–2023", "label": "Full-Stack", "focus": "NestJS + Vue/React, 3D (Three.js), SaaS", "status": "done" },
-    { "phase": "2023–nay", "label": "System Architect", "focus": "Microservices, NX Monorepo, AWS, event-driven, CI/CD", "status": "in-progress" },
-    { "phase": "2024–nay", "label": "AI Engineer", "focus": "RAG, LLM deployment, fine-tuning, AI pipelines", "status": "in-progress" },
-    { "phase": "Tiếp theo", "label": "AI Solutions Architect / DevSecOps", "focus": "Kiến trúc AI quy mô lớn, bảo mật, tối ưu chi phí cloud, Japanese N3+", "status": "planned" }
+    {
+      "phase": "2022",
+      "label": "Frontend Foundation",
+      "focus": "React, UI/UX, responsive web",
+      "status": "done"
+    },
+    {
+      "phase": "2022–2023",
+      "label": "Full-Stack",
+      "focus": "NestJS + Vue/React, 3D (Three.js), SaaS",
+      "status": "done"
+    },
+    {
+      "phase": "2023–nay",
+      "label": "System Architect",
+      "focus": "Microservices, NX Monorepo, AWS, event-driven, CI/CD",
+      "status": "in-progress"
+    },
+    {
+      "phase": "2024–nay",
+      "label": "AI Engineer",
+      "focus": "RAG, LLM deployment, fine-tuning, AI pipelines",
+      "status": "in-progress"
+    },
+    {
+      "phase": "Tiếp theo",
+      "label": "AI Solutions Architect / DevSecOps",
+      "focus": "Kiến trúc AI quy mô lớn, bảo mật, tối ưu chi phí cloud, Japanese N3+",
+      "status": "planned"
+    }
   ],
-
   "$comment_journey": "Mốc cho pinned scrollytelling timeline (/journey). image: thả file vào public/images/journey/<id>.(webp|jpg|png) — không có thì hiện gradient theo kind. photo: ảnh cá nhân.",
   "journey": [
     {
       "id": "dai-hoc-nen-tang",
       "year": "2018–2021",
       "kind": "education",
-      "title": "Nền móng kỹ thuật",
-      "narrative": "Xây nền tảng tư duy hệ thống và thuật toán cho mọi hành trình sau.",
-      "bullets": ["Computer Engineering @ UIT", "Software Engineering @ FPT", "Tư duy thuật toán & hệ thống", "Tiếp cận lập trình web thực tế"],
-      "tags": ["Computer Engineering", "Algorithms", "Web"],
-      "imageConcept": "Thư viện đại học lúc hoàng hôn, laptop và sách mở, khát vọng bắt đầu."
+      "title": "Nền tảng kỹ thuật",
+      "narrative": "Thiết lập nền tảng tư duy hệ thống và thuật toán cho hành trình sau.",
+      "bullets": [
+        "Computer Engineering @ UIT",
+        "Software Engineering @ FPT",
+        "Tư duy thuật toán & hệ thống",
+        "Tiếp cận lập trình web thực tế"
+      ],
+      "tags": [
+        "Computer Engineering",
+        "Algorithms",
+        "Web"
+      ],
+      "imageConcept": "Thư viện đại học lúc hoàng hôn, laptop và sách mở, khát vọng bắt đầu.",
+      "codename": "PHASE-01 // FOUNDATION"
     },
     {
       "id": "buoc-chan-frontend",
       "year": "2022",
       "kind": "frontend",
-      "title": "Bước chân vào Frontend",
-      "narrative": "Lần đầu ship code thật cho sản phẩm có người dùng — chạm vào dữ liệu on-chain.",
-      "bullets": ["ReactJS & responsive design", "Phân tích on-chain data (crypto)", "Nâng cấp UI/UX e-learning", "Viết technical blog"],
-      "tags": ["ReactJS", "UI/UX", "Crypto", "On-chain"],
-      "imageConcept": "Màn hình code React + biểu đồ crypto xanh dương trong đêm Sài Gòn."
+      "title": "Bước chân Frontend",
+      "narrative": "Lần đầu ship code thực tế cho người dùng, chạm dữ liệu on-chain.",
+      "bullets": [
+        "Phát triển ReactJS responsive",
+        "Phân tích on-chain data crypto",
+        "Nâng cấp UI/UX e-learning",
+        "Viết technical blog"
+      ],
+      "tags": [
+        "ReactJS",
+        "UI/UX",
+        "Crypto",
+        "On-chain"
+      ],
+      "imageConcept": "Màn hình code React + biểu đồ crypto xanh dương trong đêm Sài Gòn.",
+      "codename": "OPS // FRONTIER"
     },
     {
       "id": "fullstack-thuc-chien",
       "year": "2022–2023",
       "kind": "fullstack",
-      "title": "Full-Stack & 3D",
-      "narrative": "Tự tay xây từ frontend tới backend, dựng trải nghiệm 3D tương tác.",
-      "bullets": ["NestJS + Vue.js thực chiến", "Three.js cho SaaS 3D", "Dự án full-stack hoàn chỉnh", "Remote với Docker & Git"],
-      "tags": ["NestJS", "Vue.js", "Three.js", "Docker"],
-      "imageConcept": "Hai màn hình: backend NestJS và mô hình 3D đang xoay, ánh sáng xanh."
+      "title": "Thực chiến Full-Stack 3D",
+      "narrative": "Tự triển khai full-stack từ frontend đến backend với 3D tương tác.",
+      "bullets": [
+        "Triển khai NestJS & Vue.js",
+        "Three.js cho SaaS 3D",
+        "Hoàn thiện dự án full-stack",
+        "Remote với Docker & Git"
+      ],
+      "tags": [
+        "NestJS",
+        "Vue.js",
+        "Three.js",
+        "Docker"
+      ],
+      "imageConcept": "Hai màn hình: backend NestJS và mô hình 3D đang xoay, ánh sáng xanh.",
+      "codename": "BUILD // 3D-CORE"
     },
     {
       "id": "kien-truc-he-thong",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Kiến trúc hệ thống lớn",
-      "narrative": "Hiện đại hoá nền tảng quy mô lớn — đưa microservices & cloud vào thực tiễn.",
-      "bullets": ["NX Monorepo tách services", "Microservices NestJS tối ưu", "CI/CD trên AWS EC2/Lambda", "Event-driven: SQS, EventBridge"],
-      "tags": ["NX Monorepo", "AWS", "Microservices", "CI/CD"],
-      "imageConcept": "Sơ đồ AWS phức tạp sáng màu trên màn hình lớn, không khí enterprise."
+      "title": "Kiến tạo hệ thống lớn",
+      "narrative": "Hiện đại hoá nền tảng quy mô lớn với microservices và cloud thực tiễn.",
+      "bullets": [
+        "Tách services với NX Monorepo",
+        "Microservices NestJS tối ưu",
+        "CI/CD trên AWS EC2/Lambda",
+        "Event-driven: SQS, EventBridge"
+      ],
+      "tags": [
+        "NX Monorepo",
+        "AWS",
+        "Microservices",
+        "CI/CD"
+      ],
+      "imageConcept": "Sơ đồ AWS phức tạp sáng màu trên màn hình lớn, không khí enterprise.",
+      "codename": "ARCH // MICROSERV"
     },
     {
       "id": "ai-va-toi-uu",
       "year": "2024–nay",
       "kind": "ai",
-      "title": "AI & Tối ưu hệ thống",
-      "narrative": "Mang AI vào hệ thống thật — giải bài toán với độ chính xác và tốc độ cao.",
-      "bullets": ["RAG + Word2Vec embeddings", "Deploy & fine-tune LLM (Ollama)", "AI pipeline modular, low-latency", "Tích hợp AI vào event-driven"],
-      "tags": ["RAG", "LLM", "Ollama", "Python"],
+      "title": "Tối ưu hệ thống AI",
+      "narrative": "Tích hợp AI vào hệ thống thực với độ chính xác và tốc độ cao.",
+      "bullets": [
+        "RAG + Word2Vec embeddings",
+        "Deploy & fine-tune LLM (Ollama)",
+        "AI pipeline modular, low-latency",
+        "Kết nối AI với event-driven"
+      ],
+      "tags": [
+        "RAG",
+        "LLM",
+        "Ollama",
+        "Python"
+      ],
       "imageConcept": "Mạng nơ-ron phát sáng tím-xanh, dữ liệu chảy như dòng sông ánh sáng.",
       "photo": "/images/presenting.jpg",
-      "photoAlt": "Đỗ Xuân Lộc thuyết trình"
+      "photoAlt": "Đỗ Xuân Lộc thuyết trình",
+      "codename": "AI // RAG-OPT"
     },
     {
       "id": "ai-solutions-architect",
       "year": "Tương lai",
       "kind": "future",
-      "title": "AI Solutions Architect",
-      "narrative": "Dẫn dắt kiến trúc AI quy mô lớn — an toàn, tối ưu chi phí, sẵn sàng thị trường Nhật.",
-      "bullets": ["AI architecture enterprise-scale", "DevSecOps & tối ưu chi phí cloud", "Japanese N3+ cho thị trường Nhật", "Dẫn dắt giải pháp AI 0→1"],
-      "tags": ["AI Architecture", "DevSecOps", "Scalability", "JP N3+"],
-      "imageConcept": "Thành phố tương lai lung linh, cầu ánh sáng nối người với AI nhân từ."
+      "title": "Kiến trúc giải pháp AI",
+      "narrative": "Dẫn dắt kiến trúc AI quy mô lớn, tối ưu chi phí, sẵn sàng Nhật.",
+      "bullets": [
+        "AI architecture enterprise-scale",
+        "DevSecOps & tối ưu chi phí cloud",
+        "Japanese N3+ cho thị trường Nhật",
+        "Dẫn dắt giải pháp AI 0→1"
+      ],
+      "tags": [
+        "AI Architecture",
+        "DevSecOps",
+        "Scalability",
+        "JP N3+"
+      ],
+      "imageConcept": "Thành phố tương lai lung linh, cầu ánh sáng nối người với AI nhân từ.",
+      "codename": "FUTURE // AI-LEAD"
     }
   ]
 }
