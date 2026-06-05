@@ -1,5 +1,5 @@
 :root {
-  --bg: #0a0e1a;
+  --bg: #04060e;
   --bg-soft: #111831;
   --bg-card: #121b35;
   --bg-elev: #16203f;
@@ -34,11 +34,7 @@ html {
 
 body {
   margin: 0;
-  background:
-    radial-gradient(900px 500px at 85% -8%, rgba(91, 140, 255, 0.12), transparent 60%),
-    radial-gradient(700px 420px at 5% 0%, rgba(54, 214, 195, 0.07), transparent 55%),
-    var(--bg);
-  background-color: var(--bg);
+  background-color: #000;
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;
@@ -67,6 +63,30 @@ a:hover { color: var(--accent-2); }
 ::-webkit-scrollbar-thumb:hover { background: #38477a; }
 
 .container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+/* Nền vũ trụ kiểu SpaceX — đen sâu + 3 tầng sao tĩnh + nebula mờ + horizon glow */
+.space-bg {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background-color: #000;
+  background-image:
+    radial-gradient(1px 1px at 18% 33%, rgba(255,255,255,0.18), transparent),
+    radial-gradient(1px 1px at 74% 12%, rgba(255,255,255,0.22), transparent),
+    radial-gradient(1px 1px at 41% 81%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(1.4px 1.4px at 62% 57%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.4px 1.4px at 9% 68%, rgba(255,255,255,0.42), transparent),
+    radial-gradient(1.8px 1.8px at 88% 44%, rgba(200,220,255,0.7), transparent),
+    radial-gradient(1.6px 1.6px at 32% 22%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(ellipse 65% 38% at 22% 26%, rgba(34,70,130,0.10), transparent 60%),
+    radial-gradient(ellipse 48% 32% at 70% 72%, rgba(95,45,140,0.08), transparent 55%),
+    radial-gradient(ellipse 52% 42% at 82% 14%, rgba(20,95,110,0.06), transparent 65%);
+  background-size: 420px 420px, 520px 520px, 360px 360px, 600px 600px, 480px 480px, 700px 700px, 560px 560px, 100% 100%, 100% 100%, 100% 100%;
+  background-repeat: repeat, repeat, repeat, repeat, repeat, repeat, repeat, no-repeat, no-repeat, no-repeat;
+}
+/* Earth-limb glow nhìn từ quỹ đạo */
+.space-bg::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(78, 128, 185, 0.05), transparent 22%);
+}
 
 /* Grain overlay — texture xịn, không loè */
 .noise {
