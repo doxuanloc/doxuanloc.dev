@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getAllPosts } from '../../lib/content';
+
+const posts = getAllPosts();
+---
+<Base title="Blog" description="Blog kỹ thuật, tự cập nhật hàng ngày">
+  <section style="padding-top:56px">
+    <div class="container">
+      <p class="eyebrow">Writing · auto-updated</p>
+      <h1 class="section-title" style="font-size:2rem">Blog</h1>
+      <p class="section-sub">{posts.length} bài — viết bởi Grok mỗi ngày, xoay quanh stack & lĩnh vực của mình.</p>
+
+      {posts.length === 0 ? (
+        <div class="card muted">Chưa có bài viết. Pipeline Grok sẽ tự sinh bài đầu tiên.</div>
+      ) : (
+        <div class="grid" style="gap:14px">
+          {posts.map((p) => (
+            <a href={`/blog/${p.slug}`} class="card" style="text-decoration:none;color:inherit">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <strong style="font-size:1.15rem">{p.title}</strong>
+                <span class="mono muted" style="font-size:.78rem;white-space:nowrap">{p.date}</span>
+              </div>
+              <p class="muted" style="margin:.5em 0 .6em">{p.excerpt}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div class="chips">{(p.tags ?? []).map((t) => <span class="chip">{t}</span>)}</div>
+                {p.readingTimeMin && <span class="mono muted" style="font-size:.78rem">{p.readingTimeMin} phút đọc</span>}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

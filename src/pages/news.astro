@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import NewsCard from '../components/NewsCard.astro';
+import { getAllNews, getDailyContent } from '../lib/content';
+
+const news = getAllNews();
+const days = getDailyContent().length;
+---
+<Base title="News" description="Tin công nghệ được Grok cập nhật hàng ngày">
+  <section style="padding-top:56px">
+    <div class="container">
+      <p class="eyebrow">Tech radar · auto-updated</p>
+      <h1 class="section-title" style="font-size:2rem">Tin công nghệ</h1>
+      <p class="section-sub">
+        {news.length} tin qua {days} ngày — Grok tự quét realtime mỗi ngày, lọc theo stack của mình.
+      </p>
+
+      {news.length === 0 ? (
+        <div class="card muted">Chưa có tin. Pipeline Grok sẽ tự sinh nội dung ngày đầu tiên.</div>
+      ) : (
+        <div class="grid grid-2">
+          {news.map((n) => (
+            <NewsCard title={n.title} summary={n.summary} source={n.source} tags={n.tags} date={n.date} importance={n.importance} />
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getAllPosts } from '../../lib/content';
+import { marked } from 'marked';
+
+export function getStaticPaths() {
+  return getAllPosts().map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const html = marked.parse(post.contentMarkdown ?? '', { async: false }) as string;
+---
+<Base title={post.title} description={post.excerpt}>
+  <section style="padding-top:56px">
+    <div class="container">
+      <a href="/blog" class="mono muted" style="font-size:.85rem">← Blog</a>
+      <p class="eyebrow" style="margin-top:18px">{post.date}{post.readingTimeMin ? ` · ${post.readingTimeMin} phút đọc` : ''}</p>
+      <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.15;margin:.1em 0 .3em">{post.title}</h1>
+      <div class="chips" style="margin-bottom:8px">{(post.tags ?? []).map((t) => <span class="chip">{t}</span>)}</div>
+
+      <article class="prose" set:html={html} />
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:40px 0 20px" />
+      <p class="muted" style="font-size:.85rem">
+        Bài viết được tạo tự động bởi Grok (realtime) và xuất bản qua pipeline Claude × Grok.
+      </p>
+    </div>
+  </section>
+</Base>

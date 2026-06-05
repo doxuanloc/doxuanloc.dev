@@ -1,0 +1,25 @@
+---
+interface Props {
+  title: string;
+  summary: string;
+  source: string;
+  tags?: string[];
+  date?: string;
+  importance?: number;
+}
+const { title, summary, source, tags = [], date, importance = 1 } = Astro.props;
+let host = '';
+try { host = new URL(source).hostname.replace(/^www\./, ''); } catch {}
+---
+<article class="card" style="display:grid;gap:8px">
+  <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+    {date && <span class="mono muted" style="font-size:.78rem">{date}</span>}
+    {importance >= 3 && <span class="chip accent" style="font-size:.7rem">★ nổi bật</span>}
+  </div>
+  <h3 style="margin:0;font-size:1.08rem;line-height:1.35">{title}</h3>
+  <p class="muted" style="margin:0">{summary}</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px">
+    <div class="chips">{tags.map((t) => <span class="chip">{t}</span>)}</div>
+    {host && <a href={source} target="_blank" rel="noopener" class="mono" style="font-size:.8rem">{host} ↗</a>}
+  </div>
+</article>

@@ -1,0 +1,164 @@
+{
+  "$comment": "Du lieu profile that, trich tu CV + LinkedIn cua Do Xuan Loc. Nguon cho trang Home + Experience. Claude render, Grok co the bo sung.",
+  "version": 1,
+
+  "identity": {
+    "name": "Đỗ Xuân Lộc",
+    "nameEn": "Do Xuan Loc",
+    "title": "AI & System Optimization Engineer",
+    "subtitle": "Full-Stack Engineer · Solutions Architect (ML)",
+    "tagline": "Từ Full-Stack tới AI/System Optimization — xây hệ thống scalable, secure, tối ưu chi phí.",
+    "location": "Ho Chi Minh City, Vietnam",
+    "yearsExperience": 3,
+    "email": "locvkv1234@gmail.com",
+    "phone": "0886659358",
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/do-xuanloc-278121245",
+      "currentPortfolio": "https://portfolio-doxuanloc.vercel.app",
+      "github": null
+    }
+  },
+
+  "summary": "Full-Stack Engineer với 3 năm kinh nghiệm, hiện làm AI & System Optimization Engineer / Solutions Architect tại MarketEnterprise Vietnam. Mạnh về NestJS, Next.js, ReactJS và kiến trúc microservices trên AWS. Đang mở rộng sang AI/ML (RAG, LLM deployment) và DevSecOps. Tập trung vào hệ thống hiệu năng cao, bảo mật, dễ bảo trì.",
+
+  "languages": [
+    { "name": "Tiếng Việt", "level": "Bản ngữ" },
+    { "name": "English", "level": "Professional Working" },
+    { "name": "日本語", "level": "Limited Working" }
+  ],
+
+  "skills": {
+    "frontend": ["ReactJS", "Next.js", "Redux", "TailwindCSS", "VueJS", "Vuex", "Vuetify", "HTML/CSS", "TypeScript"],
+    "backend": ["Node.js", "NestJS", "Express", "Socket.io", "SSE", "Three.js"],
+    "database": ["MySQL", "MongoDB", "Strapi"],
+    "cloud_devops": ["AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline)", "Docker", "GitHub Actions", "NX Monorepo", "CI/CD"],
+    "ai_ml": ["RAG", "Word2Vec embeddings", "LLM (Ollama)", "Fine-tuning", "AI pipelines"],
+    "practices": ["Microservices", "Event-Driven Architecture", "DevSecOps", "Scrum/Agile", "Monitoring", "Business Intelligence"]
+  },
+
+  "experience": [
+    {
+      "company": "MarketEnterprise Vietnam",
+      "role": "AI & System Optimization Engineer / Full-Stack Engineer",
+      "location": "Ho Chi Minh City",
+      "start": "2023-06",
+      "end": null,
+      "current": true,
+      "projects": [
+        {
+          "name": "Oikura",
+          "summary": "Hiện đại hoá Oikura — nền tảng giao dịch đồ cũ lớn nhất Nhật Bản. Tập trung kiến trúc scalable, secure, maintainable.",
+          "highlights": [
+            "Thiết kế codebase NX Monorepo, tách private/public services",
+            "Microservices với API rõ ràng, tối ưu MySQL query & index",
+            "Deploy AWS EC2 với CI/CD tự động (dev/staging/prod)",
+            "Tích hợp SendGrid + SMS Media qua AWS SQS & Lambda"
+          ],
+          "stack": ["NX Monorepo", "NestJS", "Next.js", "TailwindCSS", "AWS (EC2, ECR, SQS, Lambda, CodePipeline)", "MySQL"]
+        },
+        {
+          "name": "Message Management Tool (MMT)",
+          "summary": "Hệ thống event-driven quản lý giao tiếp khách hàng (tự động + thủ công) trong thị trường đồ cũ.",
+          "highlights": [
+            "Event-driven với AWS SAM + Lambda đồng bộ dữ liệu đa nguồn",
+            "AWS EventBridge lập lịch thu thập dữ liệu định kỳ",
+            "NestJS quản lý workflow messaging, cron jobs, MongoDB",
+            "ReactJS dashboard cho operator + webhook realtime, multi-platform (SMS, Gmail, Slack, Line)"
+          ],
+          "stack": ["NestJS", "ReactJS", "MongoDB", "AWS SAM", "Lambda", "EventBridge", "Webhooks"]
+        },
+        {
+          "name": "Chatbot RAG cho dự án công nghệ",
+          "summary": "Chatbot phân tích & truy xuất tài liệu kỹ thuật xuyên dự án.",
+          "highlights": [
+            "RAG framework với Word2Vec embeddings tăng độ chính xác",
+            "LLM (Ollama) deploy local an toàn, fine-tune theo domain công ty",
+            "AI pipeline scalable, modular; tối ưu inference low-latency"
+          ],
+          "stack": ["RAG", "Word2Vec", "LLM (Ollama)", "Python", "MongoDB", "ReactJS", "Docker"]
+        }
+      ]
+    },
+    {
+      "company": "PloggMedia",
+      "role": "Web Developer (Remote)",
+      "location": "Remote",
+      "start": "2022-09",
+      "end": "2023-04",
+      "current": false,
+      "projects": [
+        {
+          "name": "Bucco",
+          "summary": "Ứng dụng cho thị trường nha khoa Pháp — kết nối phòng khám & khách hàng, đặt lịch & trao đổi thông tin với nha sĩ.",
+          "highlights": ["Fix bug & nâng cấp UI/UX", "Full-stack NestJS + Vue.js"],
+          "stack": ["NestJS", "Vue.js", "Vuetify", "Vuex", "Docker", "Git"]
+        },
+        {
+          "name": "Synode",
+          "summary": "SaaS self-service giúp kỹ sư tạo & chia sẻ hướng dẫn lắp ráp 3D tương tác (manufacturing e-commerce).",
+          "highlights": [
+            "3D visualization thay manual 2D CAD — giải bài toán versioning & cập nhật",
+            "Thiết kế API business logic, dựng UI theo Figma",
+            "Three.js + Strapi + NestJS"
+          ],
+          "stack": ["NestJS", "Three.js", "Vuetify", "Strapi", "Docker"]
+        }
+      ]
+    },
+    {
+      "company": "GenCapital",
+      "role": "Frontend Developer",
+      "location": "Ho Chi Minh City",
+      "start": "2022-04",
+      "end": "2022-06",
+      "current": false,
+      "projects": [
+        {
+          "name": "Crypto News & E-learning Platform",
+          "summary": "Website tin tức thị trường crypto + nền tảng học tập, responsive & scalable bằng React.",
+          "highlights": [
+            "Nghiên cứu phân tích on-chain data qua API, viết technical blog đăng trên web công ty",
+            "Cải thiện UI/UX hướng người dùng",
+            "Nâng cấp e-learning: nội dung tương tác, progress tracking, navigation"
+          ],
+          "stack": ["React", "UI/UX", "Responsive Web"]
+        }
+      ]
+    }
+  ],
+
+  "personalProjects": [
+    {
+      "name": "Bartending Course — NauPhaChe",
+      "period": "2022-10 — 2023-11",
+      "teamSize": 2,
+      "summary": "Nền tảng khoá học pha chế: login/register, thanh toán nhận code kích hoạt, giỏ hàng, admin quản lý khoá học & doanh thu.",
+      "stack": ["Next.js", "Bootstrap", "NestJS", "MongoDB"],
+      "links": {
+        "client": "https://course-tiktok-9ge7.vercel.app/",
+        "admin": "https://dashboard-admin-course.vercel.app/"
+      }
+    },
+    {
+      "name": "MyReview — Viettel (Myanmar)",
+      "period": "2023-03 — 2023-05",
+      "teamSize": 7,
+      "summary": "Nền tảng xem phim: thanh toán qua SMS, đăng nhập OTP qua nhà mạng Mytel Myanmar.",
+      "stack": ["HTML5", "CSS", "ExpressJS", "TypeScript"],
+      "links": { "site": "https://myreview.asia" }
+    }
+  ],
+
+  "education": [
+    { "school": "University of Information Technology", "degree": "Computer Engineering", "period": "2018 — 2021" },
+    { "school": "FPT University (BTEC FPT)", "degree": "Software Engineering", "period": "2021 — 2024" }
+  ],
+
+  "roadmap": [
+    { "phase": "2022", "label": "Frontend Foundation", "focus": "React, UI/UX, responsive web", "status": "done" },
+    { "phase": "2022–2023", "label": "Full-Stack", "focus": "NestJS + Vue/React, 3D (Three.js), SaaS", "status": "done" },
+    { "phase": "2023–nay", "label": "System Architect", "focus": "Microservices, NX Monorepo, AWS, event-driven, CI/CD", "status": "in-progress" },
+    { "phase": "2024–nay", "label": "AI Engineer", "focus": "RAG, LLM deployment, fine-tuning, AI pipelines", "status": "in-progress" },
+    { "phase": "Tiếp theo", "label": "AI Solutions Architect / DevSecOps", "focus": "Kiến trúc AI quy mô lớn, bảo mật, tối ưu chi phí cloud, Japanese N3+", "status": "planned" }
+  ]
+}

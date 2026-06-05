@@ -1,0 +1,34 @@
+{
+  "$comment": "CONTRACT Grok -> Claude. Grok xuat file content/news/YYYY-MM-DD.json dung dinh dang nay moi ngay.",
+  "date": "2026-06-05",
+  "generatedBy": "grok",
+  "version": 1,
+
+  "news": [
+    {
+      "title": "Tieu de tin cong nghe",
+      "summary": "2-3 cau tom tat, viet lai bang giong cua minh, khong copy nguyen van.",
+      "source": "https://nguon-goc.com/bai-viet",
+      "tags": ["ai", "web", "infra"],
+      "importance": 3
+    }
+  ],
+
+  "blog": {
+    "slug": "2026-06-05-ten-bai-viet",
+    "title": "Tieu de bai blog",
+    "excerpt": "1-2 cau mo ta ngan cho preview card.",
+    "contentMarkdown": "# Noi dung\n\nViet bang Markdown day du...",
+    "tags": ["learning", "ai"],
+    "readingTimeMin": 5,
+    "coverImage": null
+  },
+
+  "expUpdate": {
+    "summary": "Tom tat thay doi/kinh nghiem moi trong ngay (neu co), de cap nhat trang Experience.",
+    "highlights": [
+      "Hoc duoc X khi lam Y",
+      "Skill moi: Z"
+    ]
+  }
+}

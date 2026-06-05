@@ -1,0 +1,47 @@
+---
+interface Project { name: string; summary: string; highlights?: string[]; stack?: string[]; }
+interface Props {
+  company: string;
+  role: string;
+  location?: string;
+  start: string;
+  end?: string | null;
+  current?: boolean;
+  projects?: Project[];
+}
+const { company, role, location, start, end, current, projects = [] } = Astro.props;
+function fmt(d?: string | null) {
+  if (!d) return '';
+  const [y, m] = d.split('-');
+  return m ? `${m}/${y}` : y;
+}
+const period = `${fmt(start)} — ${current ? 'nay' : fmt(end)}`;
+---
+<article class="card" style="padding:26px 26px">
+  <header style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+    <div>
+      <h3 style="margin:0;font-size:1.2rem">{company}</h3>
+      <p style="margin:.2em 0 0;color:var(--accent)">{role}</p>
+    </div>
+    <div class="mono muted" style="font-size:.85rem;text-align:right">
+      {period}{location ? <><br />{location}</> : null}
+    </div>
+  </header>
+
+  <div style="margin-top:18px;display:grid;gap:16px">
+    {projects.map((p) => (
+      <div style="border-left:2px solid var(--border);padding-left:16px">
+        <strong>{p.name}</strong>
+        <p class="muted" style="margin:.3em 0 .5em">{p.summary}</p>
+        {p.highlights && p.highlights.length > 0 && (
+          <ul style="margin:.2em 0 .6em;padding-left:18px;color:#cfd6ea;font-size:.95rem">
+            {p.highlights.map((h) => <li>{h}</li>)}
+          </ul>
+        )}
+        {p.stack && p.stack.length > 0 && (
+          <div class="chips">{p.stack.map((s) => <span class="chip">{s}</span>)}</div>
+        )}
+      </div>
+    ))}
+  </div>
+</article>

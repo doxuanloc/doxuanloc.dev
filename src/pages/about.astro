@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import { profile } from '../lib/content';
+const id = profile.identity;
+const languages = profile.languages ?? [];
+---
+<Base title="About" description={profile.summary}>
+  <section style="padding-top:56px">
+    <div class="container" style="max-width:760px">
+      <p class="eyebrow">About</p>
+      <h1 class="section-title" style="font-size:2rem">Giới thiệu</h1>
+      <p style="font-size:1.08rem;color:#d4dbee">{profile.summary}</p>
+
+      <div class="grid grid-2" style="margin-top:28px">
+        <div class="card">
+          <strong style="color:var(--accent-2)">Liên hệ</strong>
+          <ul style="list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px">
+            <li><a href={`mailto:${id.email}`}>{id.email}</a></li>
+            <li class="mono muted">{id.phone}</li>
+            <li><a href={id.links.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a></li>
+            {id.links.currentPortfolio && <li><a href={id.links.currentPortfolio} target="_blank" rel="noopener">Portfolio cũ ↗</a></li>}
+          </ul>
+        </div>
+        <div class="card">
+          <strong style="color:var(--accent-2)">Ngôn ngữ</strong>
+          <ul style="list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px">
+            {languages.map((l: any) => (
+              <li style="display:flex;justify-content:space-between"><span>{l.name}</span><span class="muted mono" style="font-size:.82rem">{l.level}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <strong style="color:var(--accent-2)">Về portfolio này</strong>
+        <p class="muted" style="margin:12px 0 0">
+          Portfolio tự cập nhật hàng ngày theo mô hình multi-AI:
+          <strong> Grok</strong> quét tin công nghệ realtime & viết blog,
+          <strong> Claude</strong> thiết kế kiến trúc & build site bằng <span class="mono">Astro</span>.
+          Mỗi ngày một GitHub Action chạy Grok sinh nội dung, validate rồi auto-deploy.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

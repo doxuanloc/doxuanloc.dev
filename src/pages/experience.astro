@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
+import { profile, getLatestExpUpdate } from '../lib/content';
+
+const experience = profile.experience ?? [];
+const personal = profile.personalProjects ?? [];
+const education = profile.education ?? [];
+const expUpdate = getLatestExpUpdate();
+---
+<Base title="Experience" description="Kinh nghiệm làm việc và dự án của Đỗ Xuân Lộc">
+  <section style="padding-top:56px">
+    <div class="container">
+      <p class="eyebrow">Career</p>
+      <h1 class="section-title" style="font-size:2rem">Kinh nghiệm</h1>
+      <p class="section-sub">{profile.identity.yearsExperience}+ năm — từ Frontend tới AI & System Optimization.</p>
+
+      {expUpdate && (
+        <div class="card" style="border-color:var(--accent-2);margin-bottom:28px">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px">
+            <span class="chip accent">Cập nhật {expUpdate.date}</span>
+            <span class="muted" style="font-size:.85rem">tự động bởi Grok</span>
+          </div>
+          {expUpdate.summary && <p style="margin:0 0 .5em">{expUpdate.summary}</p>}
+          {expUpdate.highlights && expUpdate.highlights.length > 0 && (
+            <ul style="margin:0;padding-left:18px;color:#cfd6ea">
+              {expUpdate.highlights.map((h: string) => <li>{h}</li>)}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <div class="grid" style="gap:22px">
+        {experience.map((e: any) => (
+          <ExperienceCard
+            company={e.company}
+            role={e.role}
+            location={e.location}
+            start={e.start}
+            end={e.end}
+            current={e.current}
+            projects={e.projects}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {personal.length > 0 && (
+    <section style="padding-top:0">
+      <div class="container">
+        <p class="eyebrow">Side projects</p>
+        <h2 class="section-title">Dự án cá nhân</h2>
+        <div class="grid grid-2" style="margin-top:22px">
+          {personal.map((p: any) => (
+            <article class="card">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                <strong>{p.name}</strong>
+                <span class="mono muted" style="font-size:.78rem">{p.period}</span>
+              </div>
+              <p class="muted" style="margin:.5em 0">{p.summary}</p>
+              <div class="chips" style="margin-bottom:10px">{(p.stack ?? []).map((s: string) => <span class="chip">{s}</span>)}</div>
+              <div style="display:flex;gap:14px;flex-wrap:wrap">
+                {Object.entries(p.links ?? {}).map(([k, v]) => (
+                  <a href={v as string} target="_blank" rel="noopener" class="mono" style="font-size:.8rem">{k} ↗</a>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {education.length > 0 && (
+    <section style="padding-top:0">
+      <div class="container">
+        <p class="eyebrow">Education</p>
+        <h2 class="section-title">Học vấn</h2>
+        <div class="grid grid-2" style="margin-top:22px">
+          {education.map((ed: any) => (
+            <div class="card">
+              <strong>{ed.school}</strong>
+              <p class="muted" style="margin:.3em 0 0">{ed.degree}</p>
+              <p class="mono muted" style="margin:.2em 0 0;font-size:.82rem">{ed.period}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>

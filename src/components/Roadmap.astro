@@ -1,0 +1,35 @@
+---
+import { profile } from '../lib/content';
+const roadmap = profile.roadmap ?? [];
+const statusLabel: Record<string, string> = { done: 'Hoàn thành', 'in-progress': 'Đang làm', planned: 'Kế hoạch' };
+const statusColor: Record<string, string> = { done: 'var(--accent-2)', 'in-progress': 'var(--accent)', planned: 'var(--text-dim)' };
+---
+<section>
+  <div class="container">
+    <p class="eyebrow">Career roadmap</p>
+    <h2 class="section-title">Lộ trình phát triển</h2>
+    <p class="section-sub">Từ Frontend tới AI Solutions Architect — định hướng rõ ràng theo từng giai đoạn.</p>
+
+    <div class="roadmap">
+      {roadmap.map((r: any) => (
+        <div class="roadmap-item card">
+          <span class="dot" style={`background:${statusColor[r.status] ?? 'var(--text-dim)'}`}></span>
+          <div>
+            <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+              <strong>{r.label}</strong>
+              <span class="mono muted" style="font-size:.82rem">{r.phase}</span>
+              <span class="chip" style={`color:${statusColor[r.status]};border-color:${statusColor[r.status]}`}>{statusLabel[r.status] ?? r.status}</span>
+            </div>
+            <p class="muted" style="margin:.3em 0 0">{r.focus}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .roadmap { position: relative; display: grid; gap: 14px; padding-left: 8px; }
+  .roadmap-item { display: grid; grid-template-columns: 18px 1fr; gap: 14px; align-items: start; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 7px; box-shadow: 0 0 0 4px rgba(91,140,255,.12); }
+</style>

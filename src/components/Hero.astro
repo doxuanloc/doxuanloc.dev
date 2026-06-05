@@ -1,0 +1,31 @@
+---
+import { profile } from '../lib/content';
+const id = profile.identity;
+const skillHighlights = [
+  ...(profile.skills.backend ?? []).slice(0, 2),
+  ...(profile.skills.cloud_devops ?? []).slice(0, 1),
+  ...(profile.skills.ai_ml ?? []).slice(0, 2),
+];
+---
+<section style="padding-top:72px;padding-bottom:40px">
+  <div class="container">
+    <p class="eyebrow">{id.location}</p>
+    <h1 style="font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.08;margin:.2em 0 .1em">
+      {id.name}
+    </h1>
+    <p style="font-size:1.25rem;color:var(--text);margin:.2em 0 .1em">{id.title}</p>
+    <p class="muted" style="font-size:1.02rem;margin:.1em 0 1.2em">{id.subtitle}</p>
+    <p style="max-width:640px;color:#cfd6ea;font-size:1.05rem">{id.tagline}</p>
+
+    <div class="chips" style="margin:22px 0 26px">
+      {skillHighlights.map((s: string) => <span class="chip accent">{s}</span>)}
+      <span class="chip">+{Object.values(profile.skills).flat().length}+ skills</span>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a class="btn btn-primary" href="/experience">Xem kinh nghiệm</a>
+      <a class="btn btn-ghost" href="/blog">Đọc blog</a>
+      <a class="btn btn-ghost" href={`mailto:${id.email}`}>Liên hệ</a>
+    </div>
+  </div>
+</section>

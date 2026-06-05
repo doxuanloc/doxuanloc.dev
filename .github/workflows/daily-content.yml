@@ -1,0 +1,57 @@
+name: Daily content (Grok) + deploy
+
+on:
+  schedule:
+    # 00:30 UTC mỗi ngày (~07:30 giờ VN). Đổi nếu muốn giờ khác.
+    - cron: '30 0 * * *'
+  workflow_dispatch: {} # cho phép chạy tay từ tab Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-content
+  cancel-in-progress: false
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Grok Build CLI
+        run: curl -fsSL https://x.ai/cli/install.sh | bash
+
+      - name: Generate today's content
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          export PATH="$HOME/.grok/bin:$PATH"
+          node scripts/gen-today.mjs
+
+      - name: Validate content (guardrail)
+        run: npm run validate
+
+      - name: Commit new content
+        run: |
+          git config user.name "grok-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add content/news/
+          if git diff --cached --quiet; then
+            echo "Không có nội dung mới."
+            exit 0
+          fi
+          git commit -m "content: auto-update $(date -u +%F)"
+          git push
+
+      # Deploy: Vercel tự build khi nhận push (khuyến nghị, không cần step này).
+      # Nếu muốn build & deploy ngay trong Action, bỏ comment block dưới và đặt secrets Vercel.
+      # - name: Build
+      #   run: npm run build

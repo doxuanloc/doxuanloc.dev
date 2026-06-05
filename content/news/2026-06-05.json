@@ -1,0 +1,44 @@
+{
+  "date": "2026-06-05",
+  "generatedBy": "seed",
+  "version": 1,
+  "news": [
+    {
+      "title": "Astro tiếp tục dẫn đầu về hiệu năng cho site nội dung",
+      "summary": "Kiến trúc island + zero-JS mặc định giúp Astro đạt điểm Lighthouse cao, phù hợp cho portfolio và blog nặng nội dung. Đây là lý do stack này được chọn cho dự án.",
+      "source": "https://astro.build/",
+      "tags": ["web", "astro", "performance"],
+      "importance": 2
+    },
+    {
+      "title": "RAG vẫn là pattern chủ đạo để đưa LLM vào sản phẩm thực tế",
+      "summary": "Retrieval-Augmented Generation giúp giảm hallucination bằng cách neo câu trả lời vào nguồn dữ liệu thật — trùng với hướng đi mình áp dụng trong chatbot nội bộ.",
+      "source": "https://www.anthropic.com/",
+      "tags": ["ai", "rag", "llm"],
+      "importance": 3
+    },
+    {
+      "title": "Event-driven trên AWS Lambda + EventBridge cho hệ thống đồng bộ dữ liệu",
+      "summary": "Mô hình serverless event-driven giúp scale theo nhu cầu và tách rời các service — kiến trúc mình dùng cho Message Management Tool.",
+      "source": "https://aws.amazon.com/eventbridge/",
+      "tags": ["cloud", "aws", "serverless"],
+      "importance": 2
+    }
+  ],
+  "blog": {
+    "slug": "2026-06-05-portfolio-tu-cap-nhat-bang-grok-va-claude",
+    "title": "Xây portfolio tự cập nhật hàng ngày bằng Grok × Claude",
+    "excerpt": "Tại sao và làm thế nào mình dựng một portfolio tự sinh tin tức & blog mỗi ngày, với Grok làm content-engine và Claude làm architect.",
+    "contentMarkdown": "## Ý tưởng\n\nMột portfolio tĩnh sẽ cũ đi rất nhanh. Mình muốn nó **sống** — mỗi ngày tự cập nhật tin công nghệ và một bài blog, phản ánh đúng những gì mình đang quan tâm: AI/LLM, cloud, và web architecture.\n\n## Mô hình multi-AI\n\nDự án vận hành theo phân vai rõ ràng:\n\n- **Grok** là *content-engine*: dùng khả năng web search realtime để quét tin công nghệ và viết blog theo một contract JSON cố định.\n- **Claude** là *architect + implementer*: thiết kế kiến trúc, build site bằng Astro, và dựng pipeline tự động.\n\n## Pipeline\n\nMỗi ngày một GitHub Action chạy Grok headless để sinh `content/news/YYYY-MM-DD.json`. Trước khi deploy, một bước **validate schema** sẽ chặn mọi nội dung sai định dạng hoặc thiếu nguồn — đây là guardrail quan trọng vì site auto-publish công khai.\n\n```\ncron → grok (web search) → JSON → validate → git push → Vercel deploy\n```\n\n## Vì sao Astro?\n\nSite chủ yếu là nội dung tĩnh: experience, blog, news feed. Astro render sẵn ra HTML, gần như không JS, nên nhanh và SEO tốt — đúng nhu cầu.\n\n## Tiếp theo\n\nThêm RSS feed, dark/light toggle, và thống kê đọc. Nhưng nền tảng quan trọng nhất đã xong: một hệ thống tự nuôi nội dung mỗi ngày.",
+    "tags": ["meta", "ai", "astro", "automation"],
+    "readingTimeMin": 4,
+    "coverImage": null
+  },
+  "expUpdate": {
+    "summary": "Khởi động portfolio tự cập nhật — thiết lập pipeline Grok × Claude và kiến trúc Astro.",
+    "highlights": [
+      "Thiết kế contract JSON cho nội dung hàng ngày",
+      "Dựng guardrail validate chống hallucination cho auto-publish"
+    ]
+  }
+}

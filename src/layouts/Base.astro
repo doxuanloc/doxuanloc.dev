@@ -1,0 +1,65 @@
+---
+import '../styles/global.css';
+import { profile } from '../lib/content';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+const fullTitle = title ? `${title} · ${profile.identity.nameEn}` : `${profile.identity.nameEn} · ${profile.identity.title}`;
+const desc = description ?? profile.summary;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/experience', label: 'Experience' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/news', label: 'News' },
+  { href: '/about', label: 'About' },
+];
+function current(href: string) {
+  if (href === '/') return path === '/';
+  return path === href || path.startsWith(href + '/');
+}
+---
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="/">{profile.identity.nameEn}<span>.</span></a>
+        <nav>
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div>© {new Date().getFullYear()} {profile.identity.nameEn} — {profile.identity.title}</div>
+        <div class="muted" style="margin-top:6px;font-size:.85rem">
+          Tự cập nhật hàng ngày bằng Grok + Claude · <span class="mono">Astro</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

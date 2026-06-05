@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Roadmap from '../components/Roadmap.astro';
+import { profile, getAllPosts, getAllNews } from '../lib/content';
+
+const latestPosts = getAllPosts().slice(0, 3);
+const latestNews = getAllNews().slice(0, 4);
+const skills = profile.skills;
+const skillGroups: { label: string; key: string }[] = [
+  { label: 'Frontend', key: 'frontend' },
+  { label: 'Backend', key: 'backend' },
+  { label: 'Cloud / DevOps', key: 'cloud_devops' },
+  { label: 'AI / ML', key: 'ai_ml' },
+];
+---
+<Base>
+  <Hero />
+
+  <!-- Skills -->
+  <section style="padding-top:24px">
+    <div class="container">
+      <p class="eyebrow">Tech stack</p>
+      <h2 class="section-title">Kỹ năng</h2>
+      <p class="section-sub">Full-stack + cloud + AI, đúc kết qua các dự án thật.</p>
+      <div class="grid grid-2">
+        {skillGroups.map((g) => (
+          <div class="card">
+            <strong style="color:var(--accent-2)">{g.label}</strong>
+            <div class="chips" style="margin-top:12px">
+              {(skills[g.key] ?? []).map((s: string) => <span class="chip">{s}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Roadmap />
+
+  <!-- Latest blog -->
+  {latestPosts.length > 0 && (
+    <section style="padding-top:0">
+      <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div>
+            <p class="eyebrow">Blog</p>
+            <h2 class="section-title">Bài viết mới nhất</h2>
+          </div>
+          <a href="/blog" class="mono" style="font-size:.9rem">Tất cả ↗</a>
+        </div>
+        <div class="grid grid-3" style="margin-top:24px">
+          {latestPosts.map((p) => (
+            <a href={`/blog/${p.slug}`} class="card" style="text-decoration:none;color:inherit;display:grid;gap:8px">
+              <span class="mono muted" style="font-size:.78rem">{p.date}{p.readingTimeMin ? ` · ${p.readingTimeMin} phút đọc` : ''}</span>
+              <strong style="font-size:1.05rem">{p.title}</strong>
+              <span class="muted" style="font-size:.92rem">{p.excerpt}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Latest news -->
+  {latestNews.length > 0 && (
+    <section style="padding-top:0">
+      <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div>
+            <p class="eyebrow">Tech radar</p>
+            <h2 class="section-title">Tin công nghệ Grok cập nhật</h2>
+          </div>
+          <a href="/news" class="mono" style="font-size:.9rem">Tất cả ↗</a>
+        </div>
+        <div class="grid grid-2" style="margin-top:24px">
+          {latestNews.map((n) => (
+            <article class="card" style="display:grid;gap:6px">
+              <span class="mono muted" style="font-size:.76rem">{n.date}</span>
+              <strong style="font-size:1rem">{n.title}</strong>
+              <span class="muted" style="font-size:.9rem">{n.summary}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
