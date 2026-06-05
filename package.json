@@ -8,7 +8,8 @@
     "build": "node scripts/validate-content.mjs && astro build",
     "preview": "astro preview",
     "validate": "node scripts/validate-content.mjs",
-    "gen:today": "node scripts/gen-today.mjs"
+    "gen:today": "node scripts/gen-today.mjs",
+    "publish:today": "node scripts/gen-today.mjs && npm run validate && git add content/news && (git diff --cached --quiet || git commit -m \"content: auto $(date -u +%F)\") && git push"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",

@@ -1,10 +1,10 @@
 name: Daily content (Grok) + deploy
 
+# MVP: sinh nội dung CHẠY TAY ở LOCAL bằng grok CLI (OAuth, KHÔNG cần XAI_API_KEY):
+#   npm run publish:today   (gen → validate → commit → push → host tự deploy)
+# Workflow này chỉ là FALLBACK chạy tay trên cloud (cần secret XAI_API_KEY). Đã bỏ cron.
 on:
-  schedule:
-    # 00:30 UTC mỗi ngày (~07:30 giờ VN). Đổi nếu muốn giờ khác.
-    - cron: '30 0 * * *'
-  workflow_dispatch: {} # cho phép chạy tay từ tab Actions
+  workflow_dispatch: {} # chỉ chạy tay từ tab Actions
 
 permissions:
   contents: write

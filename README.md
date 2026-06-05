@@ -27,19 +27,22 @@ scripts/
 ## Lệnh
 ```bash
 npm install
-npm run dev        # dev server
-npm run build      # validate content -> astro build
-npm run validate   # chỉ chạy guardrail
-npm run gen:today  # sinh nội dung hôm nay bằng Grok (cần grok đã auth)
+npm run dev            # dev server
+npm run build          # validate content -> astro build
+npm run validate       # chỉ chạy guardrail
+npm run gen:today      # sinh nội dung hôm nay bằng Grok CLI (OAuth, không cần API key)
+npm run publish:today  # gen → validate → commit → push (1 lệnh, chạy tay hằng ngày)
 ```
 
-## Pipeline auto-publish
+## Pipeline (MVP: chạy tay ở local, KHÔNG cần API key)
+Grok CLI auth bằng **OAuth** (`grok login`) nên không cần `XAI_API_KEY`. Mỗi ngày chạy:
 ```
-GitHub Action (cron 00:30 UTC)
-  → cài Grok CLI → node scripts/gen-today.mjs (web search → JSON)
-  → npm run validate (guardrail: schema + source URL + chống trùng slug + bảo mật)
-  → git push → Vercel auto-deploy
+npm run publish:today
+  → grok CLI (web search → JSON)
+  → validate (guardrail: schema + source URL + chống trùng slug + bảo mật)
+  → git commit + push → host tự deploy
 ```
+> GitHub Action (`workflow_dispatch`) chỉ là fallback chạy tay trên cloud — cần secret `XAI_API_KEY`. Đã bỏ cron để không phụ thuộc API key.
 
 ## Bảo mật nội dung auto (guardrail "chặn mạnh")
 Nội dung Grok tự sinh đi qua `scripts/validate-content.mjs` trước khi deploy:
@@ -52,9 +55,8 @@ Nội dung Grok tự sinh đi qua `scripts/validate-content.mjs` trước khi de
 - JSON-LD `Person` (mọi trang) + `BlogPosting` (trang blog), canonical + Open Graph/Twitter card.
 
 ## Setup deploy
-1. Push repo lên GitHub.
-2. Import vào [Vercel](https://vercel.com) (framework auto-detect: Astro).
-3. Thêm GitHub Secret `XAI_API_KEY` (lấy ở https://console.x.ai) để Action chạy Grok.
-4. (Tùy chọn) chạy tay: tab **Actions → Daily content → Run workflow**.
+1. Push repo lên GitHub (đã xong).
+2. Import vào host tĩnh (Vercel/Netlify/Cloudflare Pages) — framework auto-detect: Astro. Mỗi lần `git push` sẽ tự build & deploy.
+3. Nội dung hằng ngày: chạy `npm run publish:today` ở local (Grok CLI OAuth, không cần API key).
 
-> ⚠️ Không commit API key. Dùng GitHub Secrets / biến môi trường.
+> ⚠️ Không commit API key. `XAI_API_KEY` chỉ cần nếu chạy workflow fallback trên cloud.
