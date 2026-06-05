@@ -1,7 +1,10 @@
 ---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { profile } from '../lib/content';
 import HeroCanvas from './HeroCanvas.astro';
 const id = profile.identity;
+const avatar = existsSync(join(process.cwd(), 'public/images/avatar.png')) ? '/images/avatar.png' : null;
 const skillHighlights = [
   ...(profile.skills.backend ?? []).slice(0, 2),
   ...(profile.skills.cloud_devops ?? []).slice(0, 1),
@@ -12,6 +15,10 @@ const totalSkills = Object.values(profile.skills).flat().length;
 <section style="position:relative;padding-top:84px;padding-bottom:44px;overflow:hidden">
   <HeroCanvas />
   <div class="container" style="position:relative;z-index:1">
+    {avatar && (
+      <img src={avatar} alt={id.name} width="84" height="84" data-reveal
+        style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--border);box-shadow:var(--shadow);margin-bottom:18px;background:var(--bg-soft)" />
+    )}
     <div class="badge" data-reveal style="--reveal-delay:40ms;margin-bottom:22px">
       <span class="pulse"></span>
       <span>{id.location} · {profile.identity.yearsExperience}+ năm kinh nghiệm</span>
@@ -30,8 +37,8 @@ const totalSkills = Object.values(profile.skills).flat().length;
     </div>
 
     <div data-reveal style="--reveal-delay:380ms;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-      <a class="btn btn-primary" href="/experience">Xem kinh nghiệm →</a>
-      <a class="btn btn-ghost" href="/blog">Đọc blog</a>
+      <a class="btn btn-primary" href="/journey">Xem hành trình →</a>
+      <a class="btn btn-ghost" href="/experience">Kinh nghiệm</a>
       <div class="social" style="margin-left:4px">
         {id.links?.linkedin && (
           <a href={id.links.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">

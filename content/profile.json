@@ -184,5 +184,71 @@
     { "phase": "2023–nay", "label": "System Architect", "focus": "Microservices, NX Monorepo, AWS, event-driven, CI/CD", "status": "in-progress" },
     { "phase": "2024–nay", "label": "AI Engineer", "focus": "RAG, LLM deployment, fine-tuning, AI pipelines", "status": "in-progress" },
     { "phase": "Tiếp theo", "label": "AI Solutions Architect / DevSecOps", "focus": "Kiến trúc AI quy mô lớn, bảo mật, tối ưu chi phí cloud, Japanese N3+", "status": "planned" }
+  ],
+
+  "$comment_journey": "Mốc cho pinned scrollytelling timeline (/journey). image: thả file vào public/images/journey/<id>.(webp|jpg|png) — không có thì hiện gradient theo kind. photo: ảnh cá nhân.",
+  "journey": [
+    {
+      "id": "dai-hoc-nen-tang",
+      "year": "2018–2021",
+      "kind": "education",
+      "title": "Nền móng kỹ thuật",
+      "narrative": "Xây nền tảng tư duy hệ thống và thuật toán cho mọi hành trình sau.",
+      "bullets": ["Computer Engineering @ UIT", "Software Engineering @ FPT", "Tư duy thuật toán & hệ thống", "Tiếp cận lập trình web thực tế"],
+      "tags": ["Computer Engineering", "Algorithms", "Web"],
+      "imageConcept": "Thư viện đại học lúc hoàng hôn, laptop và sách mở, khát vọng bắt đầu."
+    },
+    {
+      "id": "buoc-chan-frontend",
+      "year": "2022",
+      "kind": "frontend",
+      "title": "Bước chân vào Frontend",
+      "narrative": "Lần đầu ship code thật cho sản phẩm có người dùng — chạm vào dữ liệu on-chain.",
+      "bullets": ["ReactJS & responsive design", "Phân tích on-chain data (crypto)", "Nâng cấp UI/UX e-learning", "Viết technical blog"],
+      "tags": ["ReactJS", "UI/UX", "Crypto", "On-chain"],
+      "imageConcept": "Màn hình code React + biểu đồ crypto xanh dương trong đêm Sài Gòn."
+    },
+    {
+      "id": "fullstack-thuc-chien",
+      "year": "2022–2023",
+      "kind": "fullstack",
+      "title": "Full-Stack & 3D",
+      "narrative": "Tự tay xây từ frontend tới backend, dựng trải nghiệm 3D tương tác.",
+      "bullets": ["NestJS + Vue.js thực chiến", "Three.js cho SaaS 3D", "Dự án full-stack hoàn chỉnh", "Remote với Docker & Git"],
+      "tags": ["NestJS", "Vue.js", "Three.js", "Docker"],
+      "imageConcept": "Hai màn hình: backend NestJS và mô hình 3D đang xoay, ánh sáng xanh."
+    },
+    {
+      "id": "kien-truc-he-thong",
+      "year": "2023–2024",
+      "kind": "fullstack",
+      "title": "Kiến trúc hệ thống lớn",
+      "narrative": "Hiện đại hoá nền tảng quy mô lớn — đưa microservices & cloud vào thực tiễn.",
+      "bullets": ["NX Monorepo tách services", "Microservices NestJS tối ưu", "CI/CD trên AWS EC2/Lambda", "Event-driven: SQS, EventBridge"],
+      "tags": ["NX Monorepo", "AWS", "Microservices", "CI/CD"],
+      "imageConcept": "Sơ đồ AWS phức tạp sáng màu trên màn hình lớn, không khí enterprise."
+    },
+    {
+      "id": "ai-va-toi-uu",
+      "year": "2024–nay",
+      "kind": "ai",
+      "title": "AI & Tối ưu hệ thống",
+      "narrative": "Mang AI vào hệ thống thật — giải bài toán với độ chính xác và tốc độ cao.",
+      "bullets": ["RAG + Word2Vec embeddings", "Deploy & fine-tune LLM (Ollama)", "AI pipeline modular, low-latency", "Tích hợp AI vào event-driven"],
+      "tags": ["RAG", "LLM", "Ollama", "Python"],
+      "imageConcept": "Mạng nơ-ron phát sáng tím-xanh, dữ liệu chảy như dòng sông ánh sáng.",
+      "photo": "/images/presenting.jpg",
+      "photoAlt": "Đỗ Xuân Lộc thuyết trình"
+    },
+    {
+      "id": "ai-solutions-architect",
+      "year": "Tương lai",
+      "kind": "future",
+      "title": "AI Solutions Architect",
+      "narrative": "Dẫn dắt kiến trúc AI quy mô lớn — an toàn, tối ưu chi phí, sẵn sàng thị trường Nhật.",
+      "bullets": ["AI architecture enterprise-scale", "DevSecOps & tối ưu chi phí cloud", "Japanese N3+ cho thị trường Nhật", "Dẫn dắt giải pháp AI 0→1"],
+      "tags": ["AI Architecture", "DevSecOps", "Scalability", "JP N3+"],
+      "imageConcept": "Thành phố tương lai lung linh, cầu ánh sáng nối người với AI nhân từ."
+    }
   ]
 }
