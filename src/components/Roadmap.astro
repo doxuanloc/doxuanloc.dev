@@ -1,26 +1,31 @@
 ---
 import { profile } from '../lib/content';
 const roadmap = profile.roadmap ?? [];
-const statusLabel: Record<string, string> = { done: 'Hoàn thành', 'in-progress': 'Đang làm', planned: 'Kế hoạch' };
-const statusColor: Record<string, string> = { done: 'var(--accent-2)', 'in-progress': 'var(--accent)', planned: 'var(--text-dim)' };
+const statusLabel: Record<string, string> = { done: 'Hoàn thành', 'in-progress': 'Đang thực hiện', planned: 'Kế hoạch' };
+const statusColor: Record<string, string> = { done: 'var(--accent-2)', 'in-progress': 'var(--accent)', planned: 'var(--accent-3)' };
 ---
 <section>
   <div class="container">
-    <p class="eyebrow">Career roadmap</p>
-    <h2 class="section-title">Lộ trình phát triển</h2>
-    <p class="section-sub">Từ Frontend tới AI Solutions Architect — định hướng rõ ràng theo từng giai đoạn.</p>
+    <p class="eyebrow" data-reveal>Trajectory // Roadmap</p>
+    <h2 class="section-title" data-reveal style="--reveal-delay:60ms">Lộ trình tương lai</h2>
+    <p class="section-sub" data-reveal style="--reveal-delay:100ms">Từ lõi AI hôm nay đến tầm nhìn xa — nơi mình đang phóng tới.</p>
+    <div class="aurora-line" data-reveal style="--reveal-delay:140ms;max-width:120px;margin-bottom:28px"></div>
 
-    <div class="roadmap">
-      {roadmap.map((r: any) => (
-        <div class="roadmap-item card">
-          <span class="dot" style={`background:${statusColor[r.status] ?? 'var(--text-dim)'}`}></span>
-          <div>
-            <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
-              <strong>{r.label}</strong>
-              <span class="mono muted" style="font-size:.82rem">{r.phase}</span>
-              <span class="chip" style={`color:${statusColor[r.status]};border-color:${statusColor[r.status]}`}>{statusLabel[r.status] ?? r.status}</span>
+    <div class="rmap">
+      {roadmap.map((r: any, i: number) => (
+        <div class={`rmap-item card status-${r.status}`} data-reveal data-tilt style={`--reveal-delay:${i * 80}ms;--c:${statusColor[r.status]}`}>
+          <div class="rmap-side">
+            <span class={`rmap-dot ${r.status === 'in-progress' ? 'live' : ''}`}></span>
+            <span class="rmap-idx mono">{String(i + 1).padStart(2, '0')}</span>
+          </div>
+          <div class="rmap-body">
+            <div class="rmap-head">
+              <span class="rmap-phase mono">{r.phase}</span>
+              <span class="rmap-status mono">{statusLabel[r.status] ?? r.status}</span>
             </div>
-            <p class="muted" style="margin:.3em 0 0">{r.focus}</p>
+            <strong class="rmap-label">{r.label}</strong>
+            {r.story && <p class="rmap-story">{r.story}</p>}
+            <div class="chips">{(r.focus ?? []).map((f: string) => <span class="chip">{f}</span>)}</div>
           </div>
         </div>
       ))}
@@ -29,7 +34,31 @@ const statusColor: Record<string, string> = { done: 'var(--accent-2)', 'in-progr
 </section>
 
 <style>
-  .roadmap { position: relative; display: grid; gap: 14px; padding-left: 8px; }
-  .roadmap-item { display: grid; grid-template-columns: 18px 1fr; gap: 14px; align-items: start; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 7px; box-shadow: 0 0 0 4px rgba(91,140,255,.12); }
+  .rmap { display: grid; gap: 16px; }
+  .rmap-item { display: grid; grid-template-columns: 64px 1fr; gap: 20px; align-items: start; transform-style: preserve-3d; }
+  .rmap-side { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 4px; }
+  .rmap-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent), 0 0 14px var(--c);
+  }
+  .rmap-dot.live { animation: rpulse 2s ease-in-out infinite; }
+  @keyframes rpulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 20%, transparent), 0 0 10px var(--c); }
+    50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--c) 6%, transparent), 0 0 22px var(--c); }
+  }
+  .rmap-idx { font-size: 0.8rem; color: var(--text-mute); }
+  .rmap-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+  .rmap-phase { font-size: 0.78rem; color: var(--c); letter-spacing: 1px; }
+  .rmap-status { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-mute); border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px; }
+  .rmap-label { font-size: 1.25rem; letter-spacing: -0.02em; display: block; margin-bottom: 6px; }
+  .status-in-progress .rmap-label {
+    background: linear-gradient(100deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .rmap-story { color: #cfd6ea; margin: 0 0 12px; font-size: 1rem; max-width: 60ch; }
+
+  @media (max-width: 560px) {
+    .rmap-item { grid-template-columns: 1fr; gap: 12px; }
+    .rmap-side { flex-direction: row; padding-top: 0; }
+  }
 </style>

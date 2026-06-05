@@ -26,7 +26,7 @@ const skillGroups: { label: string; key: string }[] = [
         <p class="section-sub" data-reveal style="--reveal-delay:100ms">Mỗi bài toán kèm cách tiếp cận thực tế — đúc kết từ kinh nghiệm.</p>
         <div class="grid grid-2">
           {(profile.solves ?? []).map((s: any, i: number) => (
-            <div class="card" data-reveal style={`--reveal-delay:${i * 80}ms;display:grid;gap:8px`}>
+            <div class="card" data-reveal data-tilt style={`--reveal-delay:${i * 80}ms;display:grid;gap:8px`}>
               <strong style="font-size:1.05rem">{s.problem}</strong>
               <span class="muted" style="font-size:.94rem">{s.approach}</span>
               <div class="chips" style="margin-top:4px">

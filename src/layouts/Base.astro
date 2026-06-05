@@ -152,8 +152,43 @@ function current(href: string) {
         bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
       }
       window.addEventListener('scroll', updateProgress, { passive: true });
+
+      // Parallax sao theo chuột (desktop, không reduced-motion) — đặt --par-x/--par-y.
+      const fine = window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (fine) {
+        let ptick = false;
+        window.addEventListener('mousemove', (e) => {
+          if (ptick) return; ptick = true;
+          requestAnimationFrame(() => {
+            const x = (e.clientX / window.innerWidth - 0.5) * -2;
+            const y = (e.clientY / window.innerHeight - 0.5) * -2;
+            const r = document.documentElement.style;
+            r.setProperty('--par-x', x.toFixed(3));
+            r.setProperty('--par-y', y.toFixed(3));
+            ptick = false;
+          });
+        }, { passive: true });
+      }
+
+      // Tilt 3D nhẹ cho [data-tilt] (magnetic).
+      function setupTilt() {
+        if (!fine) return;
+        document.querySelectorAll<HTMLElement>('[data-tilt]:not([data-tilt-on])').forEach((el) => {
+          el.setAttribute('data-tilt-on', '');
+          let rect: DOMRect | null = null;
+          el.addEventListener('mouseenter', () => { rect = el.getBoundingClientRect(); });
+          el.addEventListener('mousemove', (e) => {
+            const r = rect ?? el.getBoundingClientRect();
+            const rx = (((e.clientY - r.top) / r.height) - 0.5) * -7;
+            const ry = (((e.clientX - r.left) / r.width) - 0.5) * 7;
+            el.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px)`;
+          });
+          el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+        });
+      }
+
       // astro:page-load chạy cả lần đầu + sau mỗi View Transition.
-      document.addEventListener('astro:page-load', () => { setupReveal(); updateProgress(); });
+      document.addEventListener('astro:page-load', () => { setupReveal(); updateProgress(); setupTilt(); });
     </script>
   </body>
 </html>

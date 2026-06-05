@@ -305,33 +305,63 @@
   ],
   "roadmap": [
     {
-      "phase": "2022",
-      "label": "Frontend Foundation",
-      "focus": "React, UI/UX, responsive web",
-      "status": "done"
-    },
-    {
-      "phase": "2022–2023",
-      "label": "Full-Stack",
-      "focus": "NestJS + Vue/React, 3D (Three.js), SaaS",
-      "status": "done"
-    },
-    {
-      "phase": "2023–nay",
-      "label": "System Architect",
-      "focus": "Microservices, NX Monorepo, AWS, event-driven, CI/CD",
+      "phase": "2026",
+      "label": "AI Core Forge",
+      "story": "Rèn lõi AI thực chiến — biến mỗi hệ thống thành một thực thể thông minh.",
+      "focus": [
+        "Production RAG",
+        "LLM optimization",
+        "Observability",
+        "Inference tuning"
+      ],
       "status": "in-progress"
     },
     {
-      "phase": "2024–nay",
-      "label": "AI Engineer",
-      "focus": "RAG, LLM deployment, fine-tuning, AI pipelines",
-      "status": "in-progress"
+      "phase": "2026–2027",
+      "label": "Mind at Scale",
+      "story": "Phóng đại trí tuệ nhân tạo phục vụ quy mô lớn mà không đánh đổi hiệu năng.",
+      "focus": [
+        "Distributed inference",
+        "MLOps",
+        "Serverless AI",
+        "Auto-scaling"
+      ],
+      "status": "planned"
     },
     {
-      "phase": "Tiếp theo",
-      "label": "AI Solutions Architect / DevSecOps",
-      "focus": "Kiến trúc AI quy mô lớn, bảo mật, tối ưu chi phí cloud, Japanese N3+",
+      "phase": "2027–2028",
+      "label": "DevSecOps Ascent",
+      "story": "Khoác lớp giáp thép cho AI — bảo mật và tối ưu chi phí từ trong ra ngoài.",
+      "focus": [
+        "Zero-trust AI",
+        "Secure CI/CD",
+        "Cloud cost control",
+        "Compliance"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase": "2028–2030",
+      "label": "AI Solutions Lead",
+      "story": "Dẫn dắt kiến trúc AI quy mô lớn, định hình giải pháp cho doanh nghiệp toàn cầu.",
+      "focus": [
+        "Enterprise RAG",
+        "Agent orchestration",
+        "Platform architecture",
+        "AI governance"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase": "2030+",
+      "label": "N3 Global Bridge",
+      "story": "Nối Việt Nam với Nhật Bản và thế giới bằng AI — cùng trình độ tiếng Nhật N3+.",
+      "focus": [
+        "Japanese N3+",
+        "Cross-border teams",
+        "AI ethics",
+        "Thought leadership"
+      ],
       "status": "planned"
     }
   ],
