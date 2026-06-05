@@ -291,13 +291,15 @@
   ],
   "education": [
     {
-      "school": "University of Information Technology",
-      "degree": "Computer Engineering",
+      "school": "Trường Đại học Công nghệ Thông tin (UIT)",
+      "org": "Đại học Quốc gia TP.HCM",
+      "degree": "Kỹ thuật Máy tính",
       "period": "2018 — 2021"
     },
     {
-      "school": "FPT University (BTEC FPT)",
-      "degree": "Software Engineering",
+      "school": "Cao đẳng Anh Quốc BTEC FPT",
+      "org": "FPT Polytechnic · Pearson BTEC HND",
+      "degree": "Kỹ thuật Phần mềm",
       "period": "2021 — 2024"
     }
   ],
@@ -342,8 +344,8 @@
       "title": "Nền tảng kỹ thuật",
       "narrative": "Thiết lập nền tảng tư duy hệ thống và thuật toán cho hành trình sau.",
       "bullets": [
-        "Computer Engineering @ UIT",
-        "Software Engineering @ FPT",
+        "Kỹ thuật Máy tính — UIT (ĐHQG-HCM)",
+        "Kỹ thuật Phần mềm — Cao đẳng BTEC FPT",
         "Tư duy thuật toán & hệ thống",
         "Tiếp cận lập trình web thực tế"
       ],

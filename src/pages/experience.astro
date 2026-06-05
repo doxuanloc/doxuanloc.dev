@@ -86,7 +86,8 @@ const expUpdate = getLatestExpUpdate();
           {education.map((ed: any) => (
             <div class="card">
               <strong>{ed.school}</strong>
-              <p class="muted" style="margin:.3em 0 0">{ed.degree}</p>
+              {ed.org && <p class="muted" style="margin:.2em 0 0;font-size:.85rem">{ed.org}</p>}
+              <p style="margin:.4em 0 0;color:var(--accent-2)">{ed.degree}</p>
               <p class="mono muted" style="margin:.2em 0 0;font-size:.82rem">{ed.period}</p>
             </div>
           ))}
