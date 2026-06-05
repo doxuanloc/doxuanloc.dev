@@ -2,7 +2,6 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { profile } from '../lib/content';
-import HeroCanvas from './HeroCanvas.astro';
 const id = profile.identity;
 const avatar = existsSync(join(process.cwd(), 'public/images/avatar.png')) ? '/images/avatar.png' : null;
 const skillHighlights = [
@@ -12,8 +11,7 @@ const skillHighlights = [
 ];
 const totalSkills = Object.values(profile.skills).flat().length;
 ---
-<section style="position:relative;padding-top:84px;padding-bottom:44px;overflow:hidden">
-  <HeroCanvas />
+<section style="position:relative;padding-top:84px;padding-bottom:44px">
   <div class="container" style="position:relative;z-index:1">
     {avatar && (
       <img src={avatar} alt={id.name} width="84" height="84" data-reveal
