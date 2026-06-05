@@ -1,0 +1,121 @@
+---
+// Hero background: "Neural Optimization Mesh" — canvas 2D procedural, lazy + a11y safe.
+---
+<div class="hero-canvas-wrap" aria-hidden="true">
+  <canvas id="hero-mesh"></canvas>
+  <div class="hero-mesh-fallback"></div>
+</div>
+
+<style>
+  .hero-canvas-wrap { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  #hero-mesh { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* Fallback tĩnh (reduced-motion / no-JS): gradient mesh pulse rất chậm */
+  .hero-mesh-fallback {
+    position: absolute; inset: 0; opacity: 0;
+    background:
+      radial-gradient(420px 300px at 78% 22%, rgba(91,140,255,0.16), transparent 60%),
+      radial-gradient(360px 260px at 30% 70%, rgba(54,214,195,0.12), transparent 60%),
+      radial-gradient(300px 220px at 60% 50%, rgba(181,140,255,0.10), transparent 60%);
+  }
+  /* Mask mờ dần xuống dưới để chữ hero luôn rõ */
+  .hero-canvas-wrap::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 35%, var(--bg) 96%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #hero-mesh { display: none; }
+    .hero-mesh-fallback { opacity: 1; animation: meshPulse 18s linear infinite; }
+  }
+  @keyframes meshPulse { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+</style>
+
+<script>
+  function initMesh() {
+    const canvas = document.getElementById('hero-mesh') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if ((canvas as any)._meshInit) return;
+    (canvas as any)._meshInit = true;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const COUNT = isMobile ? 22 : 44;
+    const LINK_DIST = isMobile ? 130 : 165;
+    const mouse = { x: -9999, y: -9999, active: false };
+    let nodes: { x: number; y: number; vx: number; vy: number; c: string }[] = [];
+    let raf = 0, running = false, last = 0;
+
+    const palette = ['rgba(91,140,255,', 'rgba(54,214,195,', 'rgba(181,140,255,'];
+
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      w = r.width; h = r.height;
+      canvas.width = Math.floor(w * dpr); canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function seed() {
+      nodes = Array.from({ length: COUNT }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
+        c: palette[(Math.random() * (Math.random() < 0.15 ? 3 : 2)) | 0],
+      }));
+    }
+    function step(t: number) {
+      if (!running) return;
+      if (t - last < 33) { raf = requestAnimationFrame(step); return; } // ~30fps
+      last = t;
+      ctx.clearRect(0, 0, w, h);
+
+      for (const n of nodes) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
+        if (mouse.active) {
+          const dx = n.x - mouse.x, dy = n.y - mouse.y, d = Math.hypot(dx, dy);
+          if (d < 120 && d > 0.1) { n.x += (dx / d) * 0.6; n.y += (dy / d) * 0.6; }
+        }
+      }
+      // links
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          const dist = Math.hypot(a.x - b.x, a.y - b.y);
+          if (dist < LINK_DIST) {
+            const op = (1 - dist / LINK_DIST) * 0.38;
+            ctx.strokeStyle = a.c + op + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        }
+      }
+      // nodes
+      for (const n of nodes) {
+        ctx.fillStyle = n.c + '0.85)';
+        ctx.beginPath(); ctx.arc(n.x, n.y, 1.7, 0, Math.PI * 2); ctx.fill();
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function start() { if (running) return; running = true; last = 0; raf = requestAnimationFrame(step); }
+    function stop() { running = false; cancelAnimationFrame(raf); }
+
+    resize(); seed();
+    window.addEventListener('resize', () => { resize(); seed(); }, { passive: true });
+    window.addEventListener('mousemove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true;
+    }, { passive: true });
+    window.addEventListener('mouseout', () => { mouse.active = false; });
+    document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
+
+    // Pause khi hero ra khỏi viewport (tiết kiệm pin).
+    const io = new IntersectionObserver((ents) => {
+      for (const e of ents) e.isIntersecting ? start() : stop();
+    }, { threshold: 0.02 });
+    io.observe(canvas);
+  }
+
+  document.addEventListener('astro:page-load', initMesh);
+</script>

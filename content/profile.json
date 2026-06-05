@@ -21,6 +21,30 @@
 
   "summary": "Full-Stack Engineer với 3 năm kinh nghiệm, hiện làm AI & System Optimization Engineer / Solutions Architect tại MarketEnterprise Vietnam. Mạnh về NestJS, Next.js, ReactJS và kiến trúc microservices trên AWS. Đang mở rộng sang AI/ML (RAG, LLM deployment) và DevSecOps. Tập trung vào hệ thống hiệu năng cao, bảo mật, dễ bảo trì.",
 
+  "$comment_solves": "Bài toán giải quyết được + cách tiếp cận, tổng quát từ kinh nghiệm thật. Không số liệu nội bộ.",
+  "solves": [
+    {
+      "problem": "Hệ thống lớn khó scale & bảo trì",
+      "approach": "Tách microservices trong NX Monorepo, API ranh giới rõ ràng, CI/CD tự động theo từng môi trường (dev/staging/prod).",
+      "stack": ["NestJS", "NX Monorepo", "AWS", "CI/CD"]
+    },
+    {
+      "problem": "Đồng bộ & xử lý dữ liệu đa nguồn realtime",
+      "approach": "Kiến trúc event-driven serverless — hàng đợi và lịch tự động tách rời các service, dễ scale theo tải.",
+      "stack": ["AWS Lambda", "EventBridge", "SAM", "SQS"]
+    },
+    {
+      "problem": "Đưa LLM vào sản phẩm mà vẫn chính xác & an toàn",
+      "approach": "RAG neo câu trả lời vào tài liệu thật, embeddings + LLM deploy nội bộ để kiểm soát dữ liệu và giảm hallucination.",
+      "stack": ["RAG", "Embeddings", "LLM (Ollama)", "Python"]
+    },
+    {
+      "problem": "Hệ thống chậm & tốn chi phí vận hành",
+      "approach": "Tối ưu query/index, tách tải, thiết kế hạ tầng cloud hợp lý theo hướng tiết kiệm chi phí.",
+      "stack": ["MySQL", "AWS", "Docker", "Monitoring"]
+    }
+  ],
+
   "languages": [
     { "name": "Tiếng Việt", "level": "Bản ngữ" },
     { "name": "English", "level": "Professional Working" },

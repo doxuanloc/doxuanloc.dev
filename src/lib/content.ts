@@ -25,7 +25,7 @@ export interface DailyContent {
   version?: number;
   news?: NewsItem[];
   blog?: BlogPost | null;
-  expUpdate?: { summary?: string; highlights?: string[] } | null;
+  expUpdate?: { summary?: string; skills?: string[]; highlights?: string[] } | null;
 }
 
 export const profile = profileJson as any;
@@ -67,7 +67,7 @@ export function getPostBySlug(slug: string) {
 /** expUpdate gần nhất (nếu có) để show trên trang Experience. */
 export function getLatestExpUpdate() {
   for (const d of getDailyContent()) {
-    if (d.expUpdate && (d.expUpdate.summary || (d.expUpdate.highlights ?? []).length)) {
+    if (d.expUpdate && (d.expUpdate.summary || (d.expUpdate.skills ?? []).length || (d.expUpdate.highlights ?? []).length)) {
       return { ...d.expUpdate, date: d.date };
     }
   }

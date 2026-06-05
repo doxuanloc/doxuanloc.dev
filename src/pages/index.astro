@@ -17,15 +17,37 @@ const skillGroups: { label: string; key: string }[] = [
 <Base>
   <Hero />
 
+  <!-- Bài toán mình giải quyết -->
+  {(profile.solves ?? []).length > 0 && (
+    <section style="padding-top:24px">
+      <div class="container">
+        <p class="eyebrow" data-reveal>What I solve</p>
+        <h2 class="section-title" data-reveal style="--reveal-delay:60ms">Bài toán mình giải quyết</h2>
+        <p class="section-sub" data-reveal style="--reveal-delay:100ms">Mỗi bài toán kèm cách tiếp cận thực tế — đúc kết từ kinh nghiệm.</p>
+        <div class="grid grid-2">
+          {(profile.solves ?? []).map((s: any, i: number) => (
+            <div class="card" data-reveal style={`--reveal-delay:${i * 80}ms;display:grid;gap:8px`}>
+              <strong style="font-size:1.05rem">{s.problem}</strong>
+              <span class="muted" style="font-size:.94rem">{s.approach}</span>
+              <div class="chips" style="margin-top:4px">
+                {(s.stack ?? []).map((t: string) => <span class="chip accent">{t}</span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
   <!-- Skills -->
-  <section style="padding-top:24px">
+  <section style="padding-top:0">
     <div class="container">
-      <p class="eyebrow">Tech stack</p>
-      <h2 class="section-title">Kỹ năng</h2>
-      <p class="section-sub">Full-stack + cloud + AI, đúc kết qua các dự án thật.</p>
+      <p class="eyebrow" data-reveal>Tech stack</p>
+      <h2 class="section-title" data-reveal style="--reveal-delay:60ms">Kỹ năng</h2>
+      <p class="section-sub" data-reveal style="--reveal-delay:100ms">Full-stack + cloud + AI, đúc kết qua các dự án thật.</p>
       <div class="grid grid-2">
-        {skillGroups.map((g) => (
-          <div class="card">
+        {skillGroups.map((g, i) => (
+          <div class="card" data-reveal style={`--reveal-delay:${i * 80}ms`}>
             <strong style="color:var(--accent-2)">{g.label}</strong>
             <div class="chips" style="margin-top:12px">
               {(skills[g.key] ?? []).map((s: string) => <span class="chip">{s}</span>)}
@@ -42,7 +64,7 @@ const skillGroups: { label: string; key: string }[] = [
   {latestPosts.length > 0 && (
     <section style="padding-top:0">
       <div class="container">
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div style="display:flex;justify-content:space-between;align-items:baseline" data-reveal>
           <div>
             <p class="eyebrow">Blog</p>
             <h2 class="section-title">Bài viết mới nhất</h2>
@@ -50,8 +72,8 @@ const skillGroups: { label: string; key: string }[] = [
           <a href="/blog" class="mono" style="font-size:.9rem">Tất cả ↗</a>
         </div>
         <div class="grid grid-3" style="margin-top:24px">
-          {latestPosts.map((p) => (
-            <a href={`/blog/${p.slug}`} class="card" style="text-decoration:none;color:inherit;display:grid;gap:8px">
+          {latestPosts.map((p, i) => (
+            <a href={`/blog/${p.slug}`} class="card" data-reveal style={`--reveal-delay:${i * 80}ms;text-decoration:none;color:inherit;display:grid;gap:8px`}>
               <span class="mono muted" style="font-size:.78rem">{p.date}{p.readingTimeMin ? ` · ${p.readingTimeMin} phút đọc` : ''}</span>
               <strong style="font-size:1.05rem">{p.title}</strong>
               <span class="muted" style="font-size:.92rem">{p.excerpt}</span>
@@ -66,7 +88,7 @@ const skillGroups: { label: string; key: string }[] = [
   {latestNews.length > 0 && (
     <section style="padding-top:0">
       <div class="container">
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div style="display:flex;justify-content:space-between;align-items:baseline" data-reveal>
           <div>
             <p class="eyebrow">Tech radar</p>
             <h2 class="section-title">Tin công nghệ Grok cập nhật</h2>
@@ -74,8 +96,8 @@ const skillGroups: { label: string; key: string }[] = [
           <a href="/news" class="mono" style="font-size:.9rem">Tất cả ↗</a>
         </div>
         <div class="grid grid-2" style="margin-top:24px">
-          {latestNews.map((n) => (
-            <article class="card" style="display:grid;gap:6px">
+          {latestNews.map((n, i) => (
+            <article class="card" data-reveal style={`--reveal-delay:${i * 70}ms;display:grid;gap:6px`}>
               <span class="mono muted" style="font-size:.76rem">{n.date}</span>
               <strong style="font-size:1rem">{n.title}</strong>
               <span class="muted" style="font-size:.9rem">{n.summary}</span>

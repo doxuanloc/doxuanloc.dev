@@ -5,6 +5,39 @@ import { getAllNews, getDailyContent } from '../lib/content';
 
 const news = getAllNews();
 const days = getDailyContent().length;
+
+// Tag duy nhất, sắp theo tần suất giảm dần — để làm filter bar.
+const tagCount = new Map<string, number>();
+for (const n of news) for (const t of n.tags ?? []) tagCount.set(t, (tagCount.get(t) ?? 0) + 1);
+const tags = [...tagCount.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
+
+// Nhóm theo ngày (mới nhất trước). news đã sort desc theo date.
+const groupsMap = new Map<string, typeof news>();
+for (const n of news) {
+  if (!groupsMap.has(n.date)) groupsMap.set(n.date, []);
+  groupsMap.get(n.date)!.push(n);
+}
+const groups = [...groupsMap.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
+
+// Nhãn tương đối so với hôm nay (ngày build, UTC).
+const todayStr = new Date().toISOString().slice(0, 10);
+function dayDiff(d: string) {
+  return Math.round((Date.parse(todayStr) - Date.parse(d)) / 86400000);
+}
+function relLabel(d: string) {
+  const diff = dayDiff(d);
+  if (diff <= 0) return 'Hôm nay';
+  if (diff === 1) return 'Hôm qua';
+  if (diff < 7) return `${diff} ngày trước`;
+  if (diff < 14) return 'Tuần trước';
+  return d;
+}
+
+// TL;DR: tin nổi bật nhất của ngày mới nhất (importance desc), tối đa 4.
+const latestDay = groups[0];
+const digest = latestDay
+  ? [...latestDay[1]].sort((a, b) => (b.importance ?? 1) - (a.importance ?? 1)).slice(0, 4)
+  : [];
 ---
 <Base title="News" description="Tin công nghệ được Grok cập nhật hàng ngày">
   <section style="padding-top:56px">
@@ -18,12 +51,109 @@ const days = getDailyContent().length;
       {news.length === 0 ? (
         <div class="card muted">Chưa có tin. Pipeline Grok sẽ tự sinh nội dung ngày đầu tiên.</div>
       ) : (
-        <div class="grid grid-2">
-          {news.map((n) => (
-            <NewsCard title={n.title} summary={n.summary} source={n.source} tags={n.tags} date={n.date} importance={n.importance} />
-          ))}
-        </div>
+        <>
+          {/* TL;DR digest — catch-up trong vài giây */}
+          {digest.length > 0 && (
+            <div class="card digest" style="margin-bottom:28px">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
+                <strong style="color:var(--accent-2)">TL;DR · {relLabel(latestDay[0])}</strong>
+                <span class="mono muted" style="font-size:.78rem">{latestDay[0]}</span>
+              </div>
+              <ul style="margin:0;padding-left:18px;display:grid;gap:6px">
+                {digest.map((n) => (
+                  <li>
+                    <a href={n.source} target="_blank" rel="noopener">{n.title}</a>
+                    {(n.importance ?? 1) >= 3 && <span class="chip accent" style="font-size:.66rem;margin-left:8px">★</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Tag filter */}
+          {tags.length > 1 && (
+            <div class="chips news-filter" role="group" aria-label="Lọc theo tag" style="margin-bottom:24px">
+              <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">Tất cả</button>
+              {tags.map((t) => (
+                <button class="chip filter-btn" data-tag={t} aria-pressed="false">{t}</button>
+              ))}
+            </div>
+          )}
+
+          {/* Nhóm theo ngày — ngày mới nhất mở sẵn, ngày cũ thu gọn */}
+          <p class="muted news-empty" hidden style="margin:0 0 18px">Không có tin nào khớp tag này.</p>
+          <div id="news-groups" style="display:grid;gap:28px">
+            {groups.map(([date, items], i) => (
+              <section class="news-group" data-date={date}>
+                <div class="group-head">
+                  <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
+                  <span class="mono muted" style="font-size:.78rem">{date} · {items.length} tin</span>
+                </div>
+                <div class="grid grid-2">
+                  {items.map((n) => (
+                    <div class={`news-item${(n.importance ?? 1) >= 3 ? ' featured' : ''}`} data-tags={(n.tags ?? []).join('|')}>
+                      <NewsCard title={n.title} summary={n.summary} source={n.source} tags={n.tags} date={undefined} importance={n.importance} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
       )}
     </div>
   </section>
 </Base>
+
+<style>
+  .digest { border-color: var(--accent-2); background: linear-gradient(180deg, rgba(54,214,195,.06), transparent); }
+  .filter-btn { cursor: pointer; font-family: var(--mono); background: var(--bg-soft); }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.is-active { background: var(--accent); color: #07101f; border-color: var(--accent); }
+
+  .group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .group-label { font-weight: 700; font-size: 1.05rem; }
+  .group-label.today { color: var(--accent-2); }
+  .group-label.today::before { content: "● "; color: var(--accent-2); font-size: .7em; vertical-align: middle; }
+
+  .news-item.featured > :global(.card) { border-color: rgba(54,214,195,.4); }
+  .news-item.is-hidden { display: none; }
+  .news-group.is-hidden { display: none; }
+</style>
+
+<script>
+  function setupNewsFilter() {
+    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.filter-btn'));
+    if (!buttons.length) return; // không phải trang News
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.news-item'));
+    const groups = Array.from(document.querySelectorAll<HTMLElement>('.news-group'));
+    const empty = document.querySelector<HTMLElement>('.news-empty');
+
+    function apply(tag: string) {
+      let shown = 0;
+      for (const el of items) {
+        const tags = (el.dataset.tags ?? '').split('|');
+        const match = tag === '*' || tags.includes(tag);
+        el.classList.toggle('is-hidden', !match);
+        if (match) shown++;
+      }
+      for (const g of groups) {
+        const visible = g.querySelectorAll('.news-item:not(.is-hidden)').length;
+        g.classList.toggle('is-hidden', visible === 0);
+      }
+      if (empty) empty.hidden = shown !== 0;
+    }
+
+    for (const btn of buttons) {
+      btn.addEventListener('click', () => {
+        for (const b of buttons) {
+          const active = b === btn;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-pressed', String(active));
+        }
+        apply(btn.dataset.tag ?? '*');
+      });
+    }
+  }
+  document.addEventListener('astro:page-load', setupNewsFilter);
+</script>

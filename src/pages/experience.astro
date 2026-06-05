@@ -17,11 +17,16 @@ const expUpdate = getLatestExpUpdate();
 
       {expUpdate && (
         <div class="card" style="border-color:var(--accent-2);margin-bottom:28px">
-          <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px">
-            <span class="chip accent">Cập nhật {expUpdate.date}</span>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+            <span class="chip accent">Skill snapshot · {expUpdate.date}</span>
             <span class="muted" style="font-size:.85rem">tự động bởi Grok</span>
           </div>
-          {expUpdate.summary && <p style="margin:0 0 .5em">{expUpdate.summary}</p>}
+          {expUpdate.summary && <p style="margin:0 0 .6em">{expUpdate.summary}</p>}
+          {expUpdate.skills && expUpdate.skills.length > 0 && (
+            <div class="chips" style="margin-bottom:10px">
+              {expUpdate.skills.map((s: string) => <span class="chip">{s}</span>)}
+            </div>
+          )}
           {expUpdate.highlights && expUpdate.highlights.length > 0 && (
             <ul style="margin:0;padding-left:18px;color:#cfd6ea">
               {expUpdate.highlights.map((h: string) => <li>{h}</li>)}

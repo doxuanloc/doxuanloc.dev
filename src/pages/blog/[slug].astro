@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getAllPosts } from '../../lib/content';
+import { getAllPosts, profile } from '../../lib/content';
 import { marked } from 'marked';
 
 export function getStaticPaths() {
@@ -9,8 +9,23 @@ export function getStaticPaths() {
 
 const { post } = Astro.props;
 const html = marked.parse(post.contentMarkdown ?? '', { async: false }) as string;
+
+const blogLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: post.excerpt,
+  datePublished: post.date,
+  dateModified: post.date,
+  keywords: (post.tags ?? []).join(', '),
+  inLanguage: 'vi',
+  author: { '@type': 'Person', name: profile.identity.name },
+  publisher: { '@type': 'Person', name: profile.identity.name },
+  mainEntityOfPage: `${Astro.site ?? 'https://doxuanloc.dev'}blog/${post.slug}/`,
+};
 ---
-<Base title={post.title} description={post.excerpt}>
+<Base title={post.title} description={post.excerpt} schema={blogLd}>
+  <div class="read-progress" id="read-progress"></div>
   <section style="padding-top:56px">
     <div class="container">
       <a href="/blog" class="mono muted" style="font-size:.85rem">← Blog</a>

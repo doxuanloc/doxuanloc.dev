@@ -1,15 +1,38 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import { profile } from '../lib/content';
 
 interface Props {
   title?: string;
   description?: string;
+  /** JSON-LD bổ sung cho từng trang (vd BlogPosting). Person + WebSite luôn được nhúng sẵn. */
+  schema?: Record<string, any> | Record<string, any>[];
 }
-const { title, description } = Astro.props;
+const { title, description, schema } = Astro.props;
 const fullTitle = title ? `${title} · ${profile.identity.nameEn}` : `${profile.identity.nameEn} · ${profile.identity.title}`;
 const desc = description ?? profile.summary;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonical = new URL(path, Astro.site ?? 'https://doxuanloc.dev').href;
+
+const id = profile.identity;
+const sameAs = [id.links?.linkedin, id.links?.github, id.links?.currentPortfolio].filter(Boolean);
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: id.name,
+  alternateName: id.nameEn,
+  jobTitle: id.title,
+  description: profile.summary,
+  email: `mailto:${id.email}`,
+  url: (Astro.site ?? new URL('https://doxuanloc.dev')).toString(),
+  address: { '@type': 'PostalAddress', addressLocality: id.location },
+  knowsLanguage: (profile.languages ?? []).map((l: any) => l.name),
+  knowsAbout: Object.values(profile.skills ?? {}).flat(),
+  worksFor: { '@type': 'Organization', name: profile.experience?.[0]?.company },
+  sameAs,
+};
+const jsonLdBlocks = [personLd, ...(Array.isArray(schema) ? schema : schema ? [schema] : [])];
 
 const nav = [
   { href: '/', label: 'Home' },
@@ -30,16 +53,31 @@ function current(href: string) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link rel="canonical" href={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={desc} />
+    <link rel="alternate" type="application/rss+xml" title={`${profile.identity.nameEn} — Blog & Tech radar`} href="/rss.xml" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+    {jsonLdBlocks.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
+    <ClientRouter />
   </head>
   <body>
+    <div class="noise" aria-hidden="true"></div>
+    <a href="#main" class="skip-link">Tới nội dung</a>
     <header class="site-header">
       <div class="container nav">
         <a class="brand" href="/">{profile.identity.nameEn}<span>.</span></a>
-        <nav>
+        <nav aria-label="Chính">
           <ul>
             {nav.map((n) => (
               <li><a href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.label}</a></li>
@@ -49,17 +87,67 @@ function current(href: string) {
       </div>
     </header>
 
-    <main>
+    <main id="main">
       <slot />
     </main>
 
     <footer class="site-footer">
-      <div class="container">
-        <div>© {new Date().getFullYear()} {profile.identity.nameEn} — {profile.identity.title}</div>
-        <div class="muted" style="margin-top:6px;font-size:.85rem">
-          Tự cập nhật hàng ngày bằng Grok + Claude · <span class="mono">Astro</span>
+      <div class="container footer-grid">
+        <div>
+          <div style="font-weight:600;color:var(--text)">{profile.identity.nameEn}<span style="color:var(--accent)">.</span></div>
+          <div class="muted" style="margin-top:4px">{profile.identity.title}</div>
+          <div class="mono" style="margin-top:10px;font-size:.78rem;color:var(--text-mute)">
+            Tự cập nhật hằng ngày · Grok × Claude · Astro
+          </div>
+        </div>
+        <nav aria-label="Footer">
+          {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+        </nav>
+        <div class="social">
+          {id.links?.linkedin && (
+            <a href={id.links.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77Z"/></svg>
+            </a>
+          )}
+          {id.links?.github && (
+            <a href={id.links.github} target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+            </a>
+          )}
+          <a href={`mailto:${id.email}`} aria-label="Email" title="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </a>
         </div>
       </div>
+      <div class="container" style="margin-top:24px;font-size:.82rem;color:var(--text-mute)">
+        © {new Date().getFullYear()} {profile.identity.nameEn}. Built with Astro.
+      </div>
     </footer>
+
+    <script>
+      // Scroll-reveal: IntersectionObserver toggles .in (1 lần / phần tử).
+      function setupReveal() {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const els = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.in)');
+        if (reduce) { els.forEach((e) => e.classList.add('in')); return; }
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+          }
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+        els.forEach((e) => io.observe(e));
+      }
+      // Reading progress (chỉ chạy nếu trang có thanh #read-progress).
+      function updateProgress() {
+        const bar = document.getElementById('read-progress');
+        if (!bar) return;
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      // astro:page-load chạy cả lần đầu + sau mỗi View Transition.
+      document.addEventListener('astro:page-load', () => { setupReveal(); updateProgress(); });
+    </script>
   </body>
 </html>

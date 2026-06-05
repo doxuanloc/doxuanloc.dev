@@ -25,10 +25,12 @@
   },
 
   "expUpdate": {
-    "summary": "Tom tat thay doi/kinh nghiem moi trong ngay (neu co), de cap nhat trang Experience.",
+    "$comment": "SKILL SNAPSHOT — chi the hien KY NANG tu lam duoc. CAM: ten cong ty/khach/du an noi bo, so lieu cu the, 'internal/confidential/client'. Moi highlight phai co dong tu ky nang (thiet ke/toi uu/trien khai/ap dung...). Chi sinh 2-3 lan/tuan, con lai de null.",
+    "summary": "Tom tat dinh huong ky nang dang manh len (chung chung, an toan), vd: 'Cung co ky nang xay AI pipeline production-ready va toi uu he thong'.",
+    "skills": ["RAG pipeline", "AWS cost optimization", "Event-driven architecture"],
     "highlights": [
-      "Hoc duoc X khi lam Y",
-      "Skill moi: Z"
+      "Ap dung pattern retry/circuit-breaker de tang resilience cho he thong su kien",
+      "Toi uu retrieval accuracy trong RAG bang chien luoc chunking + re-ranking"
     ]
   }
 }

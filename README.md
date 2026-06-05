@@ -37,9 +37,19 @@ npm run gen:today  # sinh nội dung hôm nay bằng Grok (cần grok đã auth)
 ```
 GitHub Action (cron 00:30 UTC)
   → cài Grok CLI → node scripts/gen-today.mjs (web search → JSON)
-  → npm run validate (guardrail: schema + source URL + chống trùng slug)
+  → npm run validate (guardrail: schema + source URL + chống trùng slug + bảo mật)
   → git push → Vercel auto-deploy
 ```
+
+## Bảo mật nội dung auto (guardrail "chặn mạnh")
+Nội dung Grok tự sinh đi qua `scripts/validate-content.mjs` trước khi deploy:
+- **expUpdate = "skill snapshot"** — chỉ thể hiện kỹ năng làm được, **không** lộ tên công ty/khách/dự án nội bộ, số liệu cụ thể. Mỗi highlight phải có động từ kỹ năng. Chỉ sinh Thứ 2/4/6.
+- Blocklist tên nhạy cảm + phát hiện số liệu before→after → **fail build, không deploy**.
+- Thêm tên cần ẩn vào `SENSITIVE_TERMS` trong `scripts/validate-content.mjs`.
+
+## SEO / discoverability
+- `sitemap-index.xml` (tự sinh), `robots.txt`, RSS `/rss.xml` (blog + tech radar).
+- JSON-LD `Person` (mọi trang) + `BlogPosting` (trang blog), canonical + Open Graph/Twitter card.
 
 ## Setup deploy
 1. Push repo lên GitHub.
