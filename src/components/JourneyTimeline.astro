@@ -160,8 +160,8 @@ const n = items.length;
     .journey { height: calc(var(--n) * 92vh); }
     .journey-sticky {
       position: sticky; top: 0; height: 100vh;
-      display: grid; grid-template-columns: 260px 1fr; align-items: center; gap: 40px;
-      max-width: var(--maxw); margin: 0 auto; padding: 0 24px;
+      display: grid; grid-template-columns: 240px 1fr; align-items: center; gap: clamp(40px, 6vw, 110px);
+      width: 100%; margin: 0; padding: 0 clamp(32px, 6vw, 96px);
     }
     .journey-rail { display: block; position: relative; align-self: center; }
     .rail-line { position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }

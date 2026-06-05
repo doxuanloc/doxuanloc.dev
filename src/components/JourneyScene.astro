@@ -18,10 +18,10 @@
       radial-gradient(700px 500px at 20% 80%, rgba(54,214,195,0.10), transparent 60%),
       radial-gradient(600px 500px at 55% 50%, rgba(181,140,255,0.08), transparent 60%);
   }
-  /* vignette để chữ luôn rõ */
+  /* vignette nhẹ để chữ vẫn rõ nhưng không che mất không gian sao */
   .journey-scene::after {
     content: ""; position: absolute; inset: 0;
-    background: radial-gradient(120% 100% at 50% 50%, transparent 35%, rgba(10,14,26,0.55) 100%);
+    background: radial-gradient(130% 110% at 50% 45%, transparent 50%, rgba(10,14,26,0.4) 100%);
   }
   @media (max-width: 768px), (prefers-reduced-motion: reduce) {
     #journey-stars { display: none; }
@@ -44,7 +44,7 @@
       [91,140,255], [54,214,195], [181,140,255], [91,140,255], [150,170,255], [120,200,230],
     ];
     const journey = document.querySelector<HTMLElement>('[data-journey]');
-    const N = 320, DEPTH = 1000;
+    const N = 520, DEPTH = 1000;
     let w = 0, h = 0, cx = 0, cy = 0, focal = 700;
     let stars: { x: number; y: number; z: number; o: number }[] = [];
     let camZ = 0, targetCol = PAL[0].slice(), curCol = PAL[0].slice();
@@ -91,14 +91,14 @@
         const sy = cy + (s.y / z) * focal;
         if (sx < -50 || sx > w + 50 || sy < -50 || sy > h + 50) continue;
         const depthT = 1 - z / DEPTH;            // gần = 1
-        const size = Math.max(0.4, depthT * 2.6);
-        const alpha = s.o * depthT * depthT;
+        const size = Math.max(0.5, depthT * 3.4);
+        const alpha = Math.min(0.95, s.o * Math.pow(depthT, 1.2));
         ctx.beginPath();
         ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(3)})`;
         ctx.arc(sx, sy, size, 0, Math.PI * 2);
         ctx.fill();
-        // vệt sáng nhẹ cho sao gần (cảm giác tốc độ)
-        if (depthT > 0.82) {
+        // vệt sáng cho sao gần (cảm giác tốc độ)
+        if (depthT > 0.7) {
           const pz = z + 60;
           const px = cx + (s.x / pz) * focal, py = cy + (s.y / pz) * focal;
           ctx.strokeStyle = `rgba(${r},${g},${b},${(alpha * 0.5).toFixed(3)})`;
