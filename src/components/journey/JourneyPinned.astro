@@ -437,14 +437,14 @@ for (const m of milestones) {
   }
 
   /* ── DESKTOP: PINNED SCROLLYTELLING ──────── */
-  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  @media (min-width: 900px) {
     .jp-mobile-hint { display: none; }
 
     .jp-root { height: calc(var(--n) * 100vh); }
 
     .jp-sticky {
-      position: sticky; top: 0;
-      height: 100dvh;
+      position: sticky; top: 62px;   /* clear fixed header */
+      height: calc(100dvh - 62px);
       display: grid;
       grid-template-columns: 210px 1fr;
       overflow: hidden;
@@ -552,10 +552,8 @@ for (const m of milestones) {
       padding: 0;
     }
 
-    .jp-stage { contain: layout style; }
-
     .jp-panel {
-      position: absolute; inset: clamp(16px,2.5vh,28px) clamp(20px,3vw,40px);
+      position: absolute; inset: clamp(12px,1.5vh,20px) clamp(20px,3vw,40px);
       opacity: 0;
       transform: translateY(16px) scale(0.988);
       pointer-events: none;
@@ -678,9 +676,8 @@ for (const m of milestones) {
     const root = document.querySelector<HTMLElement>('[data-jp]');
     if (!root) return;
 
-    const mq       = window.matchMedia('(min-width: 900px)');
-    const mqMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const isDesktop = () => mq.matches && !mqMotion.matches;
+    const mq        = window.matchMedia('(min-width: 900px)');
+    const isDesktop = () => mq.matches;
 
     const panels   = Array.from(root.querySelectorAll<HTMLElement>('.jp-panel'));
     const nodes    = Array.from(root.querySelectorAll<HTMLElement>('.jp-node'));
@@ -703,8 +700,10 @@ for (const m of milestones) {
     let scrollTotal = 0;
 
     function measureLayout() {
-      // getBoundingClientRect once, then cache offset
-      rootTop     = root.getBoundingClientRect().top + window.scrollY;
+      // Walk offsetParent chain — safe after View Transitions settle
+      let el: HTMLElement | null = root, t = 0;
+      while (el) { t += el.offsetTop; el = el.offsetParent as HTMLElement | null; }
+      rootTop     = t;
       scrollTotal = root.offsetHeight - window.innerHeight;
     }
 

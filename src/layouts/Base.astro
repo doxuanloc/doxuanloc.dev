@@ -106,8 +106,8 @@ function current(logical: string) {
     <header class="site-header">
       <div class="container nav">
         <a class="brand" href={localizedPath('/', lang)}>{profile.identity.nameEn}<span>.</span></a>
-        <div style="display:flex;align-items:center;gap:14px">
-          <nav aria-label="Main">
+        <div class="nav-right">
+          <nav id="main-nav" aria-label="Main">
             <ul>
               {nav.map((n) => (
                 <li><a href={n.href} aria-current={current(n.logical) ? 'page' : undefined}>{n.label}</a></li>
@@ -117,6 +117,9 @@ function current(logical: string) {
           <a class="lang-switch" href={switchHref} aria-label={`Switch to ${otherLang === 'vi' ? 'Tiếng Việt' : 'English'}`} data-astro-reload>
             <span class={lang === 'en' ? 'on' : ''}>EN</span><span class="sep">/</span><span class={lang === 'vi' ? 'on' : ''}>VI</span>
           </a>
+          <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav" type="button">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </div>
     </header>
@@ -215,8 +218,25 @@ function current(logical: string) {
         });
       }
 
+      // Hamburger nav (mobile).
+      function setupNav() {
+        const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+        const nav    = document.getElementById('main-nav');
+        if (!toggle || !nav) return;
+        toggle.addEventListener('click', () => {
+          const open = nav.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', String(open));
+          toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        });
+        nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+          nav.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Open menu');
+        }));
+      }
+
       // astro:page-load chạy cả lần đầu + sau mỗi View Transition.
-      document.addEventListener('astro:page-load', () => { setupReveal(); updateProgress(); setupTilt(); });
+      document.addEventListener('astro:page-load', () => { setupReveal(); updateProgress(); setupTilt(); setupNav(); });
     </script>
   </body>
 </html>
