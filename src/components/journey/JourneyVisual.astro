@@ -1,0 +1,295 @@
+---
+/**
+ * JourneyVisual.astro
+ * Visual component for journey milestones
+ * Handles photo, generated image, or gradient placeholder
+ */
+import type { Milestone } from './types';
+
+interface Props {
+  milestone: Milestone;
+  class?: string;
+}
+
+const { milestone, class: className = '' } = Astro.props;
+const { meta, num, resolvedPhoto, resolvedImage, title, imageConcept, photoAlt } = milestone;
+
+const hasPhoto = !!resolvedPhoto;
+const hasImage = !!resolvedImage;
+const showPlaceholder = !hasPhoto && !hasImage;
+---
+
+<div
+  class:list={['journey-visual', className]}
+  style={`--c1:${meta.c1};--c2:${meta.c2}`}
+>
+  <!-- HUD bracket decorations -->
+  <span class="hud-bracket tl" aria-hidden="true"></span>
+  <span class="hud-bracket br" aria-hidden="true"></span>
+
+  {hasPhoto && (
+    <img
+      src={resolvedPhoto}
+      alt={photoAlt ?? title}
+      loading="lazy"
+      decoding="async"
+      width="640"
+      height="640"
+      class="visual-img visual-photo"
+    />
+  )}
+
+  {!hasPhoto && hasImage && (
+    <img
+      src={resolvedImage}
+      alt={imageConcept ?? title}
+      loading="lazy"
+      decoding="async"
+      width="800"
+      height="600"
+      class="visual-img visual-generated"
+    />
+  )}
+
+  {showPlaceholder && (
+    <div class="visual-placeholder" role="img" aria-label={imageConcept ?? title}>
+      <span class="placeholder-orb" aria-hidden="true"></span>
+      <span class="placeholder-grid" aria-hidden="true"></span>
+      <span class="placeholder-icon" aria-hidden="true">{meta.icon}</span>
+      <span class="placeholder-num mono" aria-hidden="true">{num}</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .journey-visual {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 220px;
+    background: rgba(12, 18, 38, 0.6);
+  }
+
+  /* Images */
+  .visual-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Overlay to blend with cosmic theme */
+  .journey-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgba(10,14,26,0) 50%, rgba(8,12,24,0.5) 100%),
+      radial-gradient(120% 80% at 82% 8%, rgba(91,140,255,0.12), transparent 55%);
+    mix-blend-mode: normal;
+  }
+
+  /* HUD brackets */
+  .hud-bracket {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.85;
+    transition: opacity 0.3s var(--ease);
+  }
+  .hud-bracket.tl {
+    top: 10px;
+    left: 10px;
+    border-top: 2px solid var(--c1);
+    border-left: 2px solid var(--c1);
+  }
+  .hud-bracket.br {
+    bottom: 10px;
+    right: 10px;
+    border-bottom: 2px solid var(--c1);
+    border-right: 2px solid var(--c1);
+  }
+
+  /* Placeholder visual with gradient */
+  .visual-placeholder {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 90% at 80% 15%, color-mix(in srgb, var(--c1) 45%, transparent), transparent 60%),
+      radial-gradient(110% 90% at 15% 90%, color-mix(in srgb, var(--c2) 40%, transparent), transparent 60%),
+      #0c1226;
+    overflow: hidden;
+  }
+
+  .placeholder-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(120% 100% at 50% 0%, #000, transparent 75%);
+  }
+
+  .placeholder-orb {
+    position: absolute;
+    width: 46%;
+    aspect-ratio: 1;
+    right: 8%;
+    top: 14%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c1) 80%, white), var(--c2) 70%);
+    filter: blur(2px);
+    box-shadow: 0 0 60px color-mix(in srgb, var(--c1) 50%, transparent);
+    animation: float 7s var(--ease) infinite;
+  }
+
+  .placeholder-icon {
+    position: absolute;
+    left: 16px;
+    bottom: 14px;
+    font-size: 1.6rem;
+  }
+
+  .placeholder-num {
+    position: absolute;
+    right: 14px;
+    bottom: 8px;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.1);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .placeholder-orb { animation: none; }
+  }
+
+  /* ===== Small phones (<400px) ===== */
+  @media (max-width: 399px) {
+    .journey-visual {
+      min-height: 160px;
+      aspect-ratio: 16 / 10;
+    }
+
+    .hud-bracket {
+      width: 18px;
+      height: 18px;
+    }
+    .hud-bracket.tl { top: 8px; left: 8px; }
+    .hud-bracket.br { bottom: 8px; right: 8px; }
+
+    .placeholder-icon { font-size: 1.4rem; left: 12px; bottom: 10px; }
+    .placeholder-num { font-size: 2.2rem; right: 10px; bottom: 6px; }
+
+    .placeholder-orb {
+      width: 38%;
+      right: 6%;
+      top: 12%;
+    }
+  }
+
+  /* ===== Phones (400px - 600px) ===== */
+  @media (min-width: 400px) {
+    .journey-visual {
+      min-height: 180px;
+      aspect-ratio: 16 / 9;
+    }
+
+    .placeholder-icon { font-size: 1.8rem; left: 18px; bottom: 14px; }
+    .placeholder-num { font-size: 3rem; right: 16px; bottom: 8px; }
+  }
+
+  /* ===== Tablets (600px - 900px) ===== */
+  @media (min-width: 600px) {
+    .journey-visual {
+      min-height: 220px;
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--border);
+    }
+
+    .hud-bracket {
+      width: 22px;
+      height: 22px;
+    }
+
+    .placeholder-icon { font-size: 2rem; left: 20px; bottom: 16px; }
+    .placeholder-num { font-size: 3.2rem; right: 18px; bottom: 10px; }
+
+    .placeholder-orb {
+      width: 42%;
+      filter: blur(1.5px);
+    }
+  }
+
+  /* ===== Desktop (900px+) ===== */
+  @media (min-width: 900px) {
+    .journey-visual {
+      min-height: 60vh;
+      max-height: 70vh;
+      aspect-ratio: auto;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transition: border-color 0.5s var(--ease), box-shadow 0.5s var(--ease);
+    }
+
+    .hud-bracket {
+      width: 28px;
+      height: 28px;
+    }
+    .hud-bracket.tl { top: 14px; left: 14px; }
+    .hud-bracket.br { bottom: 14px; right: 14px; }
+
+    .placeholder-icon { font-size: 2.4rem; left: 26px; bottom: 22px; }
+    .placeholder-num { font-size: 4rem; right: 22px; bottom: 14px; }
+
+    .placeholder-orb {
+      width: 46%;
+      filter: blur(2px);
+    }
+
+    /* Active state styles (controlled by parent) */
+    :global(.panel.is-active) .journey-visual {
+      border-color: color-mix(in srgb, var(--c1) 55%, var(--border));
+      box-shadow: 0 0 44px color-mix(in srgb, var(--c1) 22%, transparent), var(--shadow-lg);
+    }
+  }
+
+  /* ===== Large Desktop (>1200px) ===== */
+  @media (min-width: 1200px) {
+    .journey-visual {
+      min-height: 65vh;
+    }
+
+    .hud-bracket {
+      width: 32px;
+      height: 32px;
+      border-width: 3px;
+    }
+    .hud-bracket.tl { top: 18px; left: 18px; }
+    .hud-bracket.br { bottom: 18px; right: 18px; }
+
+    .placeholder-icon { font-size: 2.8rem; left: 30px; bottom: 26px; }
+    .placeholder-num { font-size: 4.5rem; right: 26px; bottom: 18px; }
+  }
+
+  /* ===== Landscape phones ===== */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .journey-visual {
+      min-height: 100%;
+      aspect-ratio: 1 / 1;
+    }
+
+    .placeholder-icon { font-size: 1.5rem; }
+    .placeholder-num { font-size: 2.4rem; }
+  }
+</style>

@@ -1,0 +1,183 @@
+---
+/**
+ * JourneyRail.astro
+ * Side navigation rail for desktop journey timeline
+ */
+import type { Milestone } from './types';
+
+interface Props {
+  milestones: Milestone[];
+}
+
+const { milestones } = Astro.props;
+---
+
+<aside class="journey-rail" aria-hidden="true">
+  <div class="rail-line">
+    <span class="rail-fill" data-rail-fill></span>
+  </div>
+
+  <ol>
+    {milestones.map((m) => (
+      <li>
+        <button
+          class="rail-item"
+          data-go={m.index}
+          type="button"
+          style={`--c:${m.meta.c1}`}
+        >
+          <span class="rail-dot"></span>
+          <span class="rail-text">
+            <span class="rail-year">{m.year}</span>
+            <span class="rail-title">{m.title}</span>
+          </span>
+        </button>
+      </li>
+    ))}
+  </ol>
+</aside>
+
+<style>
+  .journey-rail {
+    display: none;
+  }
+
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .journey-rail {
+      display: block;
+      position: relative;
+      align-self: center;
+    }
+
+    .rail-line {
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .rail-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 0;
+      background: linear-gradient(var(--accent), var(--accent-2));
+      border-radius: 2px;
+      transition: height 0.15s linear;
+    }
+
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .rail-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 0;
+      text-align: left;
+      width: 100%;
+    }
+
+    .rail-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      flex: 0 0 auto;
+      transition: all 0.25s var(--ease);
+      z-index: 1;
+    }
+
+    .rail-text {
+      display: grid;
+      opacity: 0.5;
+      transition: opacity 0.25s var(--ease);
+    }
+
+    .rail-year {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-mute);
+    }
+
+    .rail-title {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      transition: color 0.25s var(--ease), font-weight 0.25s var(--ease);
+      /* Truncate long titles */
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Active state */
+    .rail-item.is-active .rail-dot {
+      background: var(--c);
+      border-color: var(--c);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 25%, transparent);
+      transform: scale(1.15);
+    }
+
+    .rail-item.is-active .rail-text {
+      opacity: 1;
+    }
+
+    .rail-item.is-active .rail-title {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Hover state */
+    .rail-item:hover:not(.is-active) .rail-text {
+      opacity: 0.75;
+    }
+
+    .rail-item:hover:not(.is-active) .rail-dot {
+      border-color: var(--c);
+    }
+  }
+
+  /* ===== Large Desktop (>1200px) ===== */
+  @media (min-width: 1200px) {
+    ol {
+      gap: 22px;
+    }
+
+    .rail-dot {
+      width: 14px;
+      height: 14px;
+    }
+
+    .rail-year {
+      font-size: 0.75rem;
+    }
+
+    .rail-title {
+      font-size: 0.9rem;
+      max-width: 200px;
+    }
+
+    .rail-item {
+      gap: 14px;
+    }
+
+    .rail-line {
+      left: 6px;
+      width: 2px;
+    }
+  }
+</style>

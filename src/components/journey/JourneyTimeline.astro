@@ -1,0 +1,215 @@
+---
+/**
+ * JourneyTimeline.astro (Refactored)
+ *
+ * Main journey timeline component with:
+ * - Pinned scrollytelling on desktop
+ * - Normal vertical timeline on mobile
+ * - Modular sub-components for easy customization
+ */
+import { getProfile } from '../../lib/content';
+import { getLangFromUrl } from '../../i18n/ui';
+import { prepareMilestones } from './utils';
+import type { MilestoneRaw } from './types';
+
+import JourneyPanel from './JourneyPanel.astro';
+import JourneyRail from './JourneyRail.astro';
+
+// Get milestones from profile
+const lang = getLangFromUrl(Astro.url);
+const rawMilestones = (getProfile(lang).journey ?? []) as MilestoneRaw[];
+const milestones = prepareMilestones(rawMilestones);
+const total = milestones.length;
+---
+
+<section
+  class="journey"
+  style={`--n:${total}`}
+  data-journey
+  aria-label="Hành trình sự nghiệp"
+>
+  <!-- Mobile progress indicator -->
+  <div class="journey-progress" aria-hidden="true">
+    <div class="progress-track">
+      <span class="progress-fill" data-progress-fill></span>
+    </div>
+    <span class="progress-text">
+      <span data-progress-current>1</span>/<span>{total}</span>
+    </span>
+  </div>
+
+  <div class="journey-sticky">
+    <JourneyRail milestones={milestones} />
+
+    <div class="journey-stage">
+      {milestones.map((milestone, i) => (
+        <JourneyPanel
+          milestone={milestone}
+          total={total}
+          isFirst={i === 0}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ===== Journey Container ===== */
+  .journey {
+    position: relative;
+  }
+
+  .journey-sticky {
+    display: block;
+  }
+
+  /* ===== Mobile Progress Indicator ===== */
+  .journey-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 2px;
+    transition: width 0.3s var(--ease);
+  }
+
+  .progress-text {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-mute);
+    white-space: nowrap;
+  }
+
+  /* ===== Mobile: Vertical timeline ===== */
+  .journey-stage {
+    display: grid;
+    gap: 16px;
+  }
+
+  /* ===== Small phones (<400px) ===== */
+  @media (max-width: 399px) {
+    .journey-progress {
+      margin-bottom: 12px;
+    }
+
+    .journey-stage {
+      gap: 14px;
+    }
+  }
+
+  /* ===== Phones (400px+) ===== */
+  @media (min-width: 400px) {
+    .journey-stage {
+      gap: 18px;
+    }
+
+    .journey-progress {
+      margin-bottom: 18px;
+    }
+  }
+
+  /* ===== Tablets (600px - 900px) ===== */
+  @media (min-width: 600px) {
+    .journey-stage {
+      gap: 24px;
+    }
+
+    .journey-progress {
+      margin-bottom: 24px;
+      max-width: 400px;
+    }
+
+    .progress-track {
+      height: 4px;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+    }
+  }
+
+  /* ===== Desktop: Pinned scrollytelling ===== */
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    /* Hide mobile progress on desktop */
+    .journey-progress {
+      display: none;
+    }
+
+    .journey {
+      /* Total scroll height = number of milestones × viewport height */
+      height: calc(var(--n) * 92vh);
+    }
+
+    .journey-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      align-items: center;
+      gap: clamp(32px, 5vw, 80px);
+      width: 100%;
+      margin: 0;
+      padding: 0 clamp(24px, 5vw, 64px);
+    }
+
+    .journey-stage {
+      display: block;
+      position: relative;
+      height: 78vh;
+    }
+  }
+
+  /* ===== Large Desktop (>1200px) ===== */
+  @media (min-width: 1200px) {
+    .journey-sticky {
+      grid-template-columns: 260px 1fr;
+      gap: clamp(60px, 8vw, 120px);
+      padding: 0 clamp(48px, 8vw, 120px);
+    }
+  }
+
+  /* ===== Landscape phones ===== */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .journey-progress {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: rgba(4, 6, 14, 0.85);
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      margin: 0;
+      width: auto;
+      max-width: 200px;
+    }
+
+    .journey-stage {
+      padding-top: 48px;
+    }
+  }
+</style>
+
+<script>
+  import { initJourneyScroll } from './scroll';
+  // Re-export for Astro bundling
+  initJourneyScroll();
+</script>

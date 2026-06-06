@@ -1,0 +1,303 @@
+---
+/**
+ * JourneyPanel.astro
+ * Individual milestone panel with content and visual
+ */
+import type { Milestone } from './types';
+import JourneyVisual from './JourneyVisual.astro';
+
+interface Props {
+  milestone: Milestone;
+  total: number;
+  isFirst?: boolean;
+}
+
+const { milestone, total, isFirst = false } = Astro.props;
+const { kind, meta, num, year, title, narrative, bullets = [], tags = [], codename } = milestone;
+
+const totalStr = String(total).padStart(2, '0');
+---
+
+<article
+  class:list={['panel', `kind-${kind}`, { 'is-active': isFirst }]}
+  data-panel={milestone.index}
+  style={`--c1:${meta.c1};--c2:${meta.c2}`}
+>
+  <div class="panel-content">
+    {codename && (
+      <span class="panel-codename mono">{codename}</span>
+    )}
+
+    <div class="panel-meta">
+      <span class="panel-num mono">{num} / {totalStr}</span>
+      <span class="panel-year">{year}</span>
+    </div>
+
+    <h2 class="panel-title">{title}</h2>
+
+    <p class="panel-narrative">{narrative}</p>
+
+    {bullets.length > 0 && (
+      <ul class="panel-bullets">
+        {bullets.map((bullet) => <li>{bullet}</li>)}
+      </ul>
+    )}
+
+    {tags.length > 0 && (
+      <div class="panel-tags">
+        {tags.map((tag) => <span class="chip">{tag}</span>)}
+      </div>
+    )}
+  </div>
+
+  <JourneyVisual milestone={milestone} />
+</article>
+
+<style>
+  /* ===== Panel Base Styles (Mobile-first) ===== */
+  .panel {
+    position: relative;
+    display: grid;
+    gap: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgba(18, 27, 53, 0.55);
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  /* Accent border */
+  .panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(var(--c1), var(--c2));
+  }
+
+  /* ===== Panel Content ===== */
+  .panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .panel-codename {
+    display: block;
+    color: var(--c1);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    opacity: 0.9;
+  }
+
+  .panel-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .panel-num {
+    color: var(--text-mute);
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+  }
+
+  .panel-year {
+    color: var(--c1);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+
+  .panel-title {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+    letter-spacing: -0.03em;
+    margin: 4px 0 6px;
+    line-height: 1.15;
+    color: var(--text);
+  }
+
+  .panel-narrative {
+    color: #d4dbee;
+    font-size: 0.95rem;
+    margin: 0 0 10px;
+    max-width: 46ch;
+    line-height: 1.5;
+  }
+
+  .panel-bullets {
+    margin: 0 0 12px;
+    padding-left: 16px;
+    display: grid;
+    gap: 4px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  .panel-bullets li::marker {
+    color: var(--c1);
+  }
+
+  .panel-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* ===== Small phones (<400px) ===== */
+  @media (max-width: 399px) {
+    .panel {
+      padding: 14px;
+      gap: 14px;
+    }
+
+    .panel-codename {
+      font-size: 0.6rem;
+      letter-spacing: 1.5px;
+    }
+
+    .panel-title {
+      font-size: 1.15rem;
+    }
+
+    .panel-narrative {
+      font-size: 0.88rem;
+    }
+
+    .panel-bullets {
+      font-size: 0.85rem;
+      padding-left: 14px;
+    }
+  }
+
+  /* ===== Phones (400px - 600px) ===== */
+  @media (min-width: 400px) {
+    .panel {
+      padding: 20px;
+      gap: 18px;
+    }
+
+    .panel-codename {
+      font-size: 0.68rem;
+    }
+
+    .panel-title {
+      font-size: clamp(1.35rem, 5vw, 1.85rem);
+    }
+
+    .panel-narrative {
+      font-size: 1rem;
+    }
+  }
+
+  /* ===== Tablets (600px - 900px) ===== */
+  @media (min-width: 600px) {
+    .panel {
+      padding: 24px;
+      gap: 20px;
+      /* Two-column layout for tablets */
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    .panel-codename {
+      font-size: 0.72rem;
+      letter-spacing: 2.5px;
+    }
+
+    .panel-title {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin: 6px 0 8px;
+    }
+
+    .panel-narrative {
+      font-size: 1.02rem;
+      margin: 0 0 14px;
+    }
+
+    .panel-bullets {
+      font-size: 0.95rem;
+      gap: 6px;
+    }
+  }
+
+  /* ===== Desktop: Side-by-side layout with crossfade ===== */
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .panel {
+      position: absolute;
+      inset: 0;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 40px;
+      padding: 0;
+      background: none;
+      border: none;
+      opacity: 0;
+      transform: translateY(26px) scale(0.985);
+      pointer-events: none;
+      transition: opacity 0.55s var(--ease-rev), transform 0.55s var(--ease-rev);
+    }
+
+    .panel::before {
+      display: none;
+    }
+
+    .panel.is-active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .panel-title {
+      font-size: clamp(2rem, 3.4vw, 2.8rem);
+    }
+
+    .panel-narrative {
+      font-size: 1.05rem;
+    }
+  }
+
+  /* ===== Large Desktop (>1200px) ===== */
+  @media (min-width: 1200px) {
+    .panel {
+      gap: 60px;
+    }
+
+    .panel-title {
+      font-size: clamp(2.2rem, 3vw, 3rem);
+    }
+
+    .panel-narrative {
+      font-size: 1.1rem;
+      max-width: 52ch;
+    }
+  }
+
+  /* ===== Landscape phones ===== */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .panel {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 16px;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-size: 1.3rem;
+      margin: 4px 0;
+    }
+
+    .panel-narrative {
+      font-size: 0.9rem;
+      margin: 0 0 8px;
+    }
+
+    .panel-bullets {
+      margin: 0 0 8px;
+      font-size: 0.85rem;
+    }
+  }
+</style>

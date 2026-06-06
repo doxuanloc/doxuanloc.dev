@@ -98,6 +98,21 @@ const totalSkills = Object.values(profile.skills).flat().length;
     }
   }
 
+  /* Tablet */
+  @media (max-width: 819px) and (min-width: 600px) {
+    .hero-section { padding-top: 64px; padding-bottom: 36px; }
+  }
+
+  /* Mobile */
+  @media (max-width: 599px) {
+    .hero-section { padding-top: 48px; padding-bottom: 28px; }
+  }
+
+  /* Small phones */
+  @media (max-width: 399px) {
+    .hero-section { padding-top: 36px; padding-bottom: 24px; }
+  }
+
   /* Avatar tròn */
   .hero-avatar {
     position: relative; width: 112px; height: 112px; margin-bottom: 22px;
@@ -120,6 +135,20 @@ const totalSkills = Object.values(profile.skills).flat().length;
     border-radius: 50%; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
   }
   @keyframes avatarSpin { to { transform: rotate(360deg); } }
+
+  /* Avatar responsive */
+  @media (max-width: 768px) {
+    .hero-avatar { width: 100px; height: 100px; margin-bottom: 18px; }
+    .hero-avatar::after { inset: -9px; }
+  }
+  @media (max-width: 600px) {
+    .hero-avatar { width: 88px; height: 88px; margin-bottom: 16px; }
+    .hero-avatar::before { inset: -2px; }
+    .hero-avatar::after { inset: -8px; }
+  }
+  @media (max-width: 400px) {
+    .hero-avatar { width: 76px; height: 76px; margin-bottom: 14px; }
+  }
 
   /* Hero visual — cột phải */
   .hero-visual {
@@ -149,6 +178,31 @@ const totalSkills = Object.values(profile.skills).flat().length;
       linear-gradient(90deg, rgba(4,6,14,0.45) 0%, transparent 38%),
       linear-gradient(180deg, rgba(4,6,14,0.25) 0%, transparent 25%, transparent 70%, rgba(4,6,14,0.5) 100%),
       radial-gradient(80% 70% at 75% 15%, rgba(91,140,255,0.09), transparent 65%);
+  }
+
+  /* Hero visual responsive */
+  @media (max-width: 819px) {
+    .hero-visual { 
+      margin-top: 32px;
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+    }
+  }
+  @media (max-width: 600px) {
+    .hero-visual { 
+      margin-top: 24px;
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgba(91, 140, 255, 0.15),
+        0 0 32px rgba(91, 140, 255, 0.12),
+        0 16px 40px rgba(0, 0, 0, 0.45);
+    }
+  }
+  @media (max-width: 400px) {
+    .hero-visual { 
+      margin-top: 20px;
+      border-radius: 10px;
+    }
   }
 
   /* Dải quét ngang HUD kiểu sci-fi */
