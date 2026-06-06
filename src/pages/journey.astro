@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import JourneyTimeline from '../components/journey/JourneyTimeline.astro';
+import JourneyExplorer from '../components/journey/JourneyExplorer.astro';
 import JourneyScene from '../components/JourneyScene.astro';
 import { getProfile } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
@@ -18,10 +18,13 @@ const profile = getProfile(lang);
         {t('journey.sub', { n: profile.identity.yearsExperience })}
         <span class="muted" style="display:block;margin-top:6px;font-size:.85rem">{t('journey.hint')}</span>
       </p>
+
     </div>
   </section>
 
-  <JourneyTimeline />
+  <!-- New spatial flight explorer: Story Chapters (default) + Timeline toggle.
+       More seamless cards, chapter gates, live HUD, story filaments. -->
+  <JourneyExplorer />
 
   <section style="padding-top:32px">
     <div class="container" style="text-align:center">

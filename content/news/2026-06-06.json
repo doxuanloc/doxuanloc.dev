@@ -1,0 +1,45 @@
+{
+  "date": "2026-06-06",
+  "generatedBy": "grok",
+  "version": 1,
+  "news": [
+    {
+      "title": "AWS Lambda Managed Instances kết hợp serverless với linh hoạt của EC2",
+      "summary": "Tính năng cho phép chạy Lambda functions trên EC2 instances do AWS quản lý hoàn toàn trong tài khoản của bạn. Giữ nguyên DX serverless, event integrations, nhưng cho phép chọn instance types chuyên biệt, áp dụng Savings Plans/Reserved Instances và sử dụng multi-concurrency để tối ưu tài nguyên cho workload ổn định. Vừa hỗ trợ scheduled scaling qua EventBridge.",
+      "source": "https://aws.amazon.com/blogs/aws/introducing-aws-lambda-managed-instances-serverless-simplicity-with-ec2-flexibility/",
+      "tags": ["aws", "lambda", "serverless", "cloud"],
+      "importance": 5
+    },
+    {
+      "title": "Anthropic gọi vốn 65 tỷ USD, valuation đạt 965 tỷ USD vượt OpenAI",
+      "summary": "Vòng Series H do Altimeter, Dragoneer, Greenoaks và Sequoia dẫn dắt đẩy Anthropic lên vị trí AI startup có giá trị cao nhất. Doanh thu run-rate vượt 47 tỷ USD, tập trung mở rộng compute và enterprise adoption. Coding assistants được chỉ ra là động lực tăng trưởng chính cho các frontier model.",
+      "source": "https://www.anthropic.com/news/series-h",
+      "tags": ["ai", "llm", "enterprise"],
+      "importance": 4
+    },
+    {
+      "title": "Kubernetes 1.35 đưa In-Place Pod Resize lên stable cho VPA",
+      "summary": "Tính năng resize CPU và memory của container trong Pod đang chạy mà không cần restart hay eviction đã chính thức ổn định. Giúp Vertical Pod Autoscaler hiệu quả hơn với stateful workloads, long-running services và các kịch bản cần điều chỉnh tài nguyên linh hoạt mà không gây downtime hay mất state.",
+      "source": "https://kubernetes.io/blog/2025/12/19/kubernetes-v1-35-in-place-pod-resize-ga/",
+      "tags": ["kubernetes", "devops", "containers", "cloud"],
+      "importance": 3
+    },
+    {
+      "title": "Dữ liệu ETR: adoption AI enterprise chuyển dịch mạnh, Claude tăng gấp đôi",
+      "summary": "Theo khảo sát Enterprise Technology Research được WSJ trích dẫn, Claude tăng từ 21% lên 48% share trong enterprise (dẫn đầu tốc độ), Gemini tăng đáng kể, OpenAI giảm nhẹ lần đầu tiên. Đa mô hình trở thành mặc định mới và coding assistants là động lực kéo revenue cho các nhà cung cấp LLM.",
+      "source": "https://www.saastr.com/whos-winning-enterprise-ai-now-claude-up-128-gemini-up-48-openai-down-8-grok-still-a-rounding-error/",
+      "tags": ["ai", "llm", "enterprise"],
+      "importance": 3
+    }
+  ],
+  "blog": {
+    "slug": "2026-06-06-lambda-managed-instances-khi-serverless-can-them-suc-manh-cua-ec2",
+    "title": "Lambda Managed Instances: khi serverless cần thêm sức mạnh và sự linh hoạt của EC2",
+    "excerpt": "AWS mở rộng Lambda để chạy trên EC2 instances do họ quản lý. Đây là bước tiến thú vị cho những ai đang tối ưu hệ thống event-driven trên cloud, nơi pure serverless không còn là câu trả lời duy nhất cho mọi workload.",
+    "contentMarkdown": "## Vấn đề của pure serverless\n\nAWS Lambda mang lại developer experience rất mạnh: không quản lý hạ tầng, tự scale theo request, chỉ trả tiền khi dùng. Tuy nhiên khi xây dựng hệ thống thực tế, nhiều workload không vừa khít với mô hình một execution environment xử lý đúng một invocation và cold start có thể xảy ra bất cứ lúc nào.\n\nCác trường hợp điển hình:\n\n- Traffic ổn định ở mức cao, muốn tận dụng Compute Savings Plans hoặc Reserved Instances thay vì on-demand để giảm chi phí đáng kể.\n- Cần instance types có đặc thù về CPU architecture (ví dụ Graviton), networking throughput hoặc memory profile mà classic Lambda execution environment không expose trực tiếp.\n- Muốn giảm p99 latency cho một số path nhạy cảm mà vẫn giữ event-driven model với SQS, EventBridge, SNS.\n\nTrước đây, để giải các bài toán trên thường phải migrate một phần sang ECS Fargate hoặc EC2 thuần — mất đi rất nhiều thứ đã được đầu tư: event source mapping, IAM model, versioning/alias, observability, deployment pipeline với SAM/CDK.\n\n## Lambda Managed Instances giải quyết như thế nào\n\nTính năng cho phép bạn tạo Capacity Provider ngay trong Lambda console hoặc IaC:\n\n- Chọn VPC, subnets, security groups.\n- Chỉ định instance types (hoặc để AWS recommend), max vCPU cho capacity provider.\n- Cấu hình scaling (CPU policy hoặc manual max).\n\nAWS lo toàn bộ: khởi tạo EC2 instances trong account của bạn, OS patching, lifecycle (instance có tuổi thọ giới hạn), load balancing, auto scaling khi traffic tăng. Function của bạn chỉ cần trỏ vào Capacity Provider ARN khi tạo hoặc update.\n\nĐiểm khác biệt quan trọng:\n\n- **Multi-concurrency**: Một execution environment giờ có thể xử lý nhiều request đồng thời. Điều này thay đổi đáng kể cách tận dụng tài nguyên, đặc biệt với Node.js services vốn I/O-bound.\n- **Không cold start** cho các môi trường đã được pre-provisioned trong capacity provider.\n- Pricing gồm: Lambda request charges + EC2 instance charges (có thể apply existing Savings Plans/RI của bạn) + compute management fee (~15% trên EC2 on-demand).\n- Vẫn giữ nguyên event integrations, IAM, CloudWatch, AppConfig extensions, và deployment tools.\n\nGần đây AWS còn bổ sung scheduled scaling cho Lambda Managed Instances thông qua EventBridge Scheduler — ví dụ tăng capacity trước giờ cao điểm, giảm về zero khi không có traffic.\n\n## Những điều cần cân nhắc khi áp dụng\n\nMulti-concurrency đòi hỏi code hygiene tốt hơn. Các giả định kiểu \"mỗi invocation là một process sạch\" không còn đúng: tránh shared mutable state giữa requests, cẩn thận với temp file paths, connection pools, và global singletons. Trước khi bật, cần review và test kỹ các function dự định migrate.\n\nVề chi phí: với workload ổn định, việc apply commitment-based pricing thường mang lại lợi ích rõ rệt so với classic Lambda. Tuy nhiên với traffic cực spiky, ngắn hạn, classic Lambda vẫn thường rẻ và đơn giản hơn.\n\nVề kiến trúc: đây không phải là \"tất cả hoặc không gì\". Bạn có thể mix — một số consumer nhạy cảm latency hoặc cần specialized compute thì dùng Managed Instances, phần burst/spiky giữ nguyên classic Lambda. Vẫn nằm trong cùng event-driven fabric.\n\n## Khi nào nên thử\n\n- Workload có pattern dự đoán được, volume đủ để benefit từ Reserved/Savings Plans.\n- Cần performance profile mà classic Lambda execution không đáp ứng tốt.\n- Muốn giảm cold start ảnh hưởng mà không muốn vận hành full container platform.\n\nNgược lại, nếu bạn đang ở giai đoạn early, traffic khó đoán, hoặc ưu tiên zero ops tối đa — hãy giữ classic Lambda.\n\n## Kết\n\nLambda Managed Instances là một ví dụ điển hình về việc cloud provider lấp dần khoảng trống giữa các abstraction layers. Đối với ai đang làm system optimization trên AWS, nó cung cấp thêm một lựa chọn sắc bén: giữ được phần lớn lợi ích của serverless DX trong khi mở khóa khả năng kiểm soát compute và tối ưu chi phí mà trước kia chỉ có khi chấp nhận vận hành nhiều hơn.\n\nQuan trọng nhất là hiểu rõ trade-off mới — đặc biệt quanh execution model và multi-concurrency — rồi đo đạc, pilot trước khi rollout rộng. Đó chính là cách tiếp cận thực tế khi tối ưu hệ thống production.",
+    "tags": ["aws", "lambda", "serverless", "cloud", "optimization"],
+    "readingTimeMin": 6,
+    "coverImage": null
+  },
+  "expUpdate": null
+}

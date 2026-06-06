@@ -24,7 +24,7 @@ const totalSkills = Object.values(profile.skills).flat().length;
       <div class="hero-content">
         {avatar && (
           <div class="hero-avatar" data-reveal style="--reveal-delay:10ms">
-            <img src={avatar} alt={id.name} width="200" height="200" />
+            <img src={avatar} alt="" width="200" height="200" role="presentation" />
           </div>
         )}
         <div class="badge" data-reveal style="--reveal-delay:40ms;margin-bottom:22px">
@@ -182,14 +182,14 @@ const totalSkills = Object.values(profile.skills).flat().length;
 
   /* Hero visual responsive */
   @media (max-width: 819px) {
-    .hero-visual { 
+    .hero-visual {
       margin-top: 32px;
       aspect-ratio: 16 / 9;
       border-radius: 14px;
     }
   }
   @media (max-width: 600px) {
-    .hero-visual { 
+    .hero-visual {
       margin-top: 24px;
       border-radius: 12px;
       box-shadow:
@@ -199,7 +199,7 @@ const totalSkills = Object.values(profile.skills).flat().length;
     }
   }
   @media (max-width: 400px) {
-    .hero-visual { 
+    .hero-visual {
       margin-top: 20px;
       border-radius: 10px;
     }
@@ -225,6 +225,18 @@ const totalSkills = Object.values(profile.skills).flat().length;
   .hud-bracket { position: absolute; width: 22px; height: 22px; z-index: 3; pointer-events: none; }
   .hud-bracket.tl { top: 10px; left: 10px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
   .hud-bracket.br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--accent-2); border-right: 2px solid var(--accent-2); }
+
+  /* HUD brackets responsive */
+  @media (max-width: 600px) {
+    .hud-bracket { width: 18px; height: 18px; }
+    .hud-bracket.tl { top: 8px; left: 8px; }
+    .hud-bracket.br { bottom: 8px; right: 8px; }
+  }
+  @media (max-width: 400px) {
+    .hud-bracket { width: 14px; height: 14px; }
+    .hud-bracket.tl { top: 6px; left: 6px; }
+    .hud-bracket.br { bottom: 6px; right: 6px; }
+  }
 
   @keyframes heroFloat {
     0%, 100% { transform: translateY(0); }

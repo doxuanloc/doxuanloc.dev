@@ -114,6 +114,18 @@ export const KIND_META: Record<MilestoneKind, KindMeta> = {
     icon: "🚀",
     label: "Future",
   },
+  personal: {
+    c1: "#f0b232",
+    c2: "#36d6c3",
+    icon: "🛠️",
+    label: "Personal",
+  },
+  transition: {
+    c1: "#b58cff",
+    c2: "#f0b232",
+    icon: "↗",
+    label: "Transition",
+  },
 };
 
 /**

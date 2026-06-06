@@ -19,24 +19,24 @@ function fmt(d?: string | null) {
 }
 const period = `${fmt(start)} — ${current ? present : fmt(end)}`;
 ---
-<article class="card" style="padding:26px 26px">
-  <header style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">
+<article class="exp-card card">
+  <header class="exp-header">
     <div>
-      <h3 style="margin:0;font-size:1.2rem">{company}</h3>
-      <p style="margin:.2em 0 0;color:var(--accent)">{role}</p>
+      <h3 class="exp-company">{company}</h3>
+      <p class="exp-role">{role}</p>
     </div>
-    <div class="mono muted" style="font-size:.85rem;text-align:right">
+    <div class="exp-meta mono muted">
       {period}{location ? <><br />{location}</> : null}
     </div>
   </header>
 
-  <div style="margin-top:18px;display:grid;gap:16px">
+  <div class="exp-projects">
     {projects.map((p) => (
-      <div style="border-left:2px solid var(--border);padding-left:16px">
+      <div class="exp-project">
         <strong>{p.name}</strong>
-        <p class="muted" style="margin:.3em 0 .5em">{p.summary}</p>
+        <p class="muted exp-summary">{p.summary}</p>
         {p.highlights && p.highlights.length > 0 && (
-          <ul style="margin:.2em 0 .6em;padding-left:18px;color:#cfd6ea;font-size:.95rem">
+          <ul class="exp-highlights">
             {p.highlights.map((h) => <li>{h}</li>)}
           </ul>
         )}
@@ -47,3 +47,46 @@ const period = `${fmt(start)} — ${current ? present : fmt(end)}`;
     ))}
   </div>
 </article>
+
+<style>
+  .exp-card { padding: 26px; }
+  .exp-header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+  .exp-company { margin: 0; font-size: 1.2rem; }
+  .exp-role { margin: 0.2em 0 0; color: var(--accent); }
+  .exp-meta { font-size: 0.85rem; text-align: right; }
+  .exp-projects { margin-top: 18px; display: grid; gap: 16px; }
+  .exp-project { border-left: 2px solid var(--border); padding-left: 16px; }
+  .exp-summary { margin: 0.3em 0 0.5em; }
+  .exp-highlights { margin: 0.2em 0 0.6em; padding-left: 18px; color: #cfd6ea; font-size: 0.95rem; }
+
+  /* Tablet */
+  @media (max-width: 768px) {
+    .exp-card { padding: 22px; }
+    .exp-company { font-size: 1.12rem; }
+    .exp-meta { font-size: 0.82rem; }
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .exp-card { padding: 18px; }
+    .exp-header { gap: 8px; }
+    .exp-company { font-size: 1.05rem; }
+    .exp-role { font-size: 0.92rem; }
+    .exp-meta { font-size: 0.78rem; }
+    .exp-projects { margin-top: 14px; gap: 14px; }
+    .exp-project { padding-left: 12px; }
+    .exp-highlights { font-size: 0.9rem; padding-left: 16px; }
+  }
+
+  /* Small phones */
+  @media (max-width: 400px) {
+    .exp-card { padding: 14px 16px; }
+    .exp-header { flex-direction: column; gap: 4px; }
+    .exp-meta { text-align: left; }
+    .exp-company { font-size: 1rem; }
+    .exp-role { font-size: 0.88rem; }
+    .exp-projects { margin-top: 12px; gap: 12px; }
+    .exp-project { padding-left: 10px; }
+    .exp-highlights { font-size: 0.85rem; padding-left: 14px; }
+  }
+</style>

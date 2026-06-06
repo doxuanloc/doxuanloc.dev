@@ -1,0 +1,842 @@
+---
+/**
+ * JourneyExplorer.astro
+ * New main renderer for the redesigned spatial flight experience.
+ * - Primary: Story Chapters (narrative logic, grouped, connected)
+ * - Secondary: Timeline (chrono, user selectable)
+ * - Spatial flight feel: continuous vertical flow, chapter gates, filaments, live HUD
+ * - Reuses JourneyVisual + KIND_META colors
+ * - No classic side-rail + pinned crossfade (those remain in legacy JourneyTimeline for now)
+ */
+import { getProfile } from '../../lib/content';
+import { getLangFromUrl, useTranslations, localizedPath } from '../../i18n/ui';
+import { prepareMilestones, groupByChapter, sortForTimeline, computeConnections } from './utils';
+import type { Milestone, JourneyView, JourneyChapter } from './types';
+import JourneyVisual from './JourneyVisual.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const profile = getProfile(lang);
+
+const rawMilestones = (profile.journey ?? []) as any[];
+let allMilestones = prepareMilestones(rawMilestones);
+
+// Chapter config (can be moved to profile later for full editability)
+const chapterDefs: Record<string, { label: string; narrative?: string }> = {
+  origins: {
+    label: lang === 'vi' ? 'Origins' : 'Origins',
+    narrative: lang === 'vi' 
+      ? 'Nền tảng tư duy hệ thống và những bước chân đầu tiên vào thế giới thực.' 
+      : 'Foundation in systems thinking and first steps into the real world.',
+  },
+  forge: {
+    label: lang === 'vi' ? 'Forge' : 'Forge',
+    narrative: lang === 'vi' 
+      ? 'Thực chiến, đóng tàu, học ownership qua side projects và remote work.' 
+      : 'Hands-on building, shipping, and learning ownership through side projects and remote work.',
+  },
+  systems: {
+    label: lang === 'vi' ? 'Systems' : 'Systems',
+    narrative: lang === 'vi' 
+      ? 'Bước vào quy mô lớn, microservices, event-driven thực tế tại MarketEnterprise.' 
+      : 'Entering large-scale systems, real microservices and event-driven work at MarketEnterprise.',
+  },
+  intelligence: {
+    label: lang === 'vi' ? 'Intelligence' : 'Intelligence',
+    narrative: lang === 'vi' 
+      ? 'Kết nối AI vào hệ thống production với độ chính xác và tốc độ.' 
+      : 'Weaving AI into production systems with accuracy and speed.',
+  },
+  horizon: {
+    label: lang === 'vi' ? 'Horizon' : 'Horizon',
+    narrative: lang === 'vi' 
+      ? 'Chuẩn bị dẫn dắt giải pháp AI quy mô lớn và cầu nối Nhật Bản.' 
+      : 'Preparing to lead large-scale AI solutions and the Japan bridge.',
+  },
+};
+
+// Prepare grouped data for chapters view (primary)
+const chapterGroups = groupByChapter(allMilestones, 
+  Object.keys(chapterDefs).map(id => ({ id, label: chapterDefs[id].label, narrative: chapterDefs[id].narrative }))
+);
+
+// Timeline view data (sorted chrono)
+const timelineMilestones = sortForTimeline(allMilestones);
+
+// Connections for filaments (computed per view later in client)
+const allConnections = computeConnections(allMilestones);
+
+const totalBeats = allMilestones.length;
+---
+
+<section class="journey-explorer" data-journey-explorer data-total={totalBeats}>
+  <!-- View Switcher (functional, spatial cockpit style) -->
+  <div class="explorer-switch">
+    <div class="switch-track" aria-label="Journey view mode">
+      <button 
+        type="button" 
+        class="switch-btn active" 
+        data-view="chapters"
+        aria-pressed="true"
+      >
+        {t('journey.view.chapters')}
+      </button>
+      <button 
+        type="button" 
+        class="switch-btn" 
+        data-view="timeline"
+        aria-pressed="false"
+      >
+        {t('journey.view.timeline')}
+      </button>
+    </div>
+    <div class="switch-hint mono">{t('journey.hint')}</div>
+  </div>
+
+  <!-- Live HUD (cockpit) -->
+  <div class="flight-hud" aria-live="polite">
+    <div class="hud-inner">
+      <div class="hud-sector">
+        <span class="hud-label">{t('journey.hud.sector')}</span>
+        <span class="hud-value" data-hud-chapter>—</span>
+      </div>
+      <div class="hud-codename mono" data-hud-codename>—</div>
+      <div class="hud-progress">
+        <div class="progress-track">
+          <div class="progress-fill" data-hud-progress style="width: 0%"></div>
+        </div>
+        <span class="progress-text mono" data-hud-progress-text>00 / {String(totalBeats).padStart(2, '0')}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapters View (primary, story logic) -->
+  <div id="chapters-view" class="flight-view" data-view="chapters">
+    {chapterGroups.map((group, gIdx) => (
+      <div class="chapter-block" data-chapter={group.chapter.id}>
+        <!-- Chapter Gate (spatial threshold) -->
+        <div class="chapter-gate" data-gate={group.chapter.id}>
+          <div class="gate-accent" style={`--c1:${group.beats[0]?.meta.c1 || '#5b8cff'}`}></div>
+          <div class="gate-content">
+            <span class="gate-eyebrow mono">{t('journey.chapter')} {String(gIdx + 1).padStart(2, '0')}</span>
+            <h3 class="gate-title">{group.chapter.label}</h3>
+            {group.chapter.narrative && (
+              <p class="gate-narrative">{group.chapter.narrative}</p>
+            )}
+          </div>
+        </div>
+
+        <!-- Beats inside chapter (seamless connected flow) -->
+        <div class="chapter-beats">
+          {group.beats.map((beat, bIdx) => (
+            <article 
+              class="flight-beat kind-${beat.kind}" 
+              data-beat-id={beat.id}
+              data-chapter={group.chapter.id}
+              data-index={beat.index}
+              data-connects-to={beat.connectsTo?.join(',') || ''}
+              style={`--c1:${beat.meta.c1};--c2:${beat.meta.c2}`}
+            >
+              <div class="beat-main">
+                <div class="beat-header">
+                  {beat.codename && <span class="beat-codename mono">{beat.codename}</span>}
+                  <span class="beat-meta">
+                    <span class="beat-num mono">{beat.num}</span>
+                    <span class="beat-year">{beat.year}</span>
+                  </span>
+                </div>
+
+                <h4 class="beat-title">{beat.title}</h4>
+                <p class="beat-narrative">{beat.narrative}</p>
+
+                {beat.bullets && beat.bullets.length > 0 && (
+                  <ul class="beat-bullets">
+                    {beat.bullets.map(b => <li>{b}</li>)}
+                  </ul>
+                )}
+
+                {beat.tags && beat.tags.length > 0 && (
+                  <div class="beat-tags">
+                    {beat.tags.map(tag => <span class="chip">{tag}</span>)}
+                  </div>
+                )}
+              </div>
+
+              <div class="beat-visual">
+                <JourneyVisual milestone={beat} />
+              </div>
+
+              <!-- Connection point for filaments -->
+              <div class="beat-connector" data-connector={beat.id} aria-hidden="true"></div>
+            </article>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Timeline View (chrono, user choice) -->
+  <div id="timeline-view" class="flight-view hidden" data-view="timeline">
+    <div class="timeline-path">
+      {timelineMilestones.map((beat, idx) => (
+        <article 
+          class="flight-beat timeline-beat kind-${beat.kind}" 
+          data-beat-id={beat.id}
+          data-index={idx}
+          data-connects-to={beat.connectsTo?.join(',') || ''}
+          style={`--c1:${beat.meta.c1};--c2:${beat.meta.c2}`}
+        >
+          <div class="beat-main">
+            <div class="beat-header">
+              {beat.codename && <span class="beat-codename mono">{beat.codename}</span>}
+              <span class="beat-meta">
+                <span class="beat-num mono">{beat.num}</span>
+                <span class="beat-year">{beat.year}</span>
+              </span>
+            </div>
+
+            <h4 class="beat-title">{beat.title}</h4>
+            <p class="beat-narrative">{beat.narrative}</p>
+
+            {beat.bullets && beat.bullets.length > 0 && (
+              <ul class="beat-bullets">
+                {beat.bullets.map(b => <li>{b}</li>)}
+              </ul>
+            )}
+
+            {beat.tags && beat.tags.length > 0 && (
+              <div class="beat-tags">
+                {beat.tags.map(tag => <span class="chip">{tag}</span>)}
+              </div>
+            )}
+          </div>
+
+          <div class="beat-visual">
+            <JourneyVisual milestone={beat} />
+          </div>
+
+          <div class="beat-connector" data-connector={beat.id} aria-hidden="true"></div>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <!-- Filament layer (SVG connections for story logic) -->
+  <svg class="filament-layer" aria-hidden="true">
+    <g class="filaments" data-filaments></g>
+  </svg>
+
+  <!-- Horizon teaser: the roadmap as the destination sector (spatial continuation) -->
+  <div class="horizon-teaser">
+    <div class="container">
+      <div class="horizon-header">
+        <span class="mono" style="color:var(--accent-2);letter-spacing:2px;font-size:0.72rem">HORIZON</span>
+        <h4 style="margin:6px 0 4px;font-size:1.1rem">The journey continues</h4>
+        <p style="max-width:52ch;color:#c8d4f0;margin:0 0 14px;font-size:0.92rem">
+          {lang === 'vi' 
+            ? 'Sau intelligence layer là những waypoint tiếp theo — AI at scale, DevSecOps, và cầu nối Nhật Bản.' 
+            : 'Beyond the intelligence layer lie the next waypoints — AI at scale, DevSecOps, and the Japan bridge.'}
+        </p>
+      </div>
+      <div class="horizon-anchors">
+        {(profile.roadmap ?? []).slice(0, 3).map((r: any, i: number) => (
+          <div class="h-anchor" style={`--c:${i === 0 ? 'var(--accent-2)' : 'var(--accent)'}`}>
+            <span class="h-phase mono">{r.phase}</span>
+            <strong>{r.label}</strong>
+          </div>
+        ))}
+        <a href={localizedPath('/#', lang)} class="h-more mono">See full roadmap →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .journey-explorer {
+    position: relative;
+    padding: 0 0 80px;
+  }
+
+  /* View switcher - cockpit / HUD aesthetic */
+  .explorer-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding: 0 24px;
+  }
+  .switch-track {
+    display: inline-flex;
+    background: rgba(18, 27, 53, 0.7);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .switch-btn {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  .switch-btn.active {
+    background: var(--bg-soft);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .switch-hint {
+    font-size: 0.72rem;
+    color: var(--text-mute);
+    opacity: 0.7;
+  }
+
+  /* Live cockpit HUD */
+  .flight-hud {
+    position: sticky;
+    top: 70px;
+    z-index: 40;
+    margin: 0 auto 24px;
+    max-width: 420px;
+    padding: 0 24px;
+  }
+  .hud-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(10, 14, 26, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow);
+  }
+  .hud-sector, .hud-codename {
+    white-space: nowrap;
+  }
+  .hud-label {
+    font-size: 0.65rem;
+    color: var(--text-mute);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: block;
+  }
+  .hud-value {
+    font-weight: 600;
+    color: var(--accent-2);
+  }
+  .hud-codename {
+    flex: 1;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    border-left: 1px solid var(--border);
+    padding-left: 14px;
+    margin-left: 6px;
+  }
+  .hud-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 92px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--accent), var(--accent-2));
+    transition: width 0.1s linear;
+  }
+  .progress-text {
+    font-size: 0.7rem;
+    color: var(--text-mute);
+    min-width: 42px;
+    text-align: right;
+  }
+
+  /* Chapter gate - spatial threshold */
+  .chapter-gate {
+    position: relative;
+    margin: 48px 24px 18px;
+    padding: 22px 28px 22px 42px;
+    border-left: 3px solid var(--accent);
+    background: linear-gradient(90deg, rgba(18,27,53,0.5), transparent);
+  }
+  .gate-accent {
+    position: absolute;
+    left: -1px;
+    top: 22px;
+    bottom: 22px;
+    width: 3px;
+    background: linear-gradient(var(--c1, #5b8cff), var(--c2, #36d6c3));
+    border-radius: 3px;
+  }
+  .gate-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .gate-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 4px 0 8px;
+    color: var(--text);
+  }
+  .gate-narrative {
+    max-width: 52ch;
+    color: #c8d4f0;
+    font-size: 0.98rem;
+    margin: 0;
+  }
+
+  /* Flight beats - seamless flow instead of pinned discrete panels */
+  .chapter-beats,
+  .timeline-path {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 0 24px;
+    position: relative;
+  }
+
+  /* Continuous flight path line (spatial seam) */
+  .chapter-beats::before,
+  .timeline-path::before {
+    content: '';
+    position: absolute;
+    left: 32px;
+    top: 40px;
+    bottom: 40px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--border), var(--accent-2), var(--border));
+    opacity: 0.35;
+    z-index: 0;
+    border-radius: 2px;
+  }
+
+  .flight-beat {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgba(18, 27, 53, 0.6);
+    padding: 20px;
+    overflow: hidden;
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+
+  .flight-beat::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(var(--c1), var(--c2));
+  }
+
+  .flight-beat:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--c1) 40%, var(--border));
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+
+  .beat-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .beat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2px;
+  }
+
+  .beat-codename {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    color: var(--c1);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .beat-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 0.78rem;
+  }
+  .beat-num { color: var(--text-mute); }
+  .beat-year { color: var(--c1); font-family: var(--mono); }
+
+  .beat-title {
+    font-size: 1.28rem;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    margin: 4px 0 6px;
+  }
+
+  .beat-narrative {
+    color: #d4dbee;
+    font-size: 0.98rem;
+    line-height: 1.45;
+    max-width: 52ch;
+    margin: 0 0 8px;
+  }
+
+  .beat-bullets {
+    margin: 0 0 10px;
+    padding-left: 16px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    display: grid;
+    gap: 3px;
+  }
+  .beat-bullets li::marker { color: var(--c1); }
+
+  .beat-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .beat-visual {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #0a0e1a;
+    min-height: 180px;
+  }
+
+  .beat-connector {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c1) 25%, transparent);
+    opacity: 0.7;
+    z-index: 2;
+  }
+
+  /* Filament SVG layer */
+  .filament-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: visible;
+  }
+  .filaments line {
+    stroke: var(--accent);
+    stroke-width: 1.2;
+    stroke-opacity: 0.35;
+    transition: stroke-opacity 0.2s ease;
+  }
+  .filaments line.explicit {
+    stroke: var(--accent-2);
+    stroke-opacity: 0.55;
+    stroke-width: 1.6;
+  }
+
+  /* Timeline specific tweaks */
+  .timeline-beat {
+    grid-template-columns: 1fr 0.9fr;
+    align-items: start;
+  }
+
+  .flight-view.hidden {
+    display: none;
+  }
+
+  /* Desktop: more breathing room + slight depth */
+  @media (min-width: 900px) {
+    .explorer-switch {
+      padding: 0 32px;
+    }
+    .chapter-beats,
+    .timeline-path {
+      padding: 0 32px;
+      gap: 32px;
+    }
+    .flight-beat {
+      grid-template-columns: 1fr 1.05fr;
+      align-items: center;
+      gap: 32px;
+      padding: 26px 28px;
+    }
+    .beat-title {
+      font-size: 1.42rem;
+    }
+    .beat-visual {
+      min-height: 240px;
+    }
+    .chapter-gate {
+      margin-left: 32px;
+      margin-right: 32px;
+    }
+  }
+
+  /* Horizon teaser */
+  .horizon-teaser {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .horizon-header {
+    padding: 0 24px;
+  }
+  .horizon-anchors {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 0 24px;
+    margin-top: 12px;
+  }
+  .h-anchor {
+    font-size: 0.82rem;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(18,27,53,0.5);
+  }
+  .h-anchor strong { display: block; margin-top: 2px; color: var(--text); }
+  .h-phase { font-size: 0.7rem; color: var(--c, var(--accent)); }
+  .h-more {
+    align-self: center;
+    font-size: 0.78rem;
+    color: var(--accent-2);
+    margin-left: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flight-beat { transition: none; }
+    .filaments line { transition: none; }
+  }
+
+  /* Mobile: simpler river, lighter filaments, full flow */
+  @media (max-width: 768px) {
+    .filament-layer { opacity: 0.5; }
+    .flight-beat {
+      grid-template-columns: 1fr;
+      padding: 16px;
+    }
+    .beat-visual {
+      min-height: 160px;
+    }
+    .explorer-switch {
+      padding: 0 16px;
+    }
+    .chapter-beats,
+    .timeline-path {
+      padding: 0 16px;
+      gap: 22px;
+    }
+  }
+</style>
+
+<script>
+  // Client-side: view switching + filaments + live HUD + scroll spy
+  function initJourneyExplorer() {
+    const root = document.querySelector<HTMLElement>('[data-journey-explorer]');
+    if (!root) return;
+
+    const chaptersView = root.querySelector<HTMLElement>('#chapters-view');
+    const timelineView = root.querySelector<HTMLElement>('#timeline-view');
+    const switchBtns = root.querySelectorAll<HTMLButtonElement>('.switch-btn');
+    const hudChapter = root.querySelector<HTMLElement>('[data-hud-chapter]');
+    const hudCodename = root.querySelector<HTMLElement>('[data-hud-codename]');
+    const hudProgress = root.querySelector<HTMLElement>('[data-hud-progress]');
+    const hudProgressText = root.querySelector<HTMLElement>('[data-hud-progress-text]');
+    const filamentGroup = root.querySelector<SVGGElement>('[data-filaments]');
+
+    let currentView: 'chapters' | 'timeline' = 'chapters';
+    let raf = 0;
+
+    function setView(view: 'chapters' | 'timeline') {
+      currentView = view;
+
+      if (chaptersView && timelineView) {
+        chaptersView.classList.toggle('hidden', view !== 'chapters');
+        timelineView.classList.toggle('hidden', view !== 'timeline');
+      }
+
+      switchBtns.forEach(btn => {
+        const isActive = btn.dataset.view === view;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+      });
+
+      // Redraw filaments for the active view
+      drawFilaments();
+
+      // Update HUD to first visible beat in new view
+      updateHUDFromScroll();
+    }
+
+    // Switcher buttons
+    switchBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const v = btn.dataset.view as 'chapters' | 'timeline';
+        if (v && v !== currentView) setView(v);
+      });
+    });
+
+    // Filaments: connect beats that have story relationship
+    function drawFilaments() {
+      if (!filamentGroup) return;
+      filamentGroup.innerHTML = '';
+
+      const containerRect = root.getBoundingClientRect();
+      const activeViewEl = currentView === 'chapters' ? chaptersView : timelineView;
+      if (!activeViewEl) return;
+
+      const connectors = Array.from(activeViewEl.querySelectorAll<HTMLElement>('.beat-connector'));
+      const idToEl = new Map<string, HTMLElement>();
+      connectors.forEach(el => {
+        const id = el.dataset.connector;
+        if (id) idToEl.set(id, el);
+      });
+
+      // Use the pre-computed connections (we embed a simple version via data or recompute client-side)
+      // For simplicity we use implicit previous + explicit via data-connects on the beat
+      const beats = Array.from(activeViewEl.querySelectorAll<HTMLElement>('.flight-beat'));
+
+      beats.forEach((beatEl, i) => {
+        const beatId = beatEl.dataset.beatId;
+        if (!beatId) return;
+
+        const explicitTargets = (beatEl.dataset.connectsTo || '').split(',').filter(Boolean);
+        const targets = explicitTargets.length > 0 
+          ? explicitTargets 
+          : (i > 0 ? [beats[i-1].dataset.beatId!] : []);
+
+        targets.forEach(targetId => {
+          const fromEl = idToEl.get(targetId);
+          const toEl = idToEl.get(beatId);
+          if (!fromEl || !toEl) return;
+
+          const fromRect = fromEl.getBoundingClientRect();
+          const toRect = toEl.getBoundingClientRect();
+
+          const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+          const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+          const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+          const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', String(x1));
+          line.setAttribute('y1', String(y1));
+          line.setAttribute('x2', String(x2));
+          line.setAttribute('y2', String(y2));
+          line.setAttribute('class', explicitTargets.length ? 'explicit' : '');
+          filamentGroup.appendChild(line);
+        });
+      });
+    }
+
+    // Live HUD + progress based on scroll position inside explorer
+    function updateHUDFromScroll() {
+      const activeViewEl = currentView === 'chapters' ? chaptersView : timelineView;
+      if (!activeViewEl || !hudChapter || !hudCodename || !hudProgress || !hudProgressText) return;
+
+      const beats = Array.from(activeViewEl.querySelectorAll<HTMLElement>('.flight-beat'));
+      if (beats.length === 0) return;
+
+      const rootRect = root.getBoundingClientRect();
+      const viewportCenter = window.innerHeight / 2;
+
+      let activeBeat: HTMLElement | null = null;
+      let minDist = Infinity;
+
+      beats.forEach(beat => {
+        const r = beat.getBoundingClientRect();
+        const center = r.top + r.height / 2;
+        const dist = Math.abs(center - viewportCenter);
+        if (dist < minDist) {
+          minDist = dist;
+          activeBeat = beat;
+        }
+      });
+
+      if (!activeBeat) activeBeat = beats[0];
+
+      const chapter = activeBeat.dataset.chapter || (currentView === 'timeline' ? 'Timeline' : '—');
+      const codename = activeBeat.querySelector('.beat-codename')?.textContent?.trim() || '—';
+      const idx = parseInt(activeBeat.dataset.index || '0', 10) + 1;
+
+      // chapter label: prefer a nearby gate title if present, else raw id (client has no server chapterDefs)
+      const gateTitle = document.querySelector(`.chapter-gate[data-gate="${chapter}"] .gate-title`);
+      hudChapter.textContent = (gateTitle ? gateTitle.textContent : null) || chapter;
+      hudCodename.textContent = codename;
+
+      const progress = Math.max(0, Math.min(1, idx / beats.length));
+      if (hudProgress) hudProgress.style.width = `${progress * 100}%`;
+      hudProgressText.textContent = `${String(idx).padStart(2,'0')} / ${String(beats.length).padStart(2,'0')}`;
+
+      // Tell the starfield / other listeners we crossed into a new story sector
+      document.dispatchEvent(new CustomEvent('journey:chapter', { 
+        detail: { chapter, codename, progress: idx / beats.length } 
+      }));
+    }
+
+    // Throttled scroll listener
+    function onScroll() {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        updateHUDFromScroll();
+        raf = 0;
+      });
+    }
+
+    // Initial setup
+    // Seed connectsTo data on DOM elements for the filament drawer (from the prepared data we can embed a simple map)
+    // For now the drawer falls back to previous-beat logic + explicit when present in dataset.
+    // We attach a small dataset on first beat of explicit connections if needed.
+
+    // Make sure initial view is chapters
+    if (chaptersView) chaptersView.classList.remove('hidden');
+    if (timelineView) timelineView.classList.add('hidden');
+
+    // Wire scroll + resize
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => {
+      drawFilaments();
+      updateHUDFromScroll();
+    }, { passive: true });
+
+    // Initial draw
+    setTimeout(() => {
+      drawFilaments();
+      updateHUDFromScroll();
+    }, 80);
+
+    // Expose for debug / future
+    (window as any).__journeyExplorer = { setView, drawFilaments };
+  }
+
+  // Auto init
+  document.addEventListener('astro:page-load', initJourneyExplorer);
+  if (document.readyState !== 'loading') {
+    // In case the script runs after load in some bundling scenarios
+    setTimeout(initJourneyExplorer, 30);
+  }
+</script>

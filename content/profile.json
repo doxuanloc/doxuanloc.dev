@@ -365,134 +365,236 @@
       "status": "planned"
     }
   ],
-  "$comment_journey": "Mốc cho pinned scrollytelling timeline (/journey). image: thả file vào public/images/journey/<id>.(webp|jpg|png) — không có thì hiện gradient theo kind. photo: ảnh cá nhân.",
+  "$comment_journey": "NGUỒN SỰ THẬT cho trang /journey (scrolly flight + story chapters). \n\nQUY TẮC CHỈNH SỬA (profile là nơi duy nhất cần sửa):\n- Thêm/sửa/xoá entry để kể chuyện mượt. Khuyến khích 9-12 beats nhỏ thay vì 4-6 mốc lớn.\n- Dùng 'chapter' (origins|forge|systems|intelligence|horizon) để nhóm theo logic câu chuyện (primary view).\n- Dùng 'arc' cho màu filament/thread (foundation|build|scale|ai).\n- Dùng 'connectsTo': [\"id-cũ\"] để vẽ đường story rõ ràng (không chỉ previous implicit).\n- 'codename' giữ phong cách HUD (ví dụ: \"FORGE-02 // 3D-SHIP\").\n- Ảnh: public/images/journey/<id>.webp (hoặc .png). Không có → placeholder gradient + icon theo kind.\n- Muốn gợi ý từ CV thật? Xem suggestBeatsFromProfile() trong src/components/journey/utils.ts (chỉ gợi ý, bạn viết narrative).\n\nCấu trúc khuyến nghị: 4-5 chương × 2-3 beats nhỏ. Timeline view vẫn sort theo year/order nếu user chọn.",
   "journey": [
     {
-      "id": "dai-hoc-nen-tang",
+      "id": "uit-foundation",
       "year": "2018–2021",
       "kind": "education",
-      "title": "Nền tảng kỹ thuật",
-      "narrative": "Thiết lập nền tảng tư duy hệ thống và thuật toán cho hành trình sau.",
+      "title": "Tư duy hệ thống tại UIT",
+      "narrative": "Xây nền móng thuật toán và tư duy hệ thống — cái sau này trở thành lợi thế khi scale thật.",
       "bullets": [
-        "Kỹ thuật Máy tính — UIT (ĐHQG-HCM)",
-        "Kỹ thuật Phần mềm — BTEC FPT",
-        "Tư duy thuật toán & hệ thống",
-        "Tiếp cận lập trình web thực tế"
+        "Kỹ thuật Máy tính, Đại học Quốc gia TP.HCM",
+        "Tập trung algorithms, architecture, low-level thinking",
+        "Bắt đầu chạm web thực tế qua BTEC FPT song song"
       ],
-      "tags": [
-        "Computer Engineering",
-        "Algorithms",
-        "Web"
-      ],
-      "imageConcept": "Thư viện đại học lúc hoàng hôn, laptop và sách mở, khát vọng bắt đầu.",
-      "codename": "PHASE-01 // FOUNDATION"
+      "tags": ["Computer Engineering", "Algorithms", "Systems"],
+      "imageConcept": "Thư viện đại học hoàng hôn, laptop mở, sách và khát vọng.",
+      "codename": "ORIGIN-01 // SYSTEMS-THINK",
+      "chapter": "origins",
+      "arc": "foundation",
+      "order": 10
     },
     {
-      "id": "buoc-chan-frontend",
+      "id": "btec-practical",
+      "year": "2021–2022",
+      "kind": "education",
+      "title": "Thực chiến qua BTEC",
+      "narrative": "Chuyển từ lý thuyết sang ship sản phẩm nhỏ — học cách làm việc nhóm và giao nộp.",
+      "bullets": [
+        "Kỹ thuật Phần mềm — BTEC FPT",
+        "Dự án môn học thực tế, collaboration",
+        "Cầu nối giữa trường và công việc đầu tiên"
+      ],
+      "tags": ["Software Engineering", "Teamwork"],
+      "imageConcept": "Phòng lab, màn hình code, nhóm sinh viên đang review.",
+      "codename": "ORIGIN-02 // PRACTICAL-BRIDGE",
+      "chapter": "origins",
+      "arc": "foundation",
+      "connectsTo": ["uit-foundation"],
+      "order": 11
+    },
+    {
+      "id": "first-frontend-ship",
       "year": "2022",
       "kind": "frontend",
-      "title": "Bước chân Frontend",
-      "narrative": "Lần đầu ship code thực tế cho người dùng, chạm dữ liệu on-chain.",
+      "title": "Lần đầu ship cho user thật",
+      "narrative": "Chạm data on-chain, viết blog kỹ thuật, và cảm giác code của mình được người khác dùng.",
       "bullets": [
-        "Phát triển ReactJS responsive",
-        "Phân tích on-chain data crypto",
-        "Nâng cấp UI/UX e-learning",
-        "Viết technical blog"
+        "ReactJS responsive cho nền tảng crypto + e-learning",
+        "Phân tích on-chain, viết technical content",
+        "Cải thiện UX theo feedback thực"
       ],
-      "tags": [
-        "ReactJS",
-        "UI/UX",
-        "Crypto",
-        "On-chain"
-      ],
-      "imageConcept": "Màn hình code React + biểu đồ crypto xanh dương trong đêm Sài Gòn.",
-      "codename": "OPS // FRONTIER"
+      "tags": ["ReactJS", "On-chain", "UI/UX"],
+      "imageConcept": "Màn hình React + chart crypto xanh trong đêm Sài Gòn.",
+      "codename": "FORGE-01 // FIRST-USERS",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": ["btec-practical"],
+      "order": 20
     },
     {
-      "id": "fullstack-thuc-chien",
+      "id": "threejs-saas",
       "year": "2022–2023",
       "kind": "fullstack",
-      "title": "Thực chiến Full-Stack 3D",
-      "narrative": "Tự triển khai full-stack từ frontend đến backend với 3D tương tác.",
+      "title": "Xây SaaS 3D với Three.js",
+      "narrative": "Tự mình làm full-stack từ ý tưởng đến production: 3D instructions thay 2D CAD, giải versioning.",
       "bullets": [
-        "Triển khai NestJS & Vue.js",
-        "Three.js cho SaaS 3D",
-        "Hoàn thiện dự án full-stack",
-        "Remote với Docker & Git"
+        "NestJS + Vue + Vuetify + Three.js + Strapi + Docker",
+        "SaaS self-service cho kỹ sư manufacturing",
+        "Học cách thiết kế API business logic từ Figma"
       ],
-      "tags": [
-        "NestJS",
-        "Vue.js",
-        "Three.js",
-        "Docker"
-      ],
-      "imageConcept": "Hai màn hình: backend NestJS và mô hình 3D đang xoay, ánh sáng xanh.",
-      "codename": "BUILD // 3D-CORE"
+      "tags": ["Three.js", "NestJS", "Full-Stack", "Docker"],
+      "imageConcept": "Mô hình 3D xoay, ánh sáng xanh, hai màn hình backend+frontend.",
+      "codename": "FORGE-02 // 3D-SHIP",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": ["first-frontend-ship"],
+      "order": 21
     },
     {
-      "id": "kien-truc-he-thong",
+      "id": "personal-platforms",
+      "year": "2022–2023",
+      "kind": "personal",
+      "title": "Side quests: học qua sản phẩm thật",
+      "narrative": "Làm 2 dự án cá nhân có user trả tiền và thanh toán thực — hiểu rõ hơn về auth, billing, ops.",
+      "bullets": [
+        "Bartending course platform (Next + Nest + Mongo, thanh toán + admin)",
+        "MyReview Myanmar (Express + SMS OTP Viettel)",
+        "Học ownership từ A-Z khi không có team lớn"
+      ],
+      "tags": ["Next.js", "Billing", "Ownership"],
+      "imageConcept": "Dashboard admin + màn hình thanh toán SMS, không khí bootstrap.",
+      "codename": "FORGE-03 // SIDE-QUESTS",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": ["threejs-saas"],
+      "order": 22
+    },
+    {
+      "id": "plogg-bucco",
+      "year": "2022–2023",
+      "kind": "fullstack",
+      "title": "Remote full-stack cho thị trường Pháp",
+      "narrative": "Tham gia PloggMedia, fix và nâng cấp nhanh UI/UX + backend cho ứng dụng nha khoa.",
+      "bullets": [
+        "NestJS + Vue.js + Vuetify + Docker",
+        "Bug fixing + iteration nhanh theo feedback clinic",
+        "Làm việc remote với team châu Âu"
+      ],
+      "tags": ["Vue.js", "Remote", "Healthcare"],
+      "imageConcept": "Phòng khám + interface booking, ánh sáng trắng-xanh.",
+      "codename": "FORGE-04 // REMOTE-SHIP",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": ["personal-platforms"],
+      "order": 23
+    },
+    {
+      "id": "me-join",
+      "year": "2023-06",
+      "kind": "transition",
+      "title": "Bước vào hệ thống quy mô lớn",
+      "narrative": "Gia nhập MarketEnterprise — từ solo/remote sang làm trong codebase enterprise thực thụ.",
+      "bullets": [
+        "Học NX Monorepo, tách private/public services",
+        "Làm quen CI/CD đa môi trường (dev/staging/prod)",
+        "Chuyển tư duy từ 'làm xong' sang 'làm bền + scale'"
+      ],
+      "tags": ["Transition", "Monorepo", "Enterprise"],
+      "imageConcept": "Sơ đồ kiến trúc lớn, nhiều service box, không khí engineering.",
+      "codename": "TRANSIT-01 // SCALE-UP",
+      "chapter": "systems",
+      "arc": "scale",
+      "connectsTo": ["plogg-bucco", "threejs-saas"],
+      "order": 30
+    },
+    {
+      "id": "oikura-modernize",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Kiến tạo hệ thống lớn",
-      "narrative": "Hiện đại hoá nền tảng quy mô lớn với microservices và cloud thực tiễn.",
+      "title": "Hiện đại hoá Oikura (Nhật)",
+      "narrative": "Tham gia tái kiến trúc nền tảng giao dịch đồ cũ lớn nhất Nhật — microservices + cloud thực chiến.",
       "bullets": [
-        "Tách services với NX Monorepo",
-        "Microservices NestJS tối ưu",
-        "CI/CD trên AWS EC2/Lambda",
-        "Event-driven: SQS, EventBridge"
+        "NX Monorepo + NestJS microservices, API boundary rõ",
+        "Tối ưu MySQL query/index + deploy AWS EC2 + CodePipeline",
+        "Event-driven: SQS + Lambda cho SendGrid/SMS"
       ],
-      "tags": [
-        "NX Monorepo",
-        "AWS",
-        "Microservices",
-        "CI/CD"
-      ],
-      "imageConcept": "Sơ đồ AWS phức tạp sáng màu trên màn hình lớn, không khí enterprise.",
-      "codename": "ARCH // MICROSERV"
+      "tags": ["NX", "Microservices", "AWS", "Japan"],
+      "imageConcept": "AWS diagram phức tạp sáng trên màn hình enterprise.",
+      "codename": "SYSTEMS-01 // OIKURA",
+      "chapter": "systems",
+      "arc": "scale",
+      "connectsTo": ["me-join"],
+      "order": 31
     },
     {
-      "id": "ai-va-toi-uu",
+      "id": "mmt-event-driven",
+      "year": "2023–2024",
+      "kind": "fullstack",
+      "title": "Event-driven cho giao tiếp khách hàng",
+      "narrative": "Xây hệ thống MMT: đồng bộ đa nguồn, lịch tự động, dashboard operator realtime.",
+      "bullets": [
+        "AWS SAM + Lambda + EventBridge + SQS",
+        "NestJS workflow + Mongo + webhooks (SMS, Gmail, Slack, Line)",
+        "React dashboard cho operator + cron jobs"
+      ],
+      "tags": ["Event-Driven", "SAM", "Webhooks"],
+      "imageConcept": "Sơ đồ event bus, nhiều mũi tên, dashboard operator.",
+      "codename": "SYSTEMS-02 // MMT",
+      "chapter": "systems",
+      "arc": "scale",
+      "connectsTo": ["oikura-modernize"],
+      "order": 32
+    },
+    {
+      "id": "first-rag",
+      "year": "2024",
+      "kind": "ai",
+      "title": "RAG đầu tiên đi vào sản phẩm",
+      "narrative": "Bắt đầu đưa LLM vào thực tế: embeddings + retrieval neo câu trả lời vào tài liệu nội bộ.",
+      "bullets": [
+        "Word2Vec embeddings + RAG framework",
+        "LLM (Ollama) local deploy, fine-tune domain",
+        "Giảm hallucination, giữ data trong nhà"
+      ],
+      "tags": ["RAG", "Embeddings", "Ollama"],
+      "imageConcept": "Mạng nơ-ron tím-xanh, dữ liệu chảy như sông ánh sáng.",
+      "codename": "INTEL-01 // RAG-FIRST",
+      "chapter": "intelligence",
+      "arc": "ai",
+      "connectsTo": ["mmt-event-driven"],
+      "order": 40
+    },
+    {
+      "id": "ai-pipeline-prod",
       "year": "2024–nay",
       "kind": "ai",
-      "title": "Tối ưu hệ thống AI",
-      "narrative": "Tích hợp AI vào hệ thống thực với độ chính xác và tốc độ cao.",
+      "title": "Kết nối AI với event fabric",
+      "narrative": "Biến AI thành một thành phần có thể quan sát, tối ưu latency, tích hợp sâu với hệ thống event-driven.",
       "bullets": [
-        "RAG + Word2Vec embeddings",
-        "Deploy & fine-tune LLM (Ollama)",
-        "AI pipeline modular, low-latency",
-        "Kết nối AI với event-driven"
+        "AI pipeline modular, low-latency inference",
+        "Tối ưu retrieval + re-ranking",
+        "Quan sát + cost control cho production AI"
       ],
-      "tags": [
-        "RAG",
-        "LLM",
-        "Ollama",
-        "Python"
-      ],
-      "imageConcept": "Mạng nơ-ron phát sáng tím-xanh, dữ liệu chảy như dòng sông ánh sáng.",
+      "tags": ["AI Pipelines", "Observability", "Cost"],
+      "imageConcept": "Neural net + event arrows, HUD monitoring overlay.",
       "photo": "/images/presenting.webp",
-      "photoAlt": "Đỗ Xuân Lộc thuyết trình",
-      "codename": "AI // RAG-OPT"
+      "photoAlt": "Đỗ Xuân Lộc thuyết trình về hệ thống",
+      "codename": "INTEL-02 // AI-IN-SYSTEM",
+      "chapter": "intelligence",
+      "arc": "ai",
+      "connectsTo": ["first-rag", "mmt-event-driven"],
+      "order": 41
     },
     {
-      "id": "ai-solutions-architect",
-      "year": "Tương lai",
+      "id": "horizon-lead",
+      "year": "2025+",
       "kind": "future",
-      "title": "Kiến trúc giải pháp AI",
-      "narrative": "Dẫn dắt kiến trúc AI quy mô lớn, tối ưu chi phí, sẵn sàng Nhật.",
+      "title": "Chuẩn bị dẫn dắt giải pháp AI",
+      "narrative": "Từ người làm hệ thống có AI → người định hình kiến trúc AI cho quy mô lớn, sẵn sàng cho thị trường Nhật.",
       "bullets": [
-        "AI architecture enterprise-scale",
-        "DevSecOps & tối ưu chi phí cloud",
-        "Japanese N3+ cho thị trường Nhật",
-        "Dẫn dắt giải pháp AI 0→1"
+        "Enterprise RAG, agent orchestration, platform thinking",
+        "DevSecOps + zero-trust + cloud cost governance",
+        "N3+ Japanese + cross-border collaboration"
       ],
-      "tags": [
-        "AI Architecture",
-        "DevSecOps",
-        "Scalability",
-        "JP N3+"
-      ],
-      "imageConcept": "Thành phố tương lai lung linh, cầu ánh sáng nối người với AI nhân từ.",
-      "codename": "FUTURE // AI-LEAD"
+      "tags": ["AI Architecture", "Leadership", "JP N3+"],
+      "imageConcept": "Cầu ánh sáng nối thành phố hiện tại với tương lai AI nhân từ.",
+      "codename": "HORIZON-01 // AI-LEAD",
+      "chapter": "horizon",
+      "arc": "ai",
+      "connectsTo": ["ai-pipeline-prod"],
+      "order": 50
     }
   ]
 }
