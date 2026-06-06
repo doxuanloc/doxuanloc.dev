@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import JourneyExplorer from '../components/journey/JourneyExplorer.astro';
+import JourneyPinned from '../components/journey/JourneyPinned.astro';
 import JourneyScene from '../components/JourneyScene.astro';
 import { getProfile } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
@@ -10,25 +10,37 @@ const profile = getProfile(lang);
 ---
 <Base title={t('journey.title')} description={profile.summary} animatedBg={false}>
   <JourneyScene />
-  <section style="padding-bottom:24px">
+
+  <!-- Page header: nhỏ gọn, không chiếm nhiều không gian trước scrollytelling -->
+  <section class="journey-header">
     <div class="container">
       <p class="eyebrow" data-reveal>{t('journey.eyebrow')}</p>
-      <h1 class="section-title" data-reveal style="--reveal-delay:60ms;font-size:clamp(1.8rem,5vw,2.6rem)">{t('journey.title')}</h1>
-      <p class="section-sub" data-reveal style="--reveal-delay:100ms">
-        {t('journey.sub', { n: profile.identity.yearsExperience })}
-        <span class="muted" style="display:block;margin-top:6px;font-size:.85rem">{t('journey.hint')}</span>
-      </p>
-
+      <h1 class="journey-h1" data-reveal style="--reveal-delay:60ms">{t('journey.title')}</h1>
+      <p class="journey-hint mono muted" data-reveal style="--reveal-delay:110ms">{t('journey.hint')}</p>
     </div>
   </section>
 
-  <!-- New spatial flight explorer: Story Chapters (default) + Timeline toggle.
-       More seamless cards, chapter gates, live HUD, story filaments. -->
-  <JourneyExplorer />
+  <!-- Pinned scrollytelling: screen stays still, panels crossfade -->
+  <JourneyPinned />
 
-  <section style="padding-top:32px">
+  <section style="padding:40px 0 56px">
     <div class="container" style="text-align:center">
       <a class="btn btn-primary" href={localizedPath('/experience', lang)}>{t('journey.cta')}</a>
     </div>
   </section>
 </Base>
+
+<style>
+  .journey-header {
+    padding: clamp(56px, 10vh, 88px) 0 clamp(16px, 3vh, 28px);
+  }
+  .journey-h1 {
+    font-size: clamp(2rem, 5.5vw, 3rem);
+    font-weight: 700; letter-spacing: -0.035em;
+    margin: .1em 0 .25em; line-height: 1.08;
+  }
+  .journey-hint {
+    font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+    opacity: 0.45; margin: 0;
+  }
+</style>

@@ -1,11 +1,12 @@
 {
-  "version": 1,
+  "$comment": "Portfolio data v4 - Full & Story-driven | Do Xuan Loc | June 2026 (EN translation)",
+  "version": 4,
   "identity": {
     "name": "Đỗ Xuân Lộc",
     "nameEn": "Do Xuan Loc",
     "title": "AI & System Optimization Engineer",
     "subtitle": "Full-Stack Engineer · Solutions Architect (ML)",
-    "tagline": "From Full-Stack to AI/System Optimization — building scalable, secure, cost-optimized systems.",
+    "tagline": "From Full-Stack to AI/System Optimization — the journey of building real-world, scalable, cost-optimized systems for the Japanese market.",
     "location": "Ho Chi Minh City, Vietnam",
     "yearsExperience": 3,
     "email": "locvkv1234@gmail.com",
@@ -16,47 +17,27 @@
       "github": null
     }
   },
-  "summary": "Full-Stack Engineer with 3 years of experience, currently working as AI & System Optimization Engineer / Solutions Architect at MarketEnterprise Vietnam. Strong in NestJS, Next.js, ReactJS, and microservices architecture on AWS. Expanding into AI/ML (RAG, LLM deployment) and DevSecOps. Focused on high-performance, secure, and maintainable systems.",
+  "summary": "A computer engineer whose path went from pure frontend to designing and optimizing entire complex systems. Started by touching real on-chain data, then built full-stack products with interactive 3D, then moved to microservices architecture on AWS for large-scale platforms in Japan. Currently leading the integration of AI (RAG, Voice AI, Multi-agent) into real products in a safe, accurate, and cost-efficient way. Always asks: “Does this system truly create sustainable value?”",
   "solves": [
     {
       "problem": "Large-scale systems difficult to scale and maintain",
-      "approach": "Decompose into microservices within NX Monorepo, clear API boundaries, automated CI/CD pipelines per environment (dev/staging/prod).",
-      "stack": [
-        "NestJS",
-        "NX Monorepo",
-        "AWS",
-        "CI/CD"
-      ]
+      "approach": "Decompose into microservices within NX Monorepo, clear API boundaries, automated CI/CD pipelines per environment.",
+      "stack": ["NestJS", "NX Monorepo", "AWS", "CI/CD"]
     },
     {
       "problem": "Synchronizing and processing multi-source realtime data",
       "approach": "Event-driven serverless architecture — queues and schedules decouple services for easy scaling with load.",
-      "stack": [
-        "AWS Lambda",
-        "EventBridge",
-        "SAM",
-        "SQS"
-      ]
+      "stack": ["AWS Lambda", "EventBridge", "SAM", "SQS"]
     },
     {
       "problem": "Integrating LLMs into products while maintaining accuracy and safety",
       "approach": "RAG anchors answers to real documents, embeddings + internal LLM deployment to control data and reduce hallucination.",
-      "stack": [
-        "RAG",
-        "Embeddings",
-        "LLM (Ollama)",
-        "Python"
-      ]
+      "stack": ["RAG", "Embeddings", "LLM (Ollama)", "Python"]
     },
     {
-      "problem": "Slow systems and high operational costs",
-      "approach": "Optimize queries/indexes, separate workloads, design cost-efficient cloud infrastructure.",
-      "stack": [
-        "MySQL",
-        "AWS",
-        "Docker",
-        "Monitoring"
-      ]
+      "problem": "Handling real-world Japanese voice interactions with high accuracy",
+      "approach": "Combine Amazon Connect + Lex V2 + Bedrock Claude Haiku; handle dead air, ASR brand errors, and complex flows.",
+      "stack": ["Amazon Connect", "Lex V2", "Bedrock", "State Machine"]
     }
   ],
   "languages": [
@@ -74,51 +55,20 @@
     }
   ],
   "skills": {
-    "frontend": [
-      "ReactJS",
-      "Next.js",
-      "Redux",
-      "TailwindCSS",
-      "VueJS",
-      "Vuex",
-      "Vuetify",
-      "HTML/CSS",
-      "TypeScript"
-    ],
-    "backend": [
-      "Node.js",
-      "NestJS",
-      "Express",
-      "Socket.io",
-      "SSE",
-      "Three.js"
-    ],
-    "database": [
-      "MySQL",
-      "MongoDB",
-      "Strapi"
-    ],
+    "frontend": ["ReactJS", "Next.js", "Redux", "TailwindCSS", "VueJS", "Vuex", "Vuetify", "TypeScript"],
+    "backend": ["Node.js", "NestJS", "Express", "Socket.io", "SSE", "Three.js"],
+    "database": ["MySQL", "MongoDB", "Strapi", "Postgres", "S3 Tables (Iceberg)"],
     "cloud_devops": [
-      "AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline)",
-      "Docker",
-      "GitHub Actions",
-      "NX Monorepo",
-      "CI/CD"
+      "AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline, SageMaker, Bedrock)",
+      "Docker", "GitHub Actions", "NX Monorepo", "CI/CD", "CloudFormation"
     ],
     "ai_ml": [
-      "RAG",
-      "Word2Vec embeddings",
-      "LLM (Ollama)",
-      "Fine-tuning",
-      "AI pipelines"
+      "RAG", "Word2Vec / Embeddings", "LLM (Ollama, Claude, Gemini)", "Fine-tuning (LoRA/QLoRA)",
+      "Whisper + Pyannote", "Florence-2", "LangGraph", "Multi-Agent Systems", "AI Pipelines"
     ],
     "practices": [
-      "Microservices",
-      "Event-Driven Architecture",
-      "DevSecOps",
-      "Scrum/Agile",
-      "Monitoring",
-      "Business Intelligence"
+      "Microservices", "Event-Driven Architecture", "DevSecOps", "Scrum/Agile",
+      "Monitoring & Observability", "Business Intelligence", "Cost Optimization"
     ]
   },
   "experience": [
@@ -131,22 +81,48 @@
       "current": true,
       "projects": [
         {
-          "name": "Oikura",
-          "summary": "Modernizing Oikura — Japan's largest second-hand goods trading platform. Focused on scalable, secure, and maintainable architecture.",
+          "name": "Oikura Modernization",
+          "summary": "Modernizing Oikura — Japan's largest second-hand goods trading platform. I participated in re-architecting from monolithic to microservices.",
           "highlights": [
-            "Designed NX Monorepo codebase with clear separation of private/public services",
-            "Microservices with explicit APIs, optimized MySQL queries and indexes",
-            "Deployed on AWS EC2 with automated CI/CD across dev/staging/prod",
-            "Integrated SendGrid + SMS Media via AWS SQS & Lambda"
+            "Designed NX Monorepo with clear separation of private/public services",
+            "NestJS microservices with explicit APIs, optimized MySQL queries & indexes",
+            "Built environment-specific CI/CD on AWS (EC2 + CodePipeline)",
+            "Integrated SendGrid + SMS via AWS SQS & Lambda"
           ],
-          "stack": [
-            "NX Monorepo",
-            "NestJS",
-            "Next.js",
-            "TailwindCSS",
-            "AWS (EC2, ECR, SQS, Lambda, CodePipeline)",
-            "MySQL"
-          ]
+          "stack": ["NX Monorepo", "NestJS", "Next.js", "AWS (EC2, ECR, SQS, Lambda, CodePipeline)", "MySQL"]
+        },
+        {
+          "name": "V-Voicebot (Japanese Buyback Voicebot)",
+          "summary": "Built an automated voicebot system to collect product and customer information for Japan's used-goods buyback service (takakuureru.com). Combined Amazon Connect + Lex V2 + Bedrock Claude Haiku.",
+          "highlights": [
+            "Designed state machine and conversation flow for intake automation",
+            "Integrated Bedrock Claude Haiku for intent classification + structured data extraction",
+            "Handled real-world pain points: dead air at STARTING, ASR brand errors, unreliable PostCode",
+            "Built guard systems (rate limit, max turns, duration, empty turns)"
+          ],
+          "stack": ["Amazon Connect", "Lex V2 (ja_JP)", "Bedrock (Claude 3 Haiku)", "AWS Lambda", "DynamoDB", "S3"]
+        },
+        {
+          "name": "V-VoiceSummarize Pipeline",
+          "summary": "Led the development of an automated pipeline to transcribe + summarize + extract structured data from batches of IS/FS calls using Whisper + Pyannote + Bedrock/Gemini.",
+          "highlights": [
+            "Designed end-to-end pipeline: STT → Diarization → Summarization → Structured Extraction",
+            "Optimized cost and latency with SageMaker async endpoints + Lambda workers",
+            "Handled real-world multilingual audio quality issues (noise, distance, crosstalk)",
+            "Connected output to S3 Tables and Google Sheets for IS team review"
+          ],
+          "stack": ["Whisper Large-v3/Turbo", "Pyannote", "Bedrock", "Gemini", "SageMaker", "S3 Tables", "Lambda"]
+        },
+        {
+          "name": "Agent Buyback System",
+          "summary": "Built a multi-agent system to support the buyback workflow, combining automation with human-in-the-loop to reduce workload for IS/FS staff.",
+          "highlights": [
+            "Designed multi-agent flow with LangGraph + Gemini",
+            "Combined Voicebot intake data with agentic decision making",
+            "Built memory and caching architecture for agents",
+            "Integrated with existing systems (S3, DynamoDB, Google Sheets)"
+          ],
+          "stack": ["LangGraph", "Gemini", "Multi-Agent Architecture", "Python"]
         },
         {
           "name": "Message Management Tool (MMT)",
@@ -157,33 +133,17 @@
             "NestJS managing messaging workflows, cron jobs, and MongoDB",
             "ReactJS dashboard for operators + realtime webhooks across multi-platform (SMS, Gmail, Slack, Line)"
           ],
-          "stack": [
-            "NestJS",
-            "ReactJS",
-            "MongoDB",
-            "AWS SAM",
-            "Lambda",
-            "EventBridge",
-            "Webhooks"
-          ]
+          "stack": ["NestJS", "ReactJS", "MongoDB", "AWS SAM", "Lambda", "EventBridge", "Webhooks"]
         },
         {
           "name": "Chatbot RAG cho dự án công nghệ",
-          "summary": "Chatbot for analyzing and retrieving technical documents across projects.",
+          "summary": "Chatbot for analyzing and retrieving technical documents across projects with high accuracy.",
           "highlights": [
             "RAG framework with Word2Vec embeddings to improve accuracy",
             "LLM (Ollama) deployed locally for data control, fine-tuned for company domain",
             "Scalable, modular AI pipeline with low-latency inference optimization"
           ],
-          "stack": [
-            "RAG",
-            "Word2Vec",
-            "LLM (Ollama)",
-            "Python",
-            "MongoDB",
-            "ReactJS",
-            "Docker"
-          ]
+          "stack": ["RAG", "Word2Vec", "LLM (Ollama)", "Python", "MongoDB", "ReactJS", "Docker"]
         }
       ]
     },
@@ -196,36 +156,24 @@
       "current": false,
       "projects": [
         {
-          "name": "Bucco",
-          "summary": "Application for the French dental market — connecting clinics and customers for appointment booking and dentist communication.",
+          "name": "Bucco (Healthcare SaaS - France)",
+          "summary": "Application connecting dental clinics and customers in France. I joined to fix bugs and rapidly improve UI/UX based on real clinic feedback.",
           "highlights": [
-            "Bug fixes and UI/UX improvements",
-            "Full-stack NestJS + Vue.js development"
+            "Full-stack NestJS + Vue.js + Vuetify",
+            "Fast bugfix + iteration cycles based on clinic feedback",
+            "Remote collaboration with a European team"
           ],
-          "stack": [
-            "NestJS",
-            "Vue.js",
-            "Vuetify",
-            "Vuex",
-            "Docker",
-            "Git"
-          ]
+          "stack": ["NestJS", "Vue.js", "Vuetify", "Vuex", "Docker", "Git"]
         },
         {
-          "name": "Synode",
-          "summary": "Self-service SaaS helping engineers create and share interactive 3D assembly instructions (manufacturing e-commerce).",
+          "name": "Synode (3D Instructions SaaS)",
+          "summary": "Self-service SaaS helping engineers create and share interactive 3D assembly instructions (manufacturing e-commerce). Solved real versioning and update challenges.",
           "highlights": [
             "3D visualization replacing manual 2D CAD — solved versioning and update challenges",
             "Designed business logic APIs and built UI from Figma",
-            "Three.js + Strapi + NestJS"
+            "Three.js + Strapi + NestJS + Docker"
           ],
-          "stack": [
-            "NestJS",
-            "Three.js",
-            "Vuetify",
-            "Strapi",
-            "Docker"
-          ]
+          "stack": ["NestJS", "Three.js", "Vuetify", "Strapi", "Docker"]
         }
       ]
     },
@@ -239,22 +187,30 @@
       "projects": [
         {
           "name": "Crypto News & E-learning Platform",
-          "summary": "Crypto market news website + e-learning platform, built responsive and scalable with React.",
+          "summary": "Crypto market news website + e-learning platform. My first time touching real on-chain data and writing technical content.",
           "highlights": [
-            "Researched and analyzed on-chain data via APIs, wrote technical blog published on company site",
+            "Researched and analyzed on-chain data via APIs, wrote technical blog",
             "Improved UI/UX with user-centered design",
-            "Upgraded e-learning with interactive content, progress tracking, and navigation"
+            "Upgraded e-learning with interactive content and progress tracking"
           ],
-          "stack": [
-            "React",
-            "UI/UX",
-            "Responsive Web"
-          ]
+          "stack": ["React", "UI/UX", "Responsive Web"]
         }
       ]
     }
   ],
   "personalProjects": [
+    {
+      "name": "VPhoto — E-comm Image AI Camera App",
+      "period": "2025",
+      "teamSize": 2,
+      "summary": "Smart camera app that helps e-commerce sellers automatically process and filter product photos with high quality and consistency.",
+      "highlights": [
+        "Integrated Florence-2 for detailed captioning and object detection",
+        "Built automatic image filter pipeline (lighting, angle, background)",
+        "Optimized GPU inference and integrated into mobile app"
+      ],
+      "stack": ["Florence-2", "Computer Vision", "GPU Acceleration", "Python"]
+    },
     {
       "name": "Bartending Course — NauPhaChe",
       "period": "2022-10 — 2023-11",

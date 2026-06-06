@@ -1,0 +1,598 @@
+---
+/**
+ * JourneyPinned.astro — Pinned scrollytelling, Web3 aesthetic
+ * Desktop: sticky 100dvh, panel crossfade on scroll, left timeline rail
+ * Mobile: vertical cards
+ */
+import { getProfile } from '../../lib/content';
+import { getLangFromUrl } from '../../i18n/ui';
+import { prepareMilestones } from './utils';
+import type { MilestoneRaw } from './types';
+
+const lang = getLangFromUrl(Astro.url);
+const rawMilestones = (getProfile(lang).journey ?? []) as MilestoneRaw[];
+const milestones = prepareMilestones(rawMilestones);
+const n = milestones.length;
+
+const chapterMeta: Record<string, { label: string; c: string }> = {
+  origins:      { label: 'Origins',      c: '#5b8cff' },
+  forge:        { label: 'Forge',        c: '#36d6c3' },
+  systems:      { label: 'Systems',      c: '#b58cff' },
+  intelligence: { label: 'Intelligence', c: '#f0b232' },
+  horizon:      { label: 'Horizon',      c: '#ff7eb3' },
+};
+
+// Group milestones by chapter for the rail
+type RailGroup = { id: string; label: string; c: string; items: typeof milestones };
+const railGroups: RailGroup[] = [];
+const seen = new Set<string>();
+for (const m of milestones) {
+  const ch = (m as any).chapter ?? 'other';
+  if (!seen.has(ch)) {
+    seen.add(ch);
+    railGroups.push({
+      id: ch,
+      label: chapterMeta[ch]?.label ?? ch,
+      c: chapterMeta[ch]?.c ?? '#5b8cff',
+      items: [],
+    });
+  }
+  railGroups.find(g => g.id === ch)!.items.push(m);
+}
+---
+
+<div class="jp-root" style={`--n:${n}`} data-jp>
+
+  <!-- STICKY STAGE -->
+  <div class="jp-sticky">
+
+    <!-- Dot-grid background -->
+    <div class="jp-bg" aria-hidden="true"></div>
+
+    <!-- ── LEFT RAIL ─────────────────────────── -->
+    <aside class="jp-rail" aria-hidden="true">
+
+      <!-- Mission HUD -->
+      <div class="jp-hud-top">
+        <span class="jp-hud-label">FLIGHT LOG</span>
+        <span class="jp-hud-counter mono" data-jp-counter>
+          <span data-jp-cur>01</span><span class="jp-hud-sep">/</span>{String(n).padStart(2,'0')}
+        </span>
+      </div>
+
+      <!-- Rail line + chapter groups -->
+      <div class="jp-rail-inner">
+        <div class="jp-rail-line">
+          <span class="jp-rail-fill" data-jp-fill></span>
+        </div>
+
+        {railGroups.map(group => (
+          <div class="jp-chapter" style={`--cc:${group.c}`}>
+            <div class="jp-chapter-gate">
+              <span class="jp-chapter-name">{group.label}</span>
+            </div>
+            <ol>
+              {group.items.map((m: any) => (
+                <li>
+                  <button class="jp-node" data-go={m.index} type="button" style={`--mc:${m.meta.c1}`}>
+                    <span class="jp-node-dot"></span>
+                    <span class="jp-node-info">
+                      <span class="jp-node-year mono">{m.year}</span>
+                      <span class="jp-node-title">{m.title}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+
+      <!-- Chapter progress bar -->
+      <div class="jp-rail-foot">
+        <div class="jp-rail-track">
+          <span class="jp-rail-prog" data-jp-fill></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── RIGHT STAGE ─────────────────────────── -->
+    <div class="jp-stage">
+      {milestones.map((m: any, i: number) => (
+        <article
+          class={`jp-panel${i === 0 ? ' is-active' : ''}`}
+          data-panel={i}
+          style={`--c1:${m.meta.c1};--c2:${m.meta.c2}`}
+        >
+          <!-- Glass card -->
+          <div class="jp-glass">
+
+            <!-- HUD bar -->
+            <div class="jp-panel-hud">
+              <span class="jp-panel-code">{m.codename ?? `${(m.kind as string).toUpperCase()}-${m.num}`}</span>
+              <span class="jp-panel-sep" aria-hidden="true">·</span>
+              <span class="jp-panel-chapter-tag">{chapterMeta[(m as any).chapter]?.label ?? ''}</span>
+              <span style="flex:1"></span>
+              <span class="jp-panel-frac mono">{m.num}<span class="muted"> / {String(n).padStart(2,'0')}</span></span>
+            </div>
+
+            <!-- Body: text | visual -->
+            <div class="jp-panel-body">
+
+              <!-- Text column -->
+              <div class="jp-panel-text">
+                <time class="jp-year">{m.year}</time>
+                <h2 class="jp-title">{m.title}</h2>
+                <p class="jp-narr">{m.narrative}</p>
+                {(m.bullets ?? []).length > 0 && (
+                  <ul class="jp-bullets">
+                    {(m.bullets as string[]).map(b => <li>{b}</li>)}
+                  </ul>
+                )}
+                <div class="chips jp-chips">
+                  {(m.tags ?? [] as string[]).map((tag: string) => (
+                    <span class="chip jp-chip">{tag}</span>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Visual column -->
+              <div class="jp-panel-vis" style={`--c1:${m.meta.c1};--c2:${m.meta.c2}`}>
+                <span class="hud-bracket tl"></span>
+                <span class="hud-bracket br"></span>
+
+                {m.resolvedPhoto ? (
+                  <img src={m.resolvedPhoto} alt="" loading="lazy" decoding="async" width="640" height="640" />
+                ) : m.resolvedImage ? (
+                  <img src={m.resolvedImage} alt="" loading="lazy" decoding="async" width="720" height="720" />
+                ) : (
+                  <div class="jp-vis-gen">
+                    <span class="vis-grid"></span>
+                    <span class="vis-orb"></span>
+                    <span class="vis-icon">{m.meta.icon}</span>
+                    <span class="vis-num mono">{m.num}</span>
+                  </div>
+                )}
+
+                <!-- overlay gradient -->
+                <div class="jp-vis-overlay"></div>
+                <!-- scan line -->
+                <div class="jp-scan" aria-hidden="true"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Active glow ring (outside glass) -->
+          <div class="jp-glow-ring" aria-hidden="true"></div>
+        </article>
+      ))}
+    </div>
+
+  </div>
+</div>
+
+<!-- Mobile: scroll hint -->
+<p class="jp-mobile-hint muted mono" aria-hidden="true">↓ scroll</p>
+
+<style>
+  /* ── ROOT & STICKY ───────────────────────── */
+  .jp-root {
+    position: relative;
+    /* scrollytelling height: n panels × 100vh */
+  }
+  .jp-sticky {
+    display: block;
+    position: relative;
+    background: transparent;
+  }
+
+  .jp-bg {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(rgba(91,140,255,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, #000 40%, transparent 90%);
+  }
+
+  /* ── MOBILE LAYOUT (default) ─────────────── */
+  .jp-rail { display: none; }
+  .jp-mobile-hint { display: block; text-align: center; font-size: .75rem; letter-spacing: 2px; padding: 24px 0 8px; opacity: 0.4; }
+
+  .jp-stage { display: grid; gap: 20px; padding: 0 0 40px; }
+
+  .jp-panel {
+    position: relative;
+    border-radius: 16px; overflow: hidden;
+  }
+  .jp-glass {
+    background: rgba(10, 15, 36, 0.7);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-left: 2px solid var(--c1);
+    border-radius: 16px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+  /* HUD bar */
+  .jp-panel-hud {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.2);
+  }
+  .jp-panel-code {
+    font-family: var(--mono); font-size: 0.64rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--c1); opacity: 0.9;
+  }
+  .jp-panel-sep { color: var(--border); }
+  .jp-panel-chapter-tag {
+    font-family: var(--display); font-size: 0.62rem; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-mute);
+  }
+  .jp-panel-frac { font-size: 0.7rem; color: var(--accent); }
+  /* Panel body */
+  .jp-panel-body { display: grid; gap: 0; }
+  .jp-panel-text { padding: 20px 20px 16px; display: grid; gap: 10px; align-content: start; }
+
+  .jp-year {
+    display: block; font-family: var(--mono); font-size: 0.78rem;
+    color: var(--c1); letter-spacing: 2px;
+  }
+  .jp-title { font-size: clamp(1.3rem, 4vw, 1.9rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin: 0; }
+  .jp-narr { color: #cfd6ee; font-size: 0.96rem; line-height: 1.65; margin: 0; max-width: 52ch; }
+  .jp-bullets { margin: 0; padding-left: 16px; display: grid; gap: 5px; color: var(--text-dim); font-size: .9rem; }
+  .jp-bullets li::marker { color: var(--c1); }
+  .jp-chips { margin-top: 4px; }
+  .jp-chip {
+    border-color: color-mix(in srgb, var(--c1) 30%, var(--border));
+    color: color-mix(in srgb, var(--c1) 80%, var(--text));
+  }
+  /* Visual */
+  .jp-panel-vis {
+    position: relative; min-height: 180px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.35);
+  }
+  .jp-panel-vis img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .jp-vis-gen {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(120% 90% at 80% 15%, color-mix(in srgb,var(--c1) 40%,transparent), transparent 60%),
+      radial-gradient(110% 90% at 15% 90%, color-mix(in srgb,var(--c2) 35%,transparent), transparent 60%),
+      #080e22;
+    overflow: hidden;
+  }
+  .vis-grid {
+    position: absolute; inset: 0; opacity: 0.45;
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+    background-size: 30px 30px;
+    mask-image: radial-gradient(120% 100% at 50% 0%,#000,transparent 70%);
+  }
+  .vis-orb {
+    position: absolute; width: 44%; aspect-ratio: 1; right: 8%; top: 12%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb,var(--c1) 80%,white), var(--c2) 70%);
+    filter: blur(2px); box-shadow: 0 0 50px color-mix(in srgb,var(--c1) 50%,transparent);
+    animation: jpFloat 7s ease-in-out infinite;
+  }
+  @keyframes jpFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .vis-icon { position: absolute; left: 18px; bottom: 14px; font-size: 1.8rem; }
+  .vis-num { position: absolute; right: 14px; bottom: 8px; font-size: 3rem; font-weight: 800; color: rgba(255,255,255,.08); }
+
+  .jp-vis-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(4,6,14,0) 55%, rgba(4,6,14,0.55) 100%),
+      radial-gradient(110% 80% at 80% 10%, rgba(91,140,255,0.1), transparent 55%);
+  }
+  /* Scan line */
+  .jp-scan { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .jp-scan::before {
+    content: ""; position: absolute; left: 0; right: 0; height: 1.5px; top: -2px;
+    background: linear-gradient(90deg, transparent 0%, color-mix(in srgb,var(--c1) 70%,transparent) 50%, transparent 100%);
+    animation: jpScan 5s linear infinite; opacity: 0.7;
+  }
+  @keyframes jpScan { 0%{top:-2px;opacity:0} 5%{opacity:0.7} 95%{opacity:0.5} 100%{top:100%;opacity:0} }
+
+  /* HUD brackets */
+  .hud-bracket { position: absolute; width: 18px; height: 18px; z-index: 2; pointer-events: none; }
+  .hud-bracket.tl { top: 8px; left: 8px; border-top: 2px solid var(--c1); border-left: 2px solid var(--c1); opacity: 0.8; }
+  .hud-bracket.br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--c2); border-right: 2px solid var(--c2); opacity: 0.8; }
+
+  .jp-glow-ring { display: none; }
+
+  /* ── DESKTOP: PINNED SCROLLYTELLING ──────── */
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .jp-mobile-hint { display: none; }
+
+    .jp-root { height: calc(var(--n) * 100vh); }
+
+    .jp-sticky {
+      position: sticky; top: 0;
+      height: 100dvh;
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      overflow: hidden;
+    }
+
+    /* Dot grid over full viewport */
+    .jp-bg { position: absolute; }
+
+    /* ── RAIL ───────────────────── */
+    .jp-rail {
+      display: flex; flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      background: rgba(4,6,14,0.9);
+      backdrop-filter: blur(20px);
+      z-index: 2;
+      overflow: hidden;
+    }
+    .jp-hud-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .jp-hud-label {
+      font-family: var(--display); font-size: 0.58rem; letter-spacing: 3.5px;
+      color: var(--accent-2); text-transform: uppercase; opacity: 0.7;
+    }
+    .jp-hud-counter { font-size: 0.78rem; color: var(--accent); }
+    .jp-hud-sep { color: var(--border); margin: 0 2px; }
+
+    .jp-rail-inner {
+      flex: 1; overflow-y: auto; padding: 8px 0 16px;
+      scrollbar-width: none;
+      position: relative;
+    }
+    .jp-rail-inner::-webkit-scrollbar { display: none; }
+
+    /* Vertical timeline line behind dots */
+    .jp-rail-line {
+      position: absolute; left: 22px; top: 12px; bottom: 12px; width: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .jp-rail-fill {
+      position: absolute; left: 0; top: 0; width: 100%; height: 0%;
+      background: linear-gradient(var(--accent), var(--accent-2));
+      transition: height 0.15s linear;
+    }
+
+    .jp-chapter { padding: 0 12px; }
+    .jp-chapter-gate {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 10px 6px 24px;
+    }
+    .jp-chapter-gate::before {
+      content: ""; width: 24px; height: 1px; background: var(--cc); opacity: 0.5;
+    }
+    .jp-chapter-name {
+      font-family: var(--display); font-size: 0.6rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--cc); opacity: 0.8;
+    }
+    .jp-chapter ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+
+    .jp-node {
+      display: flex; align-items: center; gap: 10px;
+      background: none; border: none; cursor: pointer;
+      padding: 6px 8px 6px 14px; text-align: left; width: 100%;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .jp-node:hover { background: rgba(255,255,255,0.03); }
+    .jp-node-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      border: 1.5px solid color-mix(in srgb, var(--mc) 50%, var(--border));
+      background: rgba(4,6,14,0.9); flex: 0 0 auto;
+      transition: all 0.25s var(--ease); position: relative; z-index: 1;
+    }
+    .jp-node.is-active .jp-node-dot {
+      background: var(--mc); border-color: var(--mc);
+      box-shadow: 0 0 0 3px color-mix(in srgb,var(--mc) 25%,transparent), 0 0 10px var(--mc);
+      transform: scale(1.2);
+    }
+    .jp-node-info { display: grid; overflow: hidden; }
+    .jp-node-year { font-family: var(--mono); font-size: 0.65rem; color: var(--text-mute); }
+    .jp-node-title { font-size: 0.78rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s; }
+    .jp-node.is-active .jp-node-title { color: var(--text); font-weight: 600; }
+    .jp-node.is-active .jp-node-year { color: var(--mc); }
+
+    .jp-rail-foot {
+      padding: 12px 14px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .jp-rail-track {
+      height: 2px; border-radius: 2px;
+      background: rgba(255,255,255,0.07); overflow: hidden;
+    }
+    .jp-rail-prog {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.15s linear;
+    }
+
+    /* ── STAGE ───────────────────── */
+    .jp-stage {
+      position: relative; display: block;
+      padding: 0;
+    }
+
+    .jp-panel {
+      position: absolute; inset: clamp(16px,2.5vh,28px) clamp(20px,3vw,40px);
+      opacity: 0;
+      transform: translateY(20px) scale(0.985);
+      pointer-events: none;
+      transition: opacity 0.55s var(--ease-rev, cubic-bezier(0.4,0,0.2,1)),
+                  transform 0.55s var(--ease-rev, cubic-bezier(0.4,0,0.2,1));
+    }
+    .jp-panel.is-active {
+      opacity: 1; transform: none; pointer-events: auto;
+    }
+
+    .jp-glass {
+      height: 100%;
+      background: rgba(6,10,26,0.72);
+      backdrop-filter: blur(28px) saturate(1.2);
+      -webkit-backdrop-filter: blur(28px) saturate(1.2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-left: none; /* override mobile */
+      border-radius: 20px;
+      display: grid;
+      grid-template-rows: 44px 1fr;
+      overflow: hidden;
+      transition: border-color 0.5s, box-shadow 0.5s;
+    }
+    .jp-panel.is-active .jp-glass {
+      border-color: color-mix(in srgb, var(--c1) 30%, rgba(255,255,255,0.07));
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--c1) 15%, transparent),
+        0 0 40px color-mix(in srgb, var(--c1) 12%, transparent),
+        0 0 80px color-mix(in srgb, var(--c2) 6%, transparent),
+        0 24px 64px rgba(0,0,0,0.5);
+    }
+
+    .jp-panel-hud {
+      padding: 0 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.25);
+    }
+    .jp-panel-code { font-size: 0.67rem; }
+
+    .jp-panel-body {
+      display: grid;
+      grid-template-columns: 1fr clamp(280px,40%,420px);
+      overflow: hidden;
+    }
+
+    .jp-panel-text {
+      padding: clamp(20px,3vh,36px) clamp(24px,3.5vw,44px);
+      overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .jp-year { font-size: 0.82rem; letter-spacing: 2px; }
+    .jp-title { font-size: clamp(1.6rem,2.8vw,2.4rem); }
+    .jp-narr { font-size: 1rem; }
+    .jp-bullets { font-size: .92rem; }
+
+    .jp-panel-vis {
+      border-left: 1px solid rgba(255,255,255,0.06);
+      min-height: unset; height: 100%;
+    }
+    .jp-panel-vis img { object-fit: cover; }
+
+    .hud-bracket { width: 22px; height: 22px; }
+    .hud-bracket.tl { top: 12px; left: 12px; }
+    .hud-bracket.br { bottom: 12px; right: 12px; }
+
+    /* Outer glow ring (separate from glass, appears outside border) */
+    .jp-glow-ring {
+      display: block;
+      position: absolute; inset: -1px; border-radius: 21px;
+      z-index: -1; pointer-events: none;
+      opacity: 0;
+      background: conic-gradient(from 0deg, var(--c1), var(--c2), transparent, var(--c1));
+      filter: blur(8px);
+      transition: opacity 0.6s;
+      animation: ringRotate 4s linear infinite paused;
+    }
+    .jp-panel.is-active .jp-glow-ring {
+      opacity: 0.35;
+      animation-play-state: running;
+    }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+  }
+
+  /* ── LARGE DESKTOP ───────────────────── */
+  @media (min-width: 1200px) {
+    .jp-sticky { grid-template-columns: 240px 1fr; }
+    .jp-panel { inset: clamp(24px,3vh,36px) clamp(28px,4vw,56px); }
+    .jp-panel-body { grid-template-columns: 1fr clamp(320px,42%,480px); }
+  }
+
+  /* ── REDUCED MOTION ─────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .vis-orb { animation: none; }
+    .jp-scan::before { animation: none; }
+    .jp-glow-ring { animation: none !important; }
+    .jp-panel { transition: opacity 0.3s; transform: none !important; }
+  }
+</style>
+
+<script>
+  function setupJourneyPinned() {
+    const root = document.querySelector<HTMLElement>('[data-jp]');
+    if (!root) return;
+
+    const isDesktop = () =>
+      window.matchMedia('(min-width: 900px)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const panels    = Array.from(root.querySelectorAll<HTMLElement>('.jp-panel'));
+    const nodes     = Array.from(root.querySelectorAll<HTMLElement>('.jp-node'));
+    const counter   = root.querySelector<HTMLElement>('[data-jp-cur]');
+    const fills     = Array.from(root.querySelectorAll<HTMLElement>('[data-jp-fill]'));
+    const progBars  = Array.from(root.querySelectorAll<HTMLElement>('.jp-rail-prog'));
+    const n         = panels.length;
+    if (!n) return;
+
+    // Mobile: activate all
+    if (!isDesktop()) {
+      panels.forEach(p => p.classList.add('is-active'));
+      return;
+    }
+
+    let activeIdx = -1;
+    let ticking   = false;
+
+    function setActive(i: number, p: number) {
+      const pct = Math.max(0, Math.min(1, p));
+      // Fill the vertical rail line
+      fills.forEach(f => { f.style.height = pct * 100 + '%'; });
+      // Horizontal progress bars
+      progBars.forEach(b => { b.style.width = pct * 100 + '%'; });
+      // Counter
+      if (counter) counter.textContent = String(i + 1).padStart(2, '0');
+
+      if (i === activeIdx) return;
+      activeIdx = i;
+
+      panels.forEach((el, k) => el.classList.toggle('is-active', k === i));
+      nodes.forEach((el, k)  => el.classList.toggle('is-active', k === i));
+
+      // Scroll the rail to keep active node visible
+      const activeNode = nodes[i];
+      if (activeNode) {
+        activeNode.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const rect  = root.getBoundingClientRect();
+        const total = root.offsetHeight - window.innerHeight;
+        const scrolled = Math.min(Math.max(-rect.top, 0), total);
+        const p   = total > 0 ? scrolled / total : 0;
+        const idx = Math.min(n - 1, Math.floor(p * n));
+        setActive(idx, p);
+        ticking = false;
+      });
+    }
+
+    // Rail dot click → scroll to that panel
+    nodes.forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        const total = root.offsetHeight - window.innerHeight;
+        const y = root.offsetTop + ((i + 0.5) / n) * total;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      });
+    });
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+  }
+
+  document.addEventListener('astro:page-load', setupJourneyPinned);
+</script>
