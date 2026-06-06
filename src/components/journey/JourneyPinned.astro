@@ -119,21 +119,35 @@ for (const m of milestones) {
             <!-- Body: text | visual -->
             <div class="jp-panel-body">
 
-              <!-- Text column -->
+              <!-- Text column: 3 zones -->
               <div class="jp-panel-text">
-                <time class="jp-year">{m.year}</time>
-                <h2 class="jp-title">{m.title}</h2>
-                <p class="jp-narr">{m.narrative}</p>
-                {(m.bullets ?? []).length > 0 && (
-                  <ul class="jp-bullets">
-                    {(m.bullets as string[]).map(b => <li>{b}</li>)}
-                  </ul>
-                )}
-                <div class="chips jp-chips">
-                  {(m.tags ?? [] as string[]).map((tag: string) => (
-                    <span class="chip jp-chip">{tag}</span>
-                  ))}
+
+                <!-- TOP: year + ghost year + title -->
+                <div class="jp-text-top">
+                  <time class="jp-year">{m.year}</time>
+                  <span class="jp-ghost-year mono" aria-hidden="true">{m.year.replace(/[^0-9]/g, '').slice(0,4)}</span>
+                  <h2 class="jp-title">{m.title}</h2>
                 </div>
+
+                <!-- MID: narrative (clamped 3 lines) -->
+                <div class="jp-text-mid">
+                  <p class="jp-narr">{m.narrative}</p>
+                </div>
+
+                <!-- BOT: chips → bullets compact -->
+                <div class="jp-text-bot">
+                  <div class="chips jp-chips">
+                    {(m.tags ?? [] as string[]).map((tag: string) => (
+                      <span class="chip jp-chip">{tag}</span>
+                    ))}
+                  </div>
+                  {(m.bullets ?? []).length > 0 && (
+                    <ul class="jp-bullets">
+                      {(m.bullets as string[]).map(b => <li>{b}</li>)}
+                    </ul>
+                  )}
+                </div>
+
               </div>
 
               <!-- Visual column -->
@@ -152,8 +166,11 @@ for (const m of milestones) {
                 ) : (
                   <div class="jp-vis-gen">
                     <span class="vis-grid"></span>
+                    <span class="vis-ring r1"></span>
+                    <span class="vis-ring r2"></span>
+                    <span class="vis-ring r3"></span>
                     <span class="vis-orb"></span>
-                    <span class="vis-icon">{m.meta.icon}</span>
+                    <span class="vis-kind mono">{m.kind}</span>
                     <span class="vis-num mono">{m.num}</span>
                   </div>
                 )}
@@ -235,21 +252,62 @@ for (const m of milestones) {
   }
   .jp-panel-frac { font-size: 0.7rem; color: var(--accent); }
   /* Panel body */
-  .jp-panel-body { display: grid; gap: 0; }
-  .jp-panel-text { padding: 20px 20px 16px; display: grid; gap: 10px; align-content: start; }
+  /* ── PANEL BODY ──────────── */
+  .jp-panel-body { display: grid; gap: 0; min-height: 0; }
 
-  .jp-year {
-    display: block; font-family: var(--mono); font-size: 0.78rem;
-    color: var(--c1); letter-spacing: 2px;
+  /* Text column: flex col, space-between fills height */
+  .jp-panel-text {
+    padding: 20px 20px 18px;
+    display: flex; flex-direction: column;
+    gap: 0; overflow: hidden;
   }
-  .jp-title { font-size: clamp(1.3rem, 4vw, 1.9rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin: 0; }
-  .jp-narr { color: #cfd6ee; font-size: 0.96rem; line-height: 1.65; margin: 0; max-width: 52ch; }
-  .jp-bullets { margin: 0; padding-left: 16px; display: grid; gap: 5px; color: var(--text-dim); font-size: .9rem; }
-  .jp-bullets li::marker { color: var(--c1); }
-  .jp-chips { margin-top: 4px; }
+  .jp-text-top { position: relative; margin-bottom: 12px; }
+  .jp-text-mid { flex: 1; display: flex; align-items: center; padding: 4px 0; }
+  .jp-text-bot { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* Ghost year behind title */
+  .jp-ghost-year {
+    position: absolute; top: -10px; right: -4px;
+    font-size: clamp(3.5rem, 8vw, 5.5rem); font-weight: 900; line-height: 1;
+    color: var(--c1); opacity: 0.06; pointer-events: none; user-select: none;
+    letter-spacing: -0.06em; z-index: 0;
+  }
+  .jp-year {
+    display: block; font-family: var(--mono); font-size: 0.74rem;
+    color: var(--c1); letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 8px; position: relative; z-index: 1;
+  }
+  .jp-title {
+    font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.12; margin: 0;
+    position: relative; z-index: 1;
+  }
+  /* Narrative: max 3 lines */
+  .jp-narr {
+    color: #b8c4de; font-size: 0.93rem; line-height: 1.68; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* Chips */
+  .jp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .jp-chip {
-    border-color: color-mix(in srgb, var(--c1) 30%, var(--border));
-    color: color-mix(in srgb, var(--c1) 80%, var(--text));
+    font-size: 0.77rem;
+    border-color: color-mix(in srgb, var(--c1) 35%, var(--border));
+    color: color-mix(in srgb, var(--c1) 85%, var(--text));
+    background: color-mix(in srgb, var(--c1) 6%, transparent);
+  }
+  /* Bullets: compact arrow list */
+  .jp-bullets {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .jp-bullets li {
+    font-size: 0.82rem; color: var(--text-mute); line-height: 1.4;
+    padding-left: 14px; position: relative;
+  }
+  .jp-bullets li::before {
+    content: "↗"; position: absolute; left: 0;
+    color: var(--c1); font-size: 0.7rem; top: 1px;
   }
   /* Visual */
   .jp-panel-vis {
@@ -279,31 +337,59 @@ for (const m of milestones) {
     40%     { transform: translateY(-8px); }
     70%     { transform: translateY(4px); }
   }
+  /* ── GEN PLACEHOLDER (no image) ──── */
   .jp-vis-gen {
-    position: absolute; inset: 0;
+    position: absolute; inset: 0; overflow: hidden;
     background:
-      radial-gradient(120% 90% at 80% 15%, color-mix(in srgb,var(--c1) 40%,transparent), transparent 60%),
-      radial-gradient(110% 90% at 15% 90%, color-mix(in srgb,var(--c2) 35%,transparent), transparent 60%),
-      #080e22;
-    overflow: hidden;
+      radial-gradient(ellipse 80% 60% at 50% 40%, color-mix(in srgb,var(--c1) 22%,transparent), transparent 70%),
+      radial-gradient(ellipse 60% 80% at 20% 80%, color-mix(in srgb,var(--c2) 18%,transparent), transparent 60%),
+      #060c1e;
+    display: flex; align-items: center; justify-content: center;
   }
   .vis-grid {
-    position: absolute; inset: 0; opacity: 0.45;
-    background-image: linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
-    background-size: 30px 30px;
-    mask-image: radial-gradient(120% 100% at 50% 0%,#000,transparent 70%);
+    position: absolute; inset: 0; opacity: 0.35;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 30%, transparent 80%);
   }
+  /* Concentric glow rings */
+  .vis-ring {
+    position: absolute; border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--c1) 30%, transparent);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    animation: visRingPulse 3s ease-in-out infinite;
+  }
+  .vis-ring.r1 { width: 55%; aspect-ratio: 1; animation-delay: 0s; }
+  .vis-ring.r2 { width: 75%; aspect-ratio: 1; animation-delay: .5s; border-color: color-mix(in srgb,var(--c1) 18%,transparent); }
+  .vis-ring.r3 { width: 95%; aspect-ratio: 1; animation-delay: 1s; border-color: color-mix(in srgb,var(--c1) 10%,transparent); }
+  @keyframes visRingPulse {
+    0%,100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%,-50%) scale(1.03); }
+  }
+  /* Central orb */
   .vis-orb {
-    position: absolute; width: 44%; aspect-ratio: 1; right: 8%; top: 12%;
+    position: absolute; width: 38%; aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb,var(--c1) 80%,white), var(--c2) 70%);
-    filter: blur(2px); box-shadow: 0 0 50px color-mix(in srgb,var(--c1) 50%,transparent);
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb,var(--c1) 90%,white) 0%, var(--c2) 55%, transparent 80%);
+    filter: blur(3px);
+    box-shadow: 0 0 60px color-mix(in srgb,var(--c1) 55%,transparent),
+                0 0 120px color-mix(in srgb,var(--c1) 25%,transparent);
     animation: jpFloat 7s ease-in-out infinite;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
   }
-  @keyframes jpFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-  .vis-icon { position: absolute; left: 18px; bottom: 14px; font-size: 1.8rem; }
-  .vis-num { position: absolute; right: 14px; bottom: 8px; font-size: 3rem; font-weight: 800; color: rgba(255,255,255,.08); }
+  @keyframes jpFloat { 0%,100%{top:calc(50% - 0px)} 50%{top:calc(50% - 10px)} }
+  .vis-kind {
+    position: absolute; bottom: 18px; left: 18px;
+    font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase;
+    color: color-mix(in srgb,var(--c1) 70%,white); opacity: 0.7;
+  }
+  .vis-num {
+    position: absolute; bottom: 12px; right: 16px;
+    font-size: clamp(3rem,6vw,5rem); font-weight: 900; line-height: 1;
+    color: var(--c1); opacity: 0.08; letter-spacing: -0.05em;
+  }
 
   .jp-vis-overlay {
     position: absolute; inset: 0; pointer-events: none;
@@ -326,6 +412,25 @@ for (const m of milestones) {
   .hud-bracket.br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--c2); border-right: 2px solid var(--c2); opacity: 0.8; }
 
   .jp-glow-ring { display: none; }
+
+  /* ── TABLET (600–899px) ─────────────────── */
+  @media (min-width: 600px) and (max-width: 899px) {
+    .jp-stage { gap: 28px; padding-bottom: 48px; }
+    .jp-glass { grid-template-rows: auto 1fr; }
+    .jp-panel-body {
+      grid-template-columns: 1fr 42%;
+      min-height: 300px;
+    }
+    .jp-panel-vis {
+      min-height: unset;
+      border-left: 1px solid rgba(255,255,255,0.05);
+    }
+    .jp-ghost-year { font-size: clamp(4rem, 10vw, 6.5rem); top: -8px; }
+    .jp-title { font-size: clamp(1.45rem, 3.5vw, 1.85rem); }
+    .jp-narr { font-size: 0.92rem; -webkit-line-clamp: 4; }
+    .jp-text-top { margin-bottom: 10px; }
+    .jp-text-bot { margin-top: 10px; }
+  }
 
   /* ── DESKTOP: PINNED SCROLLYTELLING ──────── */
   @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
@@ -491,13 +596,17 @@ for (const m of milestones) {
 
     .jp-panel-text {
       padding: clamp(20px,3vh,36px) clamp(24px,3.5vw,44px);
-      overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-      display: flex; flex-direction: column; gap: 12px;
+      overflow: hidden;
+      display: flex; flex-direction: column; gap: 0;
     }
+    .jp-text-top { margin-bottom: clamp(10px,1.8vh,18px); }
+    .jp-text-mid { min-height: 0; }
+    .jp-text-bot { margin-top: clamp(10px,1.8vh,18px); }
+    .jp-ghost-year { font-size: clamp(5rem,10vw,9rem); top: -20px; right: -4px; opacity: 0.07; }
     .jp-year { font-size: 0.82rem; letter-spacing: 2px; }
     .jp-title { font-size: clamp(1.6rem,2.8vw,2.4rem); }
-    .jp-narr { font-size: 1rem; }
-    .jp-bullets { font-size: .92rem; }
+    .jp-narr { font-size: 1rem; -webkit-line-clamp: 4; }
+    .jp-bullets li { font-size: .9rem; }
 
     .jp-panel-vis {
       border-left: 1px solid rgba(255,255,255,0.06);
