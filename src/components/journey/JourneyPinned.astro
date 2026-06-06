@@ -427,15 +427,7 @@ for (const m of milestones) {
 
   .jp-glow-ring { display: none; }
 
-  /* ── TABLET (600–899px) ─────────────────── */
-  @media (min-width: 600px) and (max-width: 899px) {
-    .jp-stage { gap: 28px; padding-bottom: 48px; }
-    .jp-panel-body { aspect-ratio: 16/8; min-height: 280px; }
-    .jp-panel-text { padding: 18px 22px 18px; }
-    .jp-ghost-year { font-size: clamp(4rem, 10vw, 6.5rem); top: -10px; }
-    .jp-title { font-size: clamp(1.45rem, 3.5vw, 1.9rem); }
-    .jp-narr { -webkit-line-clamp: 3; font-size: 0.92rem; }
-  }
+  /* ── TABLET: no separate layout — covered by mobile sticky block ── */
 
   /* ── DESKTOP: PINNED SCROLLYTELLING ──────── */
   @media (min-width: 900px) {
@@ -447,7 +439,7 @@ for (const m of milestones) {
       position: sticky; top: 62px;   /* clear fixed header */
       height: calc(100dvh - 62px);
       display: grid;
-      grid-template-columns: 210px 1fr;
+      grid-template-columns: 256px 1fr;
       overflow: hidden;
     }
 
@@ -466,14 +458,14 @@ for (const m of milestones) {
     }
     .jp-hud-top {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 16px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .jp-hud-label {
-      font-family: var(--display); font-size: 0.58rem; letter-spacing: 3.5px;
-      color: var(--accent-2); text-transform: uppercase; opacity: 0.7;
+      font-family: var(--display); font-size: 0.6rem; letter-spacing: 3.5px;
+      color: var(--accent-2); text-transform: uppercase; opacity: 0.8;
     }
-    .jp-hud-counter { font-size: 0.78rem; color: var(--accent); }
+    .jp-hud-counter { font-size: 0.88rem; color: var(--accent); }
     .jp-hud-sep { color: var(--border); margin: 0 2px; }
 
     .jp-rail-inner {
@@ -483,10 +475,11 @@ for (const m of milestones) {
     }
     .jp-rail-inner::-webkit-scrollbar { display: none; }
 
-    /* Vertical timeline line behind dots */
+    /* Vertical timeline line — left edge aligned with dots (chapter 14px + node 15px = 29px) */
     .jp-rail-line {
-      position: absolute; left: 22px; top: 12px; bottom: 12px; width: 1px;
-      background: rgba(255,255,255,0.06);
+      position: absolute; left: 28px; top: 12px; bottom: 12px; width: 2px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 2px;
     }
     .jp-rail-fill {
       position: absolute; left: 0; top: 0; width: 100%; height: 0%;
@@ -494,42 +487,42 @@ for (const m of milestones) {
       transition: height 0.15s linear;
     }
 
-    .jp-chapter { padding: 0 12px; }
+    .jp-chapter { padding: 0 14px; }
     .jp-chapter-gate {
       display: flex; align-items: center; gap: 8px;
-      padding: 12px 10px 6px 24px;
+      padding: 14px 8px 7px 26px;
     }
     .jp-chapter-gate::before {
-      content: ""; width: 24px; height: 1px; background: var(--cc); opacity: 0.5;
+      content: ""; width: 20px; height: 1px; background: var(--cc); opacity: 0.6;
     }
     .jp-chapter-name {
-      font-family: var(--display); font-size: 0.6rem; letter-spacing: 3px;
-      text-transform: uppercase; color: var(--cc); opacity: 0.8;
+      font-family: var(--display); font-size: 0.62rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--cc); opacity: 0.9;
     }
-    .jp-chapter ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+    .jp-chapter ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
 
     .jp-node {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 12px;
       background: none; border: none; cursor: pointer;
-      padding: 6px 8px 6px 14px; text-align: left; width: 100%;
+      padding: 7px 10px 7px 15px; text-align: left; width: 100%;
       border-radius: 8px;
       transition: background 0.2s;
     }
-    .jp-node:hover { background: rgba(255,255,255,0.03); }
+    .jp-node:hover { background: rgba(255,255,255,0.04); }
     .jp-node-dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      border: 1.5px solid color-mix(in srgb, var(--mc) 50%, var(--border));
+      width: 11px; height: 11px; border-radius: 50%;
+      border: 1.5px solid color-mix(in srgb, var(--mc) 55%, var(--border));
       background: rgba(4,6,14,0.9); flex: 0 0 auto;
       transition: all 0.25s var(--ease); position: relative; z-index: 1;
     }
     .jp-node.is-active .jp-node-dot {
       background: var(--mc); border-color: var(--mc);
-      box-shadow: 0 0 0 3px color-mix(in srgb,var(--mc) 25%,transparent), 0 0 10px var(--mc);
-      transform: scale(1.2);
+      box-shadow: 0 0 0 3px color-mix(in srgb,var(--mc) 25%,transparent), 0 0 12px var(--mc);
+      transform: scale(1.25);
     }
     .jp-node-info { display: grid; overflow: hidden; }
-    .jp-node-year { font-family: var(--mono); font-size: 0.65rem; color: var(--text-mute); }
-    .jp-node-title { font-size: 0.78rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s; }
+    .jp-node-year { font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); }
+    .jp-node-title { font-size: 0.83rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s; }
     .jp-node.is-active .jp-node-title { color: var(--text); font-weight: 600; }
     .jp-node.is-active .jp-node-year { color: var(--mc); }
 
@@ -646,65 +639,90 @@ for (const m of milestones) {
 
   /* ── LARGE DESKTOP ───────────────────── */
   @media (min-width: 1200px) {
-    .jp-sticky { grid-template-columns: 240px 1fr; }
+    .jp-sticky { grid-template-columns: 292px 1fr; }
     .jp-panel { inset: clamp(24px,3vh,36px) clamp(28px,4vw,56px); }
     .jp-title { font-size: clamp(2rem,3.5vw,3.2rem); }
     .jp-ghost-year { font-size: clamp(7rem,13vw,14rem); }
     .jp-narr { -webkit-line-clamp: 4; }
+    .jp-node { padding: 8px 12px 8px 16px; }
+    .jp-node-title { font-size: 0.86rem; }
+    .jp-node-year { font-size: 0.7rem; }
   }
 
-  /* ── MOBILE POLISH (< 900px) ───────── */
+  /* ── MOBILE STICKY (< 900px) — same scrollytelling UX, no rail ── */
   @media (max-width: 899px) {
-    .jp-stage { gap: 16px; padding: 0 0 48px; }
-
-    /* Chapter label accent: colored top strip per panel */
-    .jp-glass::before {
-      content: ""; display: block; height: 2px;
-      background: linear-gradient(90deg, var(--c1), var(--c2, var(--c1)));
-      border-radius: 2px 2px 0 0;
+    .jp-root { height: calc(var(--n) * 100vh); }
+    .jp-sticky {
+      position: sticky; top: 62px;
+      height: calc(100dvh - 62px);
+      overflow: hidden; display: block;
     }
+    .jp-stage { position: relative; display: block; padding: 0; }
+    .jp-panel { position: absolute; inset: 6px 10px; opacity: 0; pointer-events: none; }
+    /* Show first panel instantly — JS takes over on astro:page-load */
+    .jp-panel[data-panel="0"] { opacity: 1; pointer-events: auto; }
+    .jp-glass {
+      height: 100%;
+      grid-template-rows: 40px 1fr;
+    }
+    .jp-glass::before { display: none; }
+    .jp-panel-body {
+      display: block; position: relative;
+      height: 100%; overflow: hidden;
+      aspect-ratio: unset; min-height: 0;
+    }
+    .jp-panel-vis {
+      order: 0; position: absolute; inset: 0; height: 100%;
+      aspect-ratio: unset; min-height: 0; flex-shrink: initial;
+    }
+    .jp-panel-vis::after { display: none; }
+    .jp-panel-text {
+      position: absolute; inset: 0; z-index: 1;
+      padding: 12px 14px 20px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      gap: 7px; overflow: hidden;
+      background: linear-gradient(
+        to top,
+        rgba(4,6,14,0.97) 0%,
+        rgba(4,6,14,0.9) 26%,
+        rgba(4,6,14,0.52) 50%,
+        rgba(4,6,14,0.08) 72%,
+        transparent 88%
+      );
+    }
+    .jp-panel.is-active .jp-glass {
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--c1) 20%, transparent),
+        0 0 28px color-mix(in srgb, var(--c1) 14%, transparent);
+    }
+    .jp-mobile-hint { display: none; }
 
-    /* HUD bar: tighter, smaller text */
+    /* Text sizing */
     .jp-panel-hud { padding: 8px 12px; gap: 7px; }
     .jp-panel-code { font-size: 0.58rem; letter-spacing: 2px; }
-    .jp-panel-chapter-tag { font-size: 0.57rem; color: var(--c1); opacity: 0.8; }
+    .jp-panel-chapter-tag { font-size: 0.57rem; color: var(--c1); opacity: 0.85; }
     .jp-panel-frac { font-size: 0.62rem; }
-
-    /* Titles & body text */
-    .jp-title { font-size: 1.08rem; font-weight: 700; letter-spacing: -0.02em; }
-    .jp-year { font-size: 0.64rem; letter-spacing: 2px; margin-bottom: 5px; }
-
-    /* Ghost year: hidden (overflows flow layout) */
+    .jp-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
+    .jp-year { font-size: 0.64rem; letter-spacing: 2px; margin-bottom: 4px; }
     .jp-ghost-year { display: none; }
-
-    /* Narrative: full text, smaller size */
     .jp-narr {
-      -webkit-line-clamp: unset; display: block; overflow: visible;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
       font-size: 0.82rem; line-height: 1.6;
     }
-
-    /* Chips smaller */
     .jp-chip { font-size: 0.68rem; padding: 2px 7px; }
-
-    /* Bullets tighter */
     .jp-bullets { gap: 3px; }
     .jp-bullets li { font-size: 0.76rem; line-height: 1.35; }
     .jp-bullets li::before { font-size: 0.65rem; }
-
-    /* Panel text padding */
-    .jp-panel-text { padding: 12px 13px 16px; gap: 8px; }
-
-    /* HUD brackets in vis */
     .hud-bracket { width: 12px; height: 12px; }
     .hud-bracket.tl { top: 5px; left: 5px; }
     .hud-bracket.br { bottom: 5px; right: 5px; }
   }
 
   @media (max-width: 599px) {
-    .jp-stage { gap: 10px; }
     .jp-title { font-size: 1rem; }
     .jp-narr { font-size: 0.79rem; }
-    .jp-panel-text { padding: 11px 12px 14px; gap: 7px; }
+    .jp-panel-text { padding: 11px 12px 16px; }
     .jp-panel-hud { padding: 7px 11px; }
   }
 
@@ -724,9 +742,6 @@ for (const m of milestones) {
     const root = document.querySelector<HTMLElement>('[data-jp]');
     if (!root) return;
 
-    const mq        = window.matchMedia('(min-width: 900px)');
-    const isDesktop = () => mq.matches;
-
     const panels   = Array.from(root.querySelectorAll<HTMLElement>('.jp-panel'));
     const nodes    = Array.from(root.querySelectorAll<HTMLElement>('.jp-node'));
     const counter  = root.querySelector<HTMLElement>('[data-jp-cur]');
@@ -735,12 +750,7 @@ for (const m of milestones) {
     const n = panels.length;
     if (!n) return;
 
-    if (!isDesktop()) {
-      panels.forEach(p => p.classList.add('is-active'));
-      return;
-    }
-
-    // JS-driven image queue: on desktop all panels overlap in the viewport,
+    // JS-driven image queue: all panels overlap in viewport (absolute stacked),
     // so native loading="lazy" doesn't defer anything. We strip src from non-first
     // panels and restore it progressively as panels activate.
     const imgQueue = new Map<number, HTMLImageElement[]>();
