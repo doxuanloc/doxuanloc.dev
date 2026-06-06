@@ -316,6 +316,7 @@ for (const m of milestones) {
   }
   /* Visual: absolute, fills panel body */
   .jp-panel-vis {
+    order: -1;          /* move image before text in mobile flex column */
     position: relative;
     aspect-ratio: 16/9; min-height: 160px;
     overflow: hidden; flex-shrink: 0;
@@ -663,34 +664,48 @@ for (const m of milestones) {
       border-radius: 2px 2px 0 0;
     }
 
-    /* HUD bar */
-    .jp-panel-hud { padding: 10px 14px; border-top: none; }
+    /* HUD bar: tighter, smaller text */
+    .jp-panel-hud { padding: 8px 12px; gap: 7px; }
+    .jp-panel-code { font-size: 0.58rem; letter-spacing: 2px; }
+    .jp-panel-chapter-tag { font-size: 0.57rem; color: var(--c1); opacity: 0.8; }
+    .jp-panel-frac { font-size: 0.62rem; }
 
-    /* Hide decorative ghost year — too large in flow context */
+    /* Titles & body text */
+    .jp-title { font-size: 1.08rem; font-weight: 700; letter-spacing: -0.02em; }
+    .jp-year { font-size: 0.64rem; letter-spacing: 2px; margin-bottom: 5px; }
+
+    /* Ghost year: hidden (overflows flow layout) */
     .jp-ghost-year { display: none; }
 
-    /* Show full narrative on mobile (no 3-line clamp) */
+    /* Narrative: full text, smaller size */
     .jp-narr {
       -webkit-line-clamp: unset; display: block; overflow: visible;
-      font-size: 0.9rem;
+      font-size: 0.82rem; line-height: 1.6;
     }
 
-    /* Bullets slightly tighter */
-    .jp-bullets li { font-size: 0.82rem; }
+    /* Chips smaller */
+    .jp-chip { font-size: 0.68rem; padding: 2px 7px; }
 
-    /* Chapter tag: give it a color tint on mobile */
-    .jp-panel-chapter-tag { color: var(--c1); opacity: 0.8; }
+    /* Bullets tighter */
+    .jp-bullets { gap: 3px; }
+    .jp-bullets li { font-size: 0.76rem; line-height: 1.35; }
+    .jp-bullets li::before { font-size: 0.65rem; }
+
+    /* Panel text padding */
+    .jp-panel-text { padding: 12px 13px 16px; gap: 8px; }
 
     /* HUD brackets in vis */
-    .hud-bracket { width: 14px; height: 14px; }
-    .hud-bracket.tl { top: 6px; left: 6px; }
-    .hud-bracket.br { bottom: 6px; right: 6px; }
+    .hud-bracket { width: 12px; height: 12px; }
+    .hud-bracket.tl { top: 5px; left: 5px; }
+    .hud-bracket.br { bottom: 5px; right: 5px; }
   }
 
   @media (max-width: 599px) {
-    .jp-stage { gap: 12px; }
-    .jp-panel-text { padding: 14px 14px 18px; }
-    .jp-title { font-size: clamp(1.3rem, 5.5vw, 1.7rem); }
+    .jp-stage { gap: 10px; }
+    .jp-title { font-size: 1rem; }
+    .jp-narr { font-size: 0.79rem; }
+    .jp-panel-text { padding: 11px 12px 14px; gap: 7px; }
+    .jp-panel-hud { padding: 7px 11px; }
   }
 
   /* ── REDUCED MOTION ─────────────────── */
