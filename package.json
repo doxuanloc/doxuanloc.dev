@@ -9,6 +9,8 @@
     "preview": "astro preview",
     "validate": "node scripts/validate-content.mjs",
     "gen:today": "node scripts/gen-today.mjs",
+    "deploy": "bash scripts/deploy.sh",
+    "compress:images": "node scripts/compress-images.mjs",
     "publish:today": "node scripts/gen-today.mjs && npm run validate && git add content/news && (git diff --cached --quiet || git commit -m \"content: auto $(date -u +%F)\") && git push"
   },
   "dependencies": {

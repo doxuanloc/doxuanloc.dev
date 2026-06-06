@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Đổi `site` thành domain thật khi deploy (Vercel/custom domain).
 export default defineConfig({
-  site: 'https://doxuanloc.dev',
+  site: 'https://doxuanloc.space',
   trailingSlash: 'ignore',
   build: {
     format: 'directory',

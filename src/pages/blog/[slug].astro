@@ -25,7 +25,7 @@ const blogLd = {
   inLanguage: 'vi',
   author: { '@type': 'Person', name: profile.identity.name },
   publisher: { '@type': 'Person', name: profile.identity.name },
-  mainEntityOfPage: `${Astro.site ?? 'https://doxuanloc.dev'}blog/${post.slug}/`,
+  mainEntityOfPage: `${Astro.site ?? 'https://doxuanloc.space'}blog/${post.slug}/`,
 };
 ---
 <Base title={post.title} description={post.excerpt} schema={blogLd}>

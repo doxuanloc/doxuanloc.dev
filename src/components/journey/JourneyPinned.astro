@@ -157,11 +157,11 @@ for (const m of milestones) {
 
                 {m.resolvedPhoto ? (
                   <div class="jp-img-wrap">
-                    <img src={m.resolvedPhoto} alt="" loading="lazy" decoding="async" width="800" height="1000" />
+                    <img src={m.resolvedPhoto} alt="" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} decoding="async" width="800" height="1000" />
                   </div>
                 ) : m.resolvedImage ? (
                   <div class="jp-img-wrap">
-                    <img src={m.resolvedImage} alt="" loading="lazy" decoding="async" width="800" height="1000" />
+                    <img src={m.resolvedImage} alt="" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} decoding="async" width="1280" height="720" />
                   </div>
                 ) : (
                   <div class="jp-vis-gen">
@@ -692,6 +692,26 @@ for (const m of milestones) {
       return;
     }
 
+    // JS-driven image queue: on desktop all panels overlap in the viewport,
+    // so native loading="lazy" doesn't defer anything. We strip src from non-first
+    // panels and restore it progressively as panels activate.
+    const imgQueue = new Map<number, HTMLImageElement[]>();
+    panels.forEach((panel, i) => {
+      if (i === 0) return; // keep first panel loaded (fetchpriority=high)
+      const imgs = Array.from(panel.querySelectorAll<HTMLImageElement>('img'));
+      imgs.forEach(img => {
+        const src = img.getAttribute('src');
+        if (src) { img.dataset.src = src; img.removeAttribute('src'); }
+      });
+      if (imgs.length) imgQueue.set(i, imgs);
+    });
+    function loadPanel(i: number) {
+      const imgs = imgQueue.get(i);
+      if (!imgs) return;
+      imgs.forEach(img => { if (img.dataset.src) img.src = img.dataset.src; });
+      imgQueue.delete(i);
+    }
+
     let activeIdx   = -1;
     let scrollTick  = false;
     let resizeTick  = false;
@@ -719,6 +739,9 @@ for (const m of milestones) {
 
       if (i === activeIdx) return;
       activeIdx = i;
+
+      // Preload current panel + 2 ahead so transitions are seamless
+      for (let k = Math.max(0, i - 1); k <= Math.min(n - 1, i + 2); k++) loadPanel(k);
 
       panels.forEach((el, k) => el.classList.toggle('is-active', k === i));
       nodes.forEach((el, k)  => el.classList.toggle('is-active', k === i));

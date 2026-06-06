@@ -2,7 +2,7 @@ import rss from '@astrojs/rss';
 import { getAllPosts, getAllNews, profile } from '../lib/content';
 
 export function GET(context) {
-  const site = context.site ?? 'https://doxuanloc.dev';
+  const site = context.site ?? 'https://doxuanloc.space';
 
   const posts = getAllPosts().map((p) => ({
     title: p.title,
