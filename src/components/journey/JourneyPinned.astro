@@ -251,19 +251,30 @@ for (const m of milestones) {
     text-transform: uppercase; color: var(--text-mute);
   }
   .jp-panel-frac { font-size: 0.7rem; color: var(--accent); }
-  /* Panel body */
-  /* ── PANEL BODY ──────────── */
-  .jp-panel-body { display: grid; gap: 0; min-height: 0; }
-
-  /* Text column: flex col, space-between fills height */
-  .jp-panel-text {
-    padding: 20px 20px 18px;
-    display: flex; flex-direction: column;
-    gap: 0; overflow: hidden;
+  /* ── PANEL BODY: full-bleed 16:9 ────────── */
+  .jp-glass { grid-template-rows: auto auto; }   /* let body size from aspect-ratio */
+  .jp-panel-body {
+    position: relative; display: block;
+    aspect-ratio: 16/9; min-height: 220px;
+    overflow: hidden;
   }
-  .jp-text-top { position: relative; margin-bottom: 12px; }
-  .jp-text-mid { flex: 1; display: flex; align-items: center; padding: 4px 0; }
-  .jp-text-bot { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+  /* Text overlay — anchored to bottom */
+  .jp-panel-text {
+    position: absolute; inset: 0; z-index: 1;
+    padding: 14px 16px 16px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    gap: 0; overflow: hidden;
+    background: linear-gradient(
+      to top,
+      rgba(4,6,14,0.97) 0%,
+      rgba(4,6,14,0.82) 38%,
+      rgba(4,6,14,0.28) 65%,
+      transparent 90%
+    );
+  }
+  .jp-text-top { position: relative; margin-bottom: 7px; }
+  .jp-text-mid { margin-bottom: 6px; }
+  .jp-text-bot { display: flex; flex-direction: column; gap: 7px; }
 
   /* Ghost year behind title */
   .jp-ghost-year {
@@ -309,9 +320,9 @@ for (const m of milestones) {
     content: "↗"; position: absolute; left: 0;
     color: var(--c1); font-size: 0.7rem; top: 1px;
   }
-  /* Visual */
+  /* Visual: absolute, fills panel body */
   .jp-panel-vis {
-    position: relative; min-height: 180px;
+    position: absolute; inset: 0; height: 100%;
     overflow: hidden;
     background: rgba(0,0,0,0.35);
   }
@@ -394,8 +405,7 @@ for (const m of milestones) {
   .jp-vis-overlay {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      linear-gradient(180deg, rgba(4,6,14,0) 55%, rgba(4,6,14,0.55) 100%),
-      radial-gradient(110% 80% at 80% 10%, rgba(91,140,255,0.1), transparent 55%);
+      radial-gradient(110% 55% at 75% 5%, color-mix(in srgb, var(--c1) 14%, transparent), transparent 55%);
   }
   /* Scan line */
   .jp-scan { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
@@ -416,20 +426,11 @@ for (const m of milestones) {
   /* ── TABLET (600–899px) ─────────────────── */
   @media (min-width: 600px) and (max-width: 899px) {
     .jp-stage { gap: 28px; padding-bottom: 48px; }
-    .jp-glass { grid-template-rows: auto 1fr; }
-    .jp-panel-body {
-      grid-template-columns: 1fr 42%;
-      min-height: 300px;
-    }
-    .jp-panel-vis {
-      min-height: unset;
-      border-left: 1px solid rgba(255,255,255,0.05);
-    }
-    .jp-ghost-year { font-size: clamp(4rem, 10vw, 6.5rem); top: -8px; }
-    .jp-title { font-size: clamp(1.45rem, 3.5vw, 1.85rem); }
-    .jp-narr { font-size: 0.92rem; -webkit-line-clamp: 4; }
-    .jp-text-top { margin-bottom: 10px; }
-    .jp-text-bot { margin-top: 10px; }
+    .jp-panel-body { aspect-ratio: 16/8; min-height: 280px; }
+    .jp-panel-text { padding: 18px 22px 18px; }
+    .jp-ghost-year { font-size: clamp(4rem, 10vw, 6.5rem); top: -10px; }
+    .jp-title { font-size: clamp(1.45rem, 3.5vw, 1.9rem); }
+    .jp-narr { -webkit-line-clamp: 3; font-size: 0.92rem; }
   }
 
   /* ── DESKTOP: PINNED SCROLLYTELLING ──────── */
@@ -588,30 +589,39 @@ for (const m of milestones) {
     }
     .jp-panel-code { font-size: 0.67rem; }
 
+    .jp-glass { grid-template-rows: 44px 1fr; }
     .jp-panel-body {
-      display: grid;
-      grid-template-columns: 1fr clamp(280px,40%,420px);
-      overflow: hidden;
+      display: block; position: relative;
+      height: 100%; aspect-ratio: unset; overflow: hidden;
     }
-
-    .jp-panel-text {
-      padding: clamp(20px,3vh,36px) clamp(24px,3.5vw,44px);
-      overflow: hidden;
-      display: flex; flex-direction: column; gap: 0;
-    }
-    .jp-text-top { margin-bottom: clamp(10px,1.8vh,18px); }
-    .jp-text-mid { min-height: 0; }
-    .jp-text-bot { margin-top: clamp(10px,1.8vh,18px); }
-    .jp-ghost-year { font-size: clamp(5rem,10vw,9rem); top: -20px; right: -4px; opacity: 0.07; }
-    .jp-year { font-size: 0.82rem; letter-spacing: 2px; }
-    .jp-title { font-size: clamp(1.6rem,2.8vw,2.4rem); }
-    .jp-narr { font-size: 1rem; -webkit-line-clamp: 4; }
-    .jp-bullets li { font-size: .9rem; }
-
     .jp-panel-vis {
-      border-left: 1px solid rgba(255,255,255,0.06);
-      min-height: unset; height: 100%;
+      position: absolute; inset: 0; height: 100%;
+      border-left: none;
     }
+    .jp-panel-text {
+      position: absolute; inset: 0; z-index: 1;
+      padding: clamp(24px,4vh,48px) clamp(36px,5vw,72px);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      gap: 0; overflow: hidden;
+      background: linear-gradient(
+        to top,
+        rgba(4,6,14,0.97) 0%,
+        rgba(4,6,14,0.88) 28%,
+        rgba(4,6,14,0.5) 50%,
+        rgba(4,6,14,0.08) 72%,
+        transparent 88%
+      );
+    }
+    .jp-text-top { margin-bottom: clamp(8px,1.2vh,14px); }
+    .jp-text-mid { margin-bottom: clamp(8px,1.2vh,14px); min-height: 0; }
+    .jp-text-bot { /* natural flow */ }
+    .jp-ghost-year {
+      font-size: clamp(6rem,11vw,12rem); top: -24px; right: -6px; opacity: 0.13;
+    }
+    .jp-year { font-size: 0.82rem; letter-spacing: 2px; }
+    .jp-title { font-size: clamp(1.8rem,3.2vw,2.8rem); }
+    .jp-narr { font-size: 1rem; -webkit-line-clamp: 3; }
+    .jp-bullets li { font-size: .9rem; }
     .jp-panel-vis img { object-fit: cover; }
 
     .hud-bracket { width: 22px; height: 22px; }
@@ -640,7 +650,9 @@ for (const m of milestones) {
   @media (min-width: 1200px) {
     .jp-sticky { grid-template-columns: 240px 1fr; }
     .jp-panel { inset: clamp(24px,3vh,36px) clamp(28px,4vw,56px); }
-    .jp-panel-body { grid-template-columns: 1fr clamp(320px,42%,480px); }
+    .jp-title { font-size: clamp(2rem,3.5vw,3.2rem); }
+    .jp-ghost-year { font-size: clamp(7rem,13vw,14rem); }
+    .jp-narr { -webkit-line-clamp: 4; }
   }
 
   /* ── REDUCED MOTION ─────────────────── */
