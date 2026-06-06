@@ -12,8 +12,8 @@
     "email": "locvkv1234@gmail.com",
     "phone": "0886659358",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/do-xuanloc-278121245",
-      "currentPortfolio": "https://portfolio-doxuanloc.vercel.app",
+      "linkedin": "https://www.linkedin.com/in/do-xuan-loc-278121245/",
+      "currentPortfolio": "https://doxuanloc.space",
       "github": null
     }
   },
@@ -140,8 +140,8 @@
       "current": true,
       "projects": [
         {
-          "name": "Oikura Modernization",
-          "summary": "Tham gia nhóm phát triển tái thiết kế kiến trúc Oikura — nền tảng giao dịch đồ cũ tại Nhật Bản — từ mô hình monolithic sang microservices để tối ưu hóa hiệu suất.",
+          "name": " Modernization",
+          "summary": "Tham gia nhóm phát triển tái thiết kế kiến trúc  — nền tảng giao dịch đồ cũ tại Nhật Bản — từ mô hình monolithic sang microservices để tối ưu hóa hiệu suất.",
           "highlights": [
             "Áp dụng NX Monorepo, thiết lập ranh giới rõ ràng giữa các service nội bộ và public",
             "Phát triển microservices bằng NestJS, tuân thủ SOLID, tối ưu hóa các câu truy vấn MySQL",
@@ -617,10 +617,10 @@
       "order": 30
     },
     {
-      "id": "oikura-modernize",
+      "id": "modernize",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Tái cấu trúc Oikura",
+      "title": "Tái cấu trúc ",
       "narrative": "Đóng góp vào quá trình hiện đại hóa nền tảng giao dịch, tham gia bóc tách hệ thống monolithic thành các dịch vụ độc lập.",
       "bullets": [
         "Triển khai microservices với NestJS trên kiến trúc Monorepo",
@@ -634,7 +634,7 @@
         "Japan"
       ],
       "imageConcept": "AWS diagram phức tạp sáng trên màn hình enterprise.",
-      "codename": "SYSTEMS-01 // OIKURA",
+      "codename": "SYSTEMS-01 // ",
       "chapter": "systems",
       "arc": "scale",
       "connectsTo": [
@@ -663,7 +663,7 @@
       "chapter": "systems",
       "arc": "scale",
       "connectsTo": [
-        "oikura-modernize"
+        "modernize"
       ],
       "order": 32
     },

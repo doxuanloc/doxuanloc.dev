@@ -99,14 +99,14 @@ deep purple (#b58cff) and indigo, dark engineering atmosphere
 
 ---
 
-### `oikura-modernize`
+### `-modernize`
 ```
 A phoenix-like transformation: an old monolithic block shattering on the left,
 morphing into a floating distributed microservices architecture on the right,
 AWS service icons as glowing purple runes, Japanese kanji "再生" (rebirth) dissolving
 in the background, purple (#b58cff) and electric blue, dramatic lighting
 ```
-→ File: `public/images/journey/oikura-modernize.webp`
+→ File: `public/images/journey/-modernize.webp`
 
 ---
 

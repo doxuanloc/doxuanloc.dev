@@ -26,11 +26,21 @@ export interface BlogPost {
   coverImage?: string | null;
 }
 
+export interface FinanceNewsItem {
+  title: string;
+  summary: string;
+  source: string;
+  tags: string[];
+  importance?: number;
+  category?: 'fintech' | 'crypto' | 'vc-startup' | 'market' | 'macro';
+}
+
 export interface DailyContent {
   date: string;
   generatedBy?: string;
   version?: number;
   news?: NewsItem[];
+  financeNews?: FinanceNewsItem[];
   blog?: BlogPost | null;
   expUpdate?: { summary?: string; skills?: string[]; highlights?: string[] } | null;
 }
@@ -69,6 +79,13 @@ export function getAllPosts(): (BlogPost & { date: string })[] {
 
 export function getPostBySlug(slug: string) {
   return getAllPosts().find((p) => p.slug === slug);
+}
+
+/** Gộp toàn bộ finance news từ mọi ngày, mới nhất trước, kèm ngày. */
+export function getAllFinanceNews(): (FinanceNewsItem & { date: string })[] {
+  return getDailyContent()
+    .flatMap((d) => (d.financeNews ?? []).map((n) => ({ ...n, date: d.date })))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 /** expUpdate gần nhất (nếu có) để show trên trang Experience. */

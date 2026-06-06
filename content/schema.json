@@ -38,6 +38,23 @@
         "coverImage": { "type": ["string", "null"] }
       }
     },
+    "financeNews": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["title", "summary", "source", "tags"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 8, "maxLength": 160 },
+          "summary": { "type": "string", "minLength": 20, "maxLength": 600 },
+          "source": { "type": "string", "format": "uri", "pattern": "^https?://" },
+          "tags": { "type": "array", "minItems": 1, "maxItems": 6, "items": { "type": "string", "maxLength": 24 } },
+          "importance": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "category": { "type": "string", "enum": ["fintech", "crypto", "vc-startup", "market", "macro"] }
+        }
+      }
+    },
     "expUpdate": {
       "$comment": "Skill snapshot — CHỈ thể hiện kỹ năng/technique tự làm được, KHÔNG mô tả công việc thật của công ty, KHÔNG tên dự án/khách/số liệu nội bộ.",
       "type": ["object", "null"],

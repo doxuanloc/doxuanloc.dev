@@ -24,6 +24,17 @@
     "coverImage": null
   },
 
+  "financeNews": [
+    {
+      "title": "Fed giữ lãi suất, tín hiệu cắt giảm cuối năm 2026",
+      "summary": "FOMC giữ nguyên Fed Funds Rate 4.25-4.5%. Dot plot cho thấy 2 lần cắt giảm còn lại trong năm, thị trường crypto phản ứng tích cực.",
+      "source": "https://www.federalreserve.gov/newsevents/pressreleases",
+      "tags": ["macro", "fed", "crypto"],
+      "importance": 4,
+      "category": "macro"
+    }
+  ],
+
   "expUpdate": {
     "$comment": "SKILL SNAPSHOT — chi the hien KY NANG tu lam duoc. CAM: ten cong ty/khach/du an noi bo, so lieu cu the, 'internal/confidential/client'. Moi highlight phai co dong tu ky nang (thiet ke/toi uu/trien khai/ap dung...). Chi sinh 2-3 lan/tuan, con lai de null.",
     "summary": "Tom tat dinh huong ky nang dang manh len (chung chung, an toan), vd: 'Cung co ky nang xay AI pipeline production-ready va toi uu he thong'.",

@@ -4,42 +4,140 @@
   "version": 1,
   "news": [
     {
-      "title": "AWS Lambda Managed Instances kết hợp serverless với linh hoạt của EC2",
-      "summary": "Tính năng cho phép chạy Lambda functions trên EC2 instances do AWS quản lý hoàn toàn trong tài khoản của bạn. Giữ nguyên DX serverless, event integrations, nhưng cho phép chọn instance types chuyên biệt, áp dụng Savings Plans/Reserved Instances và sử dụng multi-concurrency để tối ưu tài nguyên cho workload ổn định. Vừa hỗ trợ scheduled scaling qua EventBridge.",
-      "source": "https://aws.amazon.com/blogs/aws/introducing-aws-lambda-managed-instances-serverless-simplicity-with-ec2-flexibility/",
-      "tags": ["aws", "lambda", "serverless", "cloud"],
+      "title": "OpenAI GPT-5.5, GPT-5.4 và Codex chính thức GA trên Amazon Bedrock",
+      "summary": "AWS phát hành OpenAI frontier models GPT-5.5 (agentic), GPT-5.4 (price-perf) và Codex (coding agent >4M dev/tuần) qua Bedrock Responses API. Inference giữ trong region chọn trước, data residency + IAM/CloudTrail/guardrails sẵn. Góc nhìn: Team deep AWS có thể dùng model mạnh production mà giữ compliance, observability, networking pipeline — không cần tự build gateway hay chấp nhận egress rủi ro.",
+      "source": "https://aws.amazon.com/blogs/aws/get-started-with-openai-gpt-5-5-gpt-5-4-models-and-codex-on-amazon-bedrock/",
+      "tags": [
+        "ai",
+        "llm",
+        "aws",
+        "bedrock",
+        "developer-productivity"
+      ],
       "importance": 5
     },
     {
-      "title": "Anthropic gọi vốn 65 tỷ USD, valuation đạt 965 tỷ USD vượt OpenAI",
-      "summary": "Vòng Series H do Altimeter, Dragoneer, Greenoaks và Sequoia dẫn dắt đẩy Anthropic lên vị trí AI startup có giá trị cao nhất. Doanh thu run-rate vượt 47 tỷ USD, tập trung mở rộng compute và enterprise adoption. Coding assistants được chỉ ra là động lực tăng trưởng chính cho các frontier model.",
-      "source": "https://www.anthropic.com/news/series-h",
-      "tags": ["ai", "llm", "enterprise"],
+      "title": "MiniMax M3: open-weight model 1M context, native multimodal, frontier coding/agentic",
+      "summary": "M3 (ra 1/6/2026) dùng MiniMax Sparse Attention cho 1M token context hiệu quả, native image/video/desktop từ pretrain, benchmark vendor-claimed 59% SWE-Bench Pro (vượt nhẹ GPT-5.5), 83.5% BrowseComp, giá khởi điểm rẻ hơn 5-10x Claude/GPT. API live ngay, open weights dự kiến ~10 ngày sau trên HF/GitHub. Góc nhìn: Context dài + giá rẻ là lợi thế rõ cho agent workflow volume cao (hàng trăm-nghìn tool call, repo lớn), nhưng benchmark chưa independent, weights chưa ship và mọi prompt qua API chịu National Intelligence Law Trung Quốc — không vội đưa sensitive code/data vào production.",
+      "source": "https://www.techtimes.com/articles/317532/20260601/minimax-m3-open-weight-coding-model-frontier-claims-unverified-benchmarks.htm",
+      "tags": [
+        "ai",
+        "llm",
+        "open-source",
+        "agent",
+        "multimodal"
+      ],
       "importance": 4
     },
     {
-      "title": "Kubernetes 1.35 đưa In-Place Pod Resize lên stable cho VPA",
-      "summary": "Tính năng resize CPU và memory của container trong Pod đang chạy mà không cần restart hay eviction đã chính thức ổn định. Giúp Vertical Pod Autoscaler hiệu quả hơn với stateful workloads, long-running services và các kịch bản cần điều chỉnh tài nguyên linh hoạt mà không gây downtime hay mất state.",
-      "source": "https://kubernetes.io/blog/2025/12/19/kubernetes-v1-35-in-place-pod-resize-ga/",
-      "tags": ["kubernetes", "devops", "containers", "cloud"],
+      "title": "Next.js 15.5 ổn định Node.js runtime cho Middleware và Turbopack production beta",
+      "summary": "Middleware giờ hỗ trợ runtime 'nodejs' stable: truy cập đầy đủ Node APIs (fs, crypto, bất kỳ npm package) thay vì chỉ Edge hạn chế — cho phép auth phức tạp, DB client, heavy logic ngay tại middleware mà không đẩy sang route handler. Turbopack production build (next build --turbopack) vào beta với cải thiện tốc độ trên multi-core. Góc nhìn: Giảm boilerplate và latency cho nhiều use case thực (complex auth, feature flag, A/B custom), nhưng Node runtime nghĩa là chịu trách nhiệm nhiều hơn về perf/isolation so với Edge — benchmark kỹ trước khi bật cho traffic nhạy cảm.",
+      "source": "https://nextjs.org/blog/next-15-5",
+      "tags": [
+        "web",
+        "nextjs",
+        "javascript",
+        "framework",
+        "middleware"
+      ],
       "importance": 3
     },
     {
-      "title": "Dữ liệu ETR: adoption AI enterprise chuyển dịch mạnh, Claude tăng gấp đôi",
-      "summary": "Theo khảo sát Enterprise Technology Research được WSJ trích dẫn, Claude tăng từ 21% lên 48% share trong enterprise (dẫn đầu tốc độ), Gemini tăng đáng kể, OpenAI giảm nhẹ lần đầu tiên. Đa mô hình trở thành mặc định mới và coding assistants là động lực kéo revenue cho các nhà cung cấp LLM.",
-      "source": "https://www.saastr.com/whos-winning-enterprise-ai-now-claude-up-128-gemini-up-48-openai-down-8-grok-still-a-rounding-error/",
-      "tags": ["ai", "llm", "enterprise"],
+      "title": "Bun Rust rewrite đạt 99.8% test compatibility trên Linux x64 glibc",
+      "summary": "Jarred Sumner thông báo bản rewrite experimental bằng Rust của Bun (từ Zig) đạt 99.8% pass test suite. Mục tiêu cải thiện performance, maintainability và dễ đóng góp từ Rust ecosystem. Góc nhìn: Với team đang cân nhắc Bun cho build pipeline, SSR hay local tooling, Rust base có thể tăng confidence production và giảm barrier contributor — nhưng vẫn experimental, cần theo dõi ổn định thực tế và hỗ trợ package npm trước khi thay thế Node cho critical path.",
+      "source": "https://www.cosmicjs.com/blog/cosmic-rundown-bun-rust-rewrite-aws-frustrations-github-decline",
+      "tags": [
+        "javascript",
+        "runtime",
+        "bun",
+        "performance",
+        "devtools"
+      ],
+      "importance": 3
+    },
+    {
+      "title": "LLM agent bị lợi dụng tự động hóa post-exploitation sau exploit notebook công khai",
+      "summary": "Threat actor khai thác CVE-2026-39987 trên Marimo notebook công khai để initial access, sau đó triển khai LLM agent để thực hiện post-exploitation tự động. Cho thấy khi agent có tool execution (shell, browser, code), surface tấn công mở rộng đáng kể. Góc nhìn: Expose agent với tool call ra môi trường không trusted hoặc untrusted input là đang trao quyền hành động cho LLM — cần sandbox chặt, human-in-loop approval cho action nhạy, observability đầy đủ và rate limit, không chỉ prompt guard hay output filter.",
+      "source": "https://www.develeap.com/news/attackers-use-llm-agent-for-post-exploitation-after-marimo-c-9dd802cb/",
+      "tags": [
+        "ai",
+        "agent",
+        "security",
+        "llm"
+      ],
       "importance": 3
     }
   ],
   "blog": {
-    "slug": "2026-06-06-lambda-managed-instances-khi-serverless-can-them-suc-manh-cua-ec2",
-    "title": "Lambda Managed Instances: khi serverless cần thêm sức mạnh và sự linh hoạt của EC2",
-    "excerpt": "AWS mở rộng Lambda để chạy trên EC2 instances do họ quản lý. Đây là bước tiến thú vị cho những ai đang tối ưu hệ thống event-driven trên cloud, nơi pure serverless không còn là câu trả lời duy nhất cho mọi workload.",
-    "contentMarkdown": "## Vấn đề của pure serverless\n\nAWS Lambda mang lại developer experience rất mạnh: không quản lý hạ tầng, tự scale theo request, chỉ trả tiền khi dùng. Tuy nhiên khi xây dựng hệ thống thực tế, nhiều workload không vừa khít với mô hình một execution environment xử lý đúng một invocation và cold start có thể xảy ra bất cứ lúc nào.\n\nCác trường hợp điển hình:\n\n- Traffic ổn định ở mức cao, muốn tận dụng Compute Savings Plans hoặc Reserved Instances thay vì on-demand để giảm chi phí đáng kể.\n- Cần instance types có đặc thù về CPU architecture (ví dụ Graviton), networking throughput hoặc memory profile mà classic Lambda execution environment không expose trực tiếp.\n- Muốn giảm p99 latency cho một số path nhạy cảm mà vẫn giữ event-driven model với SQS, EventBridge, SNS.\n\nTrước đây, để giải các bài toán trên thường phải migrate một phần sang ECS Fargate hoặc EC2 thuần — mất đi rất nhiều thứ đã được đầu tư: event source mapping, IAM model, versioning/alias, observability, deployment pipeline với SAM/CDK.\n\n## Lambda Managed Instances giải quyết như thế nào\n\nTính năng cho phép bạn tạo Capacity Provider ngay trong Lambda console hoặc IaC:\n\n- Chọn VPC, subnets, security groups.\n- Chỉ định instance types (hoặc để AWS recommend), max vCPU cho capacity provider.\n- Cấu hình scaling (CPU policy hoặc manual max).\n\nAWS lo toàn bộ: khởi tạo EC2 instances trong account của bạn, OS patching, lifecycle (instance có tuổi thọ giới hạn), load balancing, auto scaling khi traffic tăng. Function của bạn chỉ cần trỏ vào Capacity Provider ARN khi tạo hoặc update.\n\nĐiểm khác biệt quan trọng:\n\n- **Multi-concurrency**: Một execution environment giờ có thể xử lý nhiều request đồng thời. Điều này thay đổi đáng kể cách tận dụng tài nguyên, đặc biệt với Node.js services vốn I/O-bound.\n- **Không cold start** cho các môi trường đã được pre-provisioned trong capacity provider.\n- Pricing gồm: Lambda request charges + EC2 instance charges (có thể apply existing Savings Plans/RI của bạn) + compute management fee (~15% trên EC2 on-demand).\n- Vẫn giữ nguyên event integrations, IAM, CloudWatch, AppConfig extensions, và deployment tools.\n\nGần đây AWS còn bổ sung scheduled scaling cho Lambda Managed Instances thông qua EventBridge Scheduler — ví dụ tăng capacity trước giờ cao điểm, giảm về zero khi không có traffic.\n\n## Những điều cần cân nhắc khi áp dụng\n\nMulti-concurrency đòi hỏi code hygiene tốt hơn. Các giả định kiểu \"mỗi invocation là một process sạch\" không còn đúng: tránh shared mutable state giữa requests, cẩn thận với temp file paths, connection pools, và global singletons. Trước khi bật, cần review và test kỹ các function dự định migrate.\n\nVề chi phí: với workload ổn định, việc apply commitment-based pricing thường mang lại lợi ích rõ rệt so với classic Lambda. Tuy nhiên với traffic cực spiky, ngắn hạn, classic Lambda vẫn thường rẻ và đơn giản hơn.\n\nVề kiến trúc: đây không phải là \"tất cả hoặc không gì\". Bạn có thể mix — một số consumer nhạy cảm latency hoặc cần specialized compute thì dùng Managed Instances, phần burst/spiky giữ nguyên classic Lambda. Vẫn nằm trong cùng event-driven fabric.\n\n## Khi nào nên thử\n\n- Workload có pattern dự đoán được, volume đủ để benefit từ Reserved/Savings Plans.\n- Cần performance profile mà classic Lambda execution không đáp ứng tốt.\n- Muốn giảm cold start ảnh hưởng mà không muốn vận hành full container platform.\n\nNgược lại, nếu bạn đang ở giai đoạn early, traffic khó đoán, hoặc ưu tiên zero ops tối đa — hãy giữ classic Lambda.\n\n## Kết\n\nLambda Managed Instances là một ví dụ điển hình về việc cloud provider lấp dần khoảng trống giữa các abstraction layers. Đối với ai đang làm system optimization trên AWS, nó cung cấp thêm một lựa chọn sắc bén: giữ được phần lớn lợi ích của serverless DX trong khi mở khóa khả năng kiểm soát compute và tối ưu chi phí mà trước kia chỉ có khi chấp nhận vận hành nhiều hơn.\n\nQuan trọng nhất là hiểu rõ trade-off mới — đặc biệt quanh execution model và multi-concurrency — rồi đo đạc, pilot trước khi rollout rộng. Đó chính là cách tiếp cận thực tế khi tối ưu hệ thống production.",
-    "tags": ["aws", "lambda", "serverless", "cloud", "optimization"],
-    "readingTimeMin": 6,
+    "slug": "2026-06-06-gpt-5-5-bedrock-vs-minimax-m3-trade-off-cho-ai-agent",
+    "title": "GPT-5.5 trên Bedrock và MiniMax M3: trade-off thực tế khi chọn model cho AI agent production",
+    "excerpt": "Nhiều lựa chọn frontier model cùng lúc: closed qua hyperscaler với governance đầy đủ, và open-weight rẻ với context khổng lồ. Vấn đề là chọn sai sẽ tốn kém hoặc rủi ro pháp lý không ngờ khi agent chạy ở scale thực.",
+    "contentMarkdown": "## Vấn đề cụ thể\n\nBuilder AI agent hôm nay đứng trước menu model ngày càng dài: Claude, GPT-5.x series, Gemini, và giờ cả open-weight Trung Quốc như MiniMax M3 với 1M context cùng giá cực thấp. AWS vừa đưa GPT-5.5 và Codex (coding agent) lên Bedrock. Câu hỏi không còn là \"model nào mạnh nhất\" mà \"model nào đáng để chịu rủi ro và chi phí ở scale\".\n\nĐặc biệt với agentic workflow thực: hàng loạt tool call liên tiếp, long-horizon task (reproduce paper, optimize kernel 24h), xử lý repo lớn hoặc desktop action. Chi phí token, độ trễ và rủi ro tích lũy nhanh. Một lựa chọn giá rẻ nhưng pháp lý lỏng lẻo có thể biến thành thảm họa audit hoặc data leak sau này.\n\n## Phân tích sâu có góc nhìn riêng\n\n**Bedrock + OpenAI (GPT-5.5 / Codex):** \n- Data residency: prompt/output ở lại region AWS bạn chọn, không egress tùy tiện.\n- Governance tích hợp sẵn: IAM, CloudTrail, Bedrock guardrails, private connectivity tiềm năng.\n- Tích hợp tự nhiên với phần còn lại của stack (Lambda, ECS, EventBridge, Step Functions, observability).\n- Codex mang lại dev productivity ngay: CLI/IDE agent dùng GPT-5.5, inference routed qua Bedrock Responses API.\n\nNhược điểm: giá vẫn là frontier pricing. Agent loop nhiều (retry, reflection, nhiều tool), long context sẽ đắt nhanh.\n\n**MiniMax M3 (và tương tự open-weight frontier):**\n- Giá rẻ hơn 5-10x, 1M token context native qua Sparse Attention (không phải bolted-on), multimodal thực sự (image/video/desktop) từ pretrain.\n- Phù hợp high-volume agent, RAG repo lớn, hoặc sau này self-host khi weights ra.\n- Launch benchmark cho thấy cạnh tranh hoặc nhỉnh hơn một số closed model trên SWE-Bench Pro / Terminal-Bench / BrowseComp.\n\nNhược điểm thực:\n- Tất cả benchmark lúc launch là vendor-run trên infra của họ, baseline họ chọn, chưa có independent verification rộng (Artificial Analysis, LMSYS còn pending).\n- Open weights chưa ship tại thời điểm launch (dự kiến ~10 ngày sau).\n- Mọi prompt qua API của công ty Trung Quốc chịu National Intelligence Law 2017: công ty \"phải hỗ trợ, hỗ trợ và hợp tác\" với cơ quan tình báo, không cần yêu cầu trước và không có cơ chế từ chối dễ dàng. Code, contract, dữ liệu chiến lược của bạn có thể nằm trong DB họ.\n\nTrade-off cốt lõi: **giá + context dài + capability vs sovereignty + verifiability + legal surface**. Nhiều team nghĩ \"rẻ thì thử trước\", nhưng với agent production, một lần data incident hoặc regulatory issue có thể đắt hơn cả 10x token chi phí.\n\n## Kết luận thực dụng — nên và không nên\n\n**Nên làm:**\n- Phân loại workload theo mức độ nhạy cảm ngay từ đầu: code base khách hàng, IP nội bộ, PII, regulated data → ưu tiên Bedrock / Anthropic / Vertex trong region có compliance rõ. Non-sensitive bulk, internal tooling, experimentation → cân nhắc M3 (hoặc tương tự) sau khi weights + third-party bench ra.\n- Xây abstraction layer cho model routing, fallback, cost tracking, eval harness từ ngày đầu. Agent production không nên hard-code một provider.\n- Chạy private eval trên distribution task thật (SWE-bench con, internal issues, tool-use scenarios của bạn) thay vì tin launch number.\n- Tính Total Cost of Ownership đầy đủ: không chỉ $/M token mà retries, context waste, observability, legal review time, và switching cost sau này.\n\n**Không nên làm:**\n- Đẩy toàn bộ prompt (kể cả có data nhạy cảm hoặc mã nguồn chiến lược) sang model rẻ nhất chỉ vì benchmark launch đẹp.\n- Commit production vào open-weight mới ra mà chưa có plan self-host hoặc provider thay thế đáng tin cậy.\n- Bỏ qua data residency / legal jurisdiction khi bán agent cho enterprise hoặc fintech.\n\nModel tốt nhất không phải là model \"mạnh nhất trên paper\" lúc launch. Đó là model bạn kiểm soát được rủi ro ở quy mô thực tế của hệ thống, với chi phí và pháp lý minh bạch theo thời gian.",
+    "tags": [
+      "ai",
+      "llm",
+      "agent",
+      "aws",
+      "trade-off",
+      "optimization"
+    ],
+    "readingTimeMin": 8,
     "coverImage": null
   },
+  "financeNews": [
+    {
+      "title": "Bitcoin và Ether spot ETF chấm dứt chuỗi outflow kỷ lục 13 ngày với inflow nhỏ",
+      "summary": "U.S. spot BTC ETF chấm dứt 13 phiên outflow liên tiếp (tổng ~4.4B USD) bằng net +3.05M USD ngày 5/6. ETH ETF cũng break 17 ngày outflow với +19.3M (chủ yếu BlackRock ETHA). Tổng BTC AUM ETF giảm ~7% từ peak. HYPE ETFs vẫn ghi nhận inflow đều. Góc nhìn: Outflow lớn nhưng vẫn là 'noise' theo một số analyst institutional — không panic sell. Tuy nhiên rotation capital sang AI assets là signal thực; builder crypto cần product có real revenue/utility (như perp DEX) mới giữ attention khi narrative thay đổi.",
+      "source": "https://www.coindesk.com/markets/2026/06/05/bitcoin-and-ether-etfs-end-record-multi-billion-outflow-streak",
+      "tags": [
+        "crypto",
+        "etf",
+        "bitcoin",
+        "ethereum"
+      ],
+      "importance": 4,
+      "category": "crypto"
+    },
+    {
+      "title": "Securitize (BlackRock-backed) vượt hurdle quan trọng để niêm yết NYSE qua SPAC",
+      "summary": "SEC phê duyệt filing merger SPAC của Securitize, leader tokenization đứng sau BlackRock BUIDL fund. Cổ phiếu dự kiến trade NYSE dưới ticker SECZ sau shareholder vote 29/6. Securitize cũng là design partner của NYSE cho tokenized securities platform (custody, corporate action, settlement on-chain). Góc nhìn: Tokenization RWA từ narrative sang hạ tầng regulated thực thụ (NYSE partner, registered transfer agent, broker-dealer custody). Engineer fintech và infra builder nên học tokenized asset standards, on-chain compliance, settlement ngay — đây là on-ramp real của traditional finance.",
+      "source": "https://www.coindesk.com/business/2026/06/05/blackrock-backed-tokenization-firm-securitize-clears-key-hurdle-to-go-public-on-nyse",
+      "tags": [
+        "fintech",
+        "tokenization",
+        "rwa",
+        "blackrock",
+        "nyse"
+      ],
+      "importance": 4,
+      "category": "fintech"
+    },
+    {
+      "title": "Hyperliquid (HYPE) tiếp tục thu hút inflow và volume thực trong thị trường điều chỉnh",
+      "summary": "Trong khi BTC/ETH ETF outflow mạnh, HYPE ETFs (ra mắt tháng 5) ghi nhận inflow hàng ngày, AUM ~185M. Protocol revenue cao kỷ lục, Assistance Fund dùng ~99% trading fee để buyback HYPE on-chain tự động. Nền tảng mở rộng perps sang commodity, pre-IPO, prediction market. Góc nhìn: DeFi protocol với real revenue + cơ chế trả vốn minh bạch (buyback on-chain, không board vote) đang chứng minh PMF mạnh hơn narrative đơn thuần. Builder Web3/DeFi nên chú ý: utility + revenue share on-chain đánh bại pure speculation khi capital khan hiếm.",
+      "source": "https://www.blockchain.com/blog/posts/the-rise-of-hyperliquid",
+      "tags": [
+        "crypto",
+        "defi",
+        "perpetual",
+        "hyperliquid"
+      ],
+      "importance": 4,
+      "category": "crypto"
+    },
+    {
+      "title": "Bitcoin giảm sâu, một số purist cho rằng vốn đang xoay sang AI thay vì mất niềm tin",
+      "summary": "BTC chạm vùng 60-63k, ETF outflow và risk-off lan tỏa từ Broadcom outlook miss + South Korea KOSPI selloff. Một số Bitcoin maximalist lập luận đây là liquidity crunch tạm thời do speculative capital chảy sang AI equities và funding round lớn, không phải mất faith vào BTC. Góc nhìn: Dù purist có đúng về long-term, correlation giữa BTC và risk asset (đặc biệt AI hype cycle) đang tăng rõ. Builder và investor crypto không thể coi 'digital gold' narrative là lá chắn hoàn toàn trước macro rotation hay AI investment wave.",
+      "source": "https://www.coindesk.com/markets/2026/06/05/why-diehard-bitcoin-purists-aren-t-sweating-the-massive-price-crash-that-wiped-out-usd200-billion",
+      "tags": [
+        "crypto",
+        "macro",
+        "bitcoin",
+        "market"
+      ],
+      "importance": 3,
+      "category": "macro"
+    }
+  ],
   "expUpdate": null
 }

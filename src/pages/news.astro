@@ -1,19 +1,24 @@
 ---
 import Base from '../layouts/Base.astro';
 import NewsCard from '../components/NewsCard.astro';
-import { getAllNews, getDailyContent } from '../lib/content';
+import { getAllNews, getAllFinanceNews, getDailyContent } from '../lib/content';
 import { getLangFromUrl, useTranslations } from '../i18n/ui';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const itemWord = lang === 'vi' ? 'tin' : 'items';
 const news = getAllNews();
+const financeNews = getAllFinanceNews();
 const days = getDailyContent().length;
 
 // Tag duy nhất, sắp theo tần suất giảm dần — để làm filter bar.
 const tagCount = new Map<string, number>();
 for (const n of news) for (const tg of n.tags ?? []) tagCount.set(tg, (tagCount.get(tg) ?? 0) + 1);
 const tags = [...tagCount.entries()].sort((a, b) => b[1] - a[1]).map(([tg]) => tg);
+
+const finTagCount = new Map<string, number>();
+for (const n of financeNews) for (const tg of n.tags ?? []) finTagCount.set(tg, (finTagCount.get(tg) ?? 0) + 1);
+const finTags = [...finTagCount.entries()].sort((a, b) => b[1] - a[1]).map(([tg]) => tg);
 
 // Nhóm theo ngày (mới nhất trước). news đã sort desc theo date.
 const groupsMap = new Map<string, typeof news>();
@@ -22,6 +27,13 @@ for (const n of news) {
   groupsMap.get(n.date)!.push(n);
 }
 const groups = [...groupsMap.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
+
+const finGroupsMap = new Map<string, typeof financeNews>();
+for (const n of financeNews) {
+  if (!finGroupsMap.has(n.date)) finGroupsMap.set(n.date, []);
+  finGroupsMap.get(n.date)!.push(n);
+}
+const finGroups = [...finGroupsMap.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
 // Nhãn tương đối so với hôm nay (ngày build, UTC).
 const todayStr = new Date().toISOString().slice(0, 10);
@@ -49,6 +61,14 @@ const latestDay = groups[0];
 const digest = latestDay
   ? [...latestDay[1]].sort((a, b) => (b.importance ?? 1) - (a.importance ?? 1)).slice(0, 4)
   : [];
+
+const categoryLabel: Record<string, string> = {
+  fintech: 'FinTech',
+  crypto: 'Crypto',
+  'vc-startup': 'VC & Startup',
+  market: 'Thị trường',
+  macro: 'Vĩ mô',
+};
 ---
 <Base title={t('news.title')} description={t('news.title')}>
   <section style="padding-top:56px">
@@ -59,59 +79,116 @@ const digest = latestDay
         {t('news.sub', { count: news.length, days })}
       </p>
 
-      {news.length === 0 ? (
-        <div class="card muted">{t('news.empty')}</div>
-      ) : (
-        <>
-          {/* TL;DR digest — catch-up trong vài giây */}
-          {digest.length > 0 && (
-            <div class="card digest" style="margin-bottom:28px">
-              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
-                <strong style="color:var(--accent-2)">TL;DR · {relLabel(latestDay[0])}</strong>
-                <span class="mono muted" style="font-size:.78rem">{latestDay[0]}</span>
-              </div>
-              <ul style="margin:0;padding-left:18px;display:grid;gap:6px">
-                {digest.map((n) => (
-                  <li>
-                    <a href={n.source} target="_blank" rel="noopener">{n.title}</a>
-                    {(n.importance ?? 1) >= 3 && <span class="chip accent" style="font-size:.66rem;margin-left:8px">★</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+      {/* Category tabs */}
+      <div class="category-tabs" role="tablist" style="margin-bottom:28px">
+        <button class="cat-tab is-active" data-cat="tech" role="tab" aria-selected="true" aria-controls="panel-tech">
+          ⚙ Công nghệ
+        </button>
+        <button class="cat-tab" data-cat="finance" role="tab" aria-selected="false" aria-controls="panel-finance">
+          $ Tài chính &amp; FinTech
+          {financeNews.length > 0 && <span class="count-badge">{financeNews.length}</span>}
+        </button>
+      </div>
 
-          {/* Tag filter */}
-          {tags.length > 1 && (
-            <div class="chips news-filter" role="group" aria-label="Filter by tag" style="margin-bottom:24px">
-              <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">{t('news.filterAll')}</button>
-              {tags.map((tg) => (
-                <button class="chip filter-btn" data-tag={tg} aria-pressed="false">{tg}</button>
+      {/* ── TECH PANEL ── */}
+      <div id="panel-tech" role="tabpanel" data-panel="tech">
+        {news.length === 0 ? (
+          <div class="card muted">{t('news.empty')}</div>
+        ) : (
+          <>
+            {digest.length > 0 && (
+              <div class="card digest" style="margin-bottom:28px">
+                <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
+                  <strong style="color:var(--accent-2)">TL;DR · {relLabel(latestDay[0])}</strong>
+                  <span class="mono muted" style="font-size:.78rem">{latestDay[0]}</span>
+                </div>
+                <ul style="margin:0;padding-left:18px;display:grid;gap:6px">
+                  {digest.map((n) => (
+                    <li>
+                      <a href={n.source} target="_blank" rel="noopener">{n.title}</a>
+                      {(n.importance ?? 1) >= 3 && <span class="chip accent" style="font-size:.66rem;margin-left:8px">★</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {tags.length > 1 && (
+              <div class="chips news-filter tech-filter" role="group" aria-label="Filter by tag" style="margin-bottom:24px">
+                <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">{t('news.filterAll')}</button>
+                {tags.map((tg) => (
+                  <button class="chip filter-btn" data-tag={tg} aria-pressed="false">{tg}</button>
+                ))}
+              </div>
+            )}
+
+            <p class="muted news-empty" hidden style="margin:0 0 18px">{t('news.noMatch')}</p>
+            <div id="news-groups" style="display:grid;gap:28px">
+              {groups.map(([date, items], i) => (
+                <section class="news-group" data-date={date}>
+                  <div class="group-head">
+                    <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
+                    <span class="mono muted" style="font-size:.78rem">{date} · {items.length} {itemWord}</span>
+                  </div>
+                  <div class="grid grid-2">
+                    {items.map((n) => (
+                      <div class={`news-item${(n.importance ?? 1) >= 3 ? ' featured' : ''}`} data-tags={(n.tags ?? []).join('|')}>
+                        <NewsCard title={n.title} summary={n.summary} source={n.source} tags={n.tags} date={undefined} importance={n.importance} />
+                      </div>
+                    ))}
+                  </div>
+                </section>
               ))}
             </div>
-          )}
+          </>
+        )}
+      </div>
 
-          {/* Nhóm theo ngày — ngày mới nhất mở sẵn, ngày cũ thu gọn */}
-          <p class="muted news-empty" hidden style="margin:0 0 18px">{t('news.noMatch')}</p>
-          <div id="news-groups" style="display:grid;gap:28px">
-            {groups.map(([date, items], i) => (
-              <section class="news-group" data-date={date}>
-                <div class="group-head">
-                  <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
-                  <span class="mono muted" style="font-size:.78rem">{date} · {items.length} {itemWord}</span>
-                </div>
-                <div class="grid grid-2">
-                  {items.map((n) => (
-                    <div class={`news-item${(n.importance ?? 1) >= 3 ? ' featured' : ''}`} data-tags={(n.tags ?? []).join('|')}>
-                      <NewsCard title={n.title} summary={n.summary} source={n.source} tags={n.tags} date={undefined} importance={n.importance} />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </>
-      )}
+      {/* ── FINANCE PANEL ── */}
+      <div id="panel-finance" role="tabpanel" data-panel="finance" hidden>
+        {financeNews.length === 0 ? (
+          <div class="card muted">Chưa có tin tài chính — sẽ có từ lần chạy gen-today tiếp theo.</div>
+        ) : (
+          <>
+            {finTags.length > 1 && (
+              <div class="chips fin-filter" role="group" aria-label="Filter by tag" style="margin-bottom:24px">
+                <button class="chip filter-btn fin-btn is-active" data-tag="*" aria-pressed="true">Tất cả</button>
+                {finTags.map((tg) => (
+                  <button class="chip filter-btn fin-btn" data-tag={tg} aria-pressed="false">{tg}</button>
+                ))}
+              </div>
+            )}
+
+            <p class="muted fin-empty" hidden style="margin:0 0 18px">{t('news.noMatch')}</p>
+            <div style="display:grid;gap:28px">
+              {finGroups.map(([date, items], i) => (
+                <section class="fin-group" data-date={date}>
+                  <div class="group-head">
+                    <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
+                    <span class="mono muted" style="font-size:.78rem">{date} · {items.length} {itemWord}</span>
+                  </div>
+                  <div class="grid grid-2">
+                    {items.map((n) => (
+                      <div class={`fin-item${(n.importance ?? 1) >= 3 ? ' featured' : ''}`} data-tags={(n.tags ?? []).join('|')}>
+                        <div class="card fin-card">
+                          {n.category && <span class="chip fin-cat">{categoryLabel[n.category] ?? n.category}</span>}
+                          <h3 class="fin-title">
+                            <a href={n.source} target="_blank" rel="noopener">{n.title}</a>
+                          </h3>
+                          <p class="fin-summary">{n.summary}</p>
+                          <div class="chips" style="margin-top:10px">
+                            {(n.tags ?? []).map((tg) => <span class="chip">{tg}</span>)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   </section>
 </Base>
@@ -130,41 +207,97 @@ const digest = latestDay
   .news-item.featured > :global(.card) { border-color: rgba(54,214,195,.4); }
   .news-item.is-hidden { display: none; }
   .news-group.is-hidden { display: none; }
+
+  /* Category tabs */
+  .category-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+  .cat-tab {
+    cursor: pointer; background: transparent; border: none; border-bottom: 2px solid transparent;
+    color: var(--muted); font-family: var(--mono); font-size: .9rem; padding: 8px 16px;
+    margin-bottom: -1px; transition: color .2s, border-color .2s;
+  }
+  .cat-tab:hover { color: var(--text); }
+  .cat-tab.is-active { color: var(--accent-2); border-bottom-color: var(--accent-2); }
+  .count-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(54,214,195,.15); color: var(--accent-2);
+    border-radius: 10px; font-size: .68rem; padding: 1px 6px; margin-left: 6px;
+  }
+
+  /* Finance cards */
+  .fin-card { display: flex; flex-direction: column; gap: 8px; height: 100%; }
+  .fin-cat { background: rgba(120,90,240,.15); color: #a78bfa; border-color: rgba(120,90,240,.3); font-size: .7rem; }
+  .fin-title { font-size: .95rem; font-weight: 600; margin: 0; line-height: 1.4; }
+  .fin-title a { color: var(--text); text-decoration: none; }
+  .fin-title a:hover { color: var(--accent-2); }
+  .fin-summary { color: var(--muted); font-size: .82rem; line-height: 1.55; margin: 0; }
+  .fin-item.featured .fin-card { border-color: rgba(167,139,250,.4); }
+  .fin-item.is-hidden { display: none; }
+  .fin-group.is-hidden { display: none; }
 </style>
 
 <script>
-  function setupNewsFilter() {
-    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.filter-btn'));
-    if (!buttons.length) return; // không phải trang News
-    const items = Array.from(document.querySelectorAll<HTMLElement>('.news-item'));
-    const groups = Array.from(document.querySelectorAll<HTMLElement>('.news-group'));
-    const empty = document.querySelector<HTMLElement>('.news-empty');
+  function setupNewsPage() {
+    // ── Category tabs ──
+    const catTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.cat-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-panel]'));
 
-    function apply(tag: string) {
-      let shown = 0;
-      for (const el of items) {
-        const tags = (el.dataset.tags ?? '').split('|');
-        const match = tag === '*' || tags.includes(tag);
-        el.classList.toggle('is-hidden', !match);
-        if (match) shown++;
+    function switchTab(cat: string) {
+      for (const tab of catTabs) {
+        const active = tab.dataset.cat === cat;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
       }
-      for (const g of groups) {
-        const visible = g.querySelectorAll('.news-item:not(.is-hidden)').length;
-        g.classList.toggle('is-hidden', visible === 0);
+      for (const panel of panels) {
+        panel.hidden = panel.dataset.panel !== cat;
       }
-      if (empty) empty.hidden = shown !== 0;
     }
 
-    for (const btn of buttons) {
-      btn.addEventListener('click', () => {
-        for (const b of buttons) {
-          const active = b === btn;
-          b.classList.toggle('is-active', active);
-          b.setAttribute('aria-pressed', String(active));
+    for (const tab of catTabs) {
+      tab.addEventListener('click', () => switchTab(tab.dataset.cat ?? 'tech'));
+    }
+
+    // ── Tech tag filter ──
+    function setupFilter(
+      btnSel: string,
+      itemSel: string,
+      groupSel: string,
+      emptySel: string,
+    ) {
+      const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>(btnSel));
+      const items = Array.from(document.querySelectorAll<HTMLElement>(itemSel));
+      const groups = Array.from(document.querySelectorAll<HTMLElement>(groupSel));
+      const empty = document.querySelector<HTMLElement>(emptySel);
+
+      function apply(tag: string) {
+        let shown = 0;
+        for (const el of items) {
+          const tags = (el.dataset.tags ?? '').split('|');
+          const match = tag === '*' || tags.includes(tag);
+          el.classList.toggle('is-hidden', !match);
+          if (match) shown++;
         }
-        apply(btn.dataset.tag ?? '*');
-      });
+        for (const g of groups) {
+          const visible = g.querySelectorAll(`${itemSel}:not(.is-hidden)`).length;
+          g.classList.toggle('is-hidden', visible === 0);
+        }
+        if (empty) empty.hidden = shown !== 0;
+      }
+
+      for (const btn of buttons) {
+        btn.addEventListener('click', () => {
+          for (const b of buttons) {
+            const active = b === btn;
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-pressed', String(active));
+          }
+          apply(btn.dataset.tag ?? '*');
+        });
+      }
     }
+
+    setupFilter('.tech-filter .filter-btn', '.news-item', '.news-group', '.news-empty');
+    setupFilter('.fin-filter .fin-btn', '.fin-item', '.fin-group', '.fin-empty');
   }
-  document.addEventListener('astro:page-load', setupNewsFilter);
+
+  document.addEventListener('astro:page-load', setupNewsPage);
 </script>

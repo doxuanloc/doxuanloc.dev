@@ -19,7 +19,7 @@
     },
     {
       "title": "Event-driven trên AWS Lambda + EventBridge cho hệ thống đồng bộ dữ liệu",
-      "summary": "Mô hình serverless event-driven giúp scale theo nhu cầu và tách rời các service — kiến trúc mình dùng cho Message Management Tool.",
+      "summary": "Mô hình serverless event-driven giúp scale theo nhu cầu và tách rời các service — pattern thường dùng cho hệ thống đồng bộ dữ liệu phức tạp.",
       "source": "https://aws.amazon.com/eventbridge/",
       "tags": ["cloud", "aws", "serverless"],
       "importance": 2
