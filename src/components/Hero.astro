@@ -7,7 +7,6 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const profile = getProfile(lang);
 const id = profile.identity;
-const avatar = existsSync(join(process.cwd(), 'public/images/avatar.png')) ? '/images/avatar.png' : null;
 const heroVisual = existsSync(join(process.cwd(), 'public/images/hero-astronaut.webp')) ? '/images/hero-astronaut.webp' : null;
 const skillHighlights = [
   ...(profile.skills.backend ?? []).slice(0, 2),
@@ -22,12 +21,7 @@ const totalSkills = Object.values(profile.skills).flat().length;
 
       <!-- Cột trái: nội dung -->
       <div class="hero-content">
-        {avatar && (
-          <div class="hero-avatar" data-reveal style="--reveal-delay:10ms">
-            <img src={avatar} alt="" width="200" height="200" role="presentation" />
-          </div>
-        )}
-        <div class="badge" data-reveal style="--reveal-delay:40ms;margin-bottom:22px">
+        <div class="badge" data-reveal style="--reveal-delay:10ms;margin-bottom:22px">
           <span class="pulse"></span>
           <span>{id.location}</span>
         </div>
@@ -113,42 +107,6 @@ const totalSkills = Object.values(profile.skills).flat().length;
     .hero-section { padding-top: 36px; padding-bottom: 24px; }
   }
 
-  /* Avatar tròn */
-  .hero-avatar {
-    position: relative; width: 112px; height: 112px; margin-bottom: 22px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 36%, #1b2748 0%, #0a1224 78%);
-    display: grid; place-items: center;
-    box-shadow: 0 0 34px rgba(91, 140, 255, 0.32), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-  }
-  .hero-avatar::before {
-    content: ""; position: absolute; inset: -3px; border-radius: 50%; z-index: -1;
-    background: conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
-    filter: blur(3px); animation: avatarSpin 7s linear infinite;
-  }
-  .hero-avatar::after {
-    content: ""; position: absolute; inset: -11px; border-radius: 50%;
-    border: 1px solid rgba(120, 160, 235, 0.22);
-  }
-  .hero-avatar img {
-    width: 94%; height: 94%; object-fit: contain; object-position: center 42%;
-    border-radius: 50%; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
-  }
-  @keyframes avatarSpin { to { transform: rotate(360deg); } }
-
-  /* Avatar responsive */
-  @media (max-width: 768px) {
-    .hero-avatar { width: 100px; height: 100px; margin-bottom: 18px; }
-    .hero-avatar::after { inset: -9px; }
-  }
-  @media (max-width: 600px) {
-    .hero-avatar { width: 88px; height: 88px; margin-bottom: 16px; }
-    .hero-avatar::before { inset: -2px; }
-    .hero-avatar::after { inset: -8px; }
-  }
-  @media (max-width: 400px) {
-    .hero-avatar { width: 76px; height: 76px; margin-bottom: 14px; }
-  }
 
   /* Hero visual — cột phải */
   .hero-visual {
