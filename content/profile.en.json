@@ -1,12 +1,12 @@
 {
-  "$comment": "Portfolio data v4 - Full & Story-driven | Do Xuan Loc | June 2026 (EN translation)",
+  "$comment": "Portfolio data v4 - Professional, Practical & Humble | Do Xuan Loc | June 2026 (EN translation)",
   "version": 4,
   "identity": {
     "name": "Đỗ Xuân Lộc",
     "nameEn": "Do Xuan Loc",
     "title": "AI & System Optimization Engineer",
     "subtitle": "Full-Stack Engineer · Solutions Architect (ML)",
-    "tagline": "From Full-Stack to AI/System Optimization — the journey of building real-world, scalable, cost-optimized systems for the Japanese market.",
+    "tagline": "Growing from Full-Stack to AI & Cloud architecture — focused on designing practical, scalable, and cost-optimized systems for the Japanese market.",
     "location": "Ho Chi Minh City, Vietnam",
     "yearsExperience": 3,
     "email": "locvkv1234@gmail.com",
@@ -17,26 +17,26 @@
       "github": null
     }
   },
-  "summary": "A computer engineer whose path went from pure frontend to designing and optimizing entire complex systems. Started by touching real on-chain data, then built full-stack products with interactive 3D, then moved to microservices architecture on AWS for large-scale platforms in Japan. Currently leading the integration of AI (RAG, Voice AI, Multi-agent) into real products in a safe, accurate, and cost-efficient way. Always asks: “Does this system truly create sustainable value?”",
+  "summary": "Software engineer with experience growing from frontend development to overall system architecture design. My diverse journey—from interactive 3D products to microservices architecture on AWS for large-scale platforms in Japan—has helped me develop systematic problem-solving thinking. Currently, I apply design principles such as SOLID and Feature-Based Design to integrate AI solutions (RAG, Voice AI, Multi-agent) into practical products. My goal is always to build systems that are secure, maintainable, and deliver sustainable operational value for businesses.",
   "solves": [
     {
-      "problem": "Large-scale systems difficult to scale and maintain",
-      "approach": "Decompose into microservices within NX Monorepo, clear API boundaries, automated CI/CD pipelines per environment.",
+      "problem": "Enhancing system scalability and maintainability",
+      "approach": "Transitioning to microservices architecture with NX Monorepo, defining clear API boundaries, and automating CI/CD pipelines per environment.",
       "stack": ["NestJS", "NX Monorepo", "AWS", "CI/CD"]
     },
     {
-      "problem": "Synchronizing and processing multi-source realtime data",
-      "approach": "Event-driven serverless architecture — queues and schedules decouple services for easy scaling with load.",
+      "problem": "Real-time synchronization and multi-source data processing",
+      "approach": "Applying event-driven and serverless architecture to minimize service dependencies and ensure stable data flow.",
       "stack": ["AWS Lambda", "EventBridge", "SAM", "SQS"]
     },
     {
-      "problem": "Integrating LLMs into products while maintaining accuracy and safety",
-      "approach": "RAG anchors answers to real documents, embeddings + internal LLM deployment to control data and reduce hallucination.",
+      "problem": "Applying LLMs to products with accuracy and security",
+      "approach": "Using RAG architecture combined with embeddings to extract information from internal documents, deploying LLMs locally for complete data control.",
       "stack": ["RAG", "Embeddings", "LLM (Ollama)", "Python"]
     },
     {
-      "problem": "Handling real-world Japanese voice interactions with high accuracy",
-      "approach": "Combine Amazon Connect + Lex V2 + Bedrock Claude Haiku; handle dead air, ASR brand errors, and complex flows.",
+      "problem": "Processing Japanese voice with complex conversation flows",
+      "approach": "Integrating Amazon Connect, Lex V2, and Bedrock Claude Haiku to extract user intent, handling noise and interruption cases.",
       "stack": ["Amazon Connect", "Lex V2", "Bedrock", "State Machine"]
     }
   ],
@@ -60,15 +60,32 @@
     "database": ["MySQL", "MongoDB", "Strapi", "Postgres", "S3 Tables (Iceberg)"],
     "cloud_devops": [
       "AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline, SageMaker, Bedrock)",
-      "Docker", "GitHub Actions", "NX Monorepo", "CI/CD", "CloudFormation"
+      "Docker",
+      "GitHub Actions",
+      "NX Monorepo",
+      "CI/CD",
+      "CloudFormation"
     ],
     "ai_ml": [
-      "RAG", "Word2Vec / Embeddings", "LLM (Ollama, Claude, Gemini)", "Fine-tuning (LoRA/QLoRA)",
-      "Whisper + Pyannote", "Florence-2", "LangGraph", "Multi-Agent Systems", "AI Pipelines"
+      "RAG",
+      "Word2Vec / Embeddings",
+      "LLM (Ollama, Claude, Gemini)",
+      "Fine-tuning (LoRA/QLoRA)",
+      "Whisper + Pyannote",
+      "Florence-2",
+      "LangGraph",
+      "Multi-Agent Systems",
+      "AI Pipelines"
     ],
     "practices": [
-      "Microservices", "Event-Driven Architecture", "DevSecOps", "Scrum/Agile",
-      "Monitoring & Observability", "Business Intelligence", "Cost Optimization"
+      "Microservices",
+      "Event-Driven Architecture",
+      "DevSecOps",
+      "Feature-Based Design",
+      "SOLID Principles",
+      "Monitoring & Observability",
+      "Business Intelligence",
+      "Cost Optimization"
     ]
   },
   "experience": [
@@ -82,66 +99,65 @@
       "projects": [
         {
           "name": "Oikura Modernization",
-          "summary": "Modernizing Oikura — Japan's largest second-hand goods trading platform. I participated in re-architecting from monolithic to microservices.",
+          "summary": "Participated in the development team redesigning Oikura's architecture — a second-hand goods trading platform in Japan — from monolithic to microservices to optimize performance.",
           "highlights": [
-            "Designed NX Monorepo with clear separation of private/public services",
-            "NestJS microservices with explicit APIs, optimized MySQL queries & indexes",
-            "Built environment-specific CI/CD on AWS (EC2 + CodePipeline)",
-            "Integrated SendGrid + SMS via AWS SQS & Lambda"
+            "Applied NX Monorepo, established clear boundaries between internal and public services",
+            "Developed NestJS microservices following SOLID principles, optimized MySQL queries",
+            "Contributed to building automated CI/CD pipelines on AWS (EC2 + CodePipeline)",
+            "Integrated notification systems (SendGrid, SMS) through event-driven architecture with SQS & Lambda"
           ],
           "stack": ["NX Monorepo", "NestJS", "Next.js", "AWS (EC2, ECR, SQS, Lambda, CodePipeline)", "MySQL"]
         },
         {
           "name": "V-Voicebot (Japanese Buyback Voicebot)",
-          "summary": "Built an automated voicebot system to collect product and customer information for Japan's used-goods buyback service (takakuureru.com). Combined Amazon Connect + Lex V2 + Bedrock Claude Haiku.",
+          "summary": "Contributed to developing an automated voicebot system for information collection at takakuureru.com service, using AWS services.",
           "highlights": [
-            "Designed state machine and conversation flow for intake automation",
-            "Integrated Bedrock Claude Haiku for intent classification + structured data extraction",
-            "Handled real-world pain points: dead air at STARTING, ASR brand errors, unreliable PostCode",
-            "Built guard systems (rate limit, max turns, duration, empty turns)"
+            "Designed state machine and conversation flow for automated data collection",
+            "Integrated Bedrock Claude Haiku for intent classification and structured data extraction",
+            "Handled real-world voice communication issues: dead air, brand recognition errors, PostCode formatting",
+            "Set up protection mechanisms (rate limit, interaction limits) to protect the system"
           ],
           "stack": ["Amazon Connect", "Lex V2 (ja_JP)", "Bedrock (Claude 3 Haiku)", "AWS Lambda", "DynamoDB", "S3"]
         },
         {
           "name": "V-VoiceSummarize Pipeline",
-          "summary": "Led the development of an automated pipeline to transcribe + summarize + extract structured data from batches of IS/FS calls using Whisper + Pyannote + Bedrock/Gemini.",
+          "summary": "Designed and deployed an automated pipeline for transcription, summarization, and data extraction from IS/FS business calls.",
           "highlights": [
-            "Designed end-to-end pipeline: STT → Diarization → Summarization → Structured Extraction",
-            "Optimized cost and latency with SageMaker async endpoints + Lambda workers",
-            "Handled real-world multilingual audio quality issues (noise, distance, crosstalk)",
-            "Connected output to S3 Tables and Google Sheets for IS team review"
+            "Built end-to-end processing flow: STT → Diarization → Summarization → Structured Extraction",
+            "Used SageMaker async endpoints and Lambda workers to optimize cost and latency",
+            "Fine-tuned for improved accuracy on real-world audio data (background noise, cross-talk)",
+            "Stored and exported data via S3 Tables and Google Sheets for operations team"
           ],
           "stack": ["Whisper Large-v3/Turbo", "Pyannote", "Bedrock", "Gemini", "SageMaker", "S3 Tables", "Lambda"]
         },
         {
           "name": "Agent Buyback System",
-          "summary": "Built a multi-agent system to support the buyback workflow, combining automation with human-in-the-loop to reduce workload for IS/FS staff.",
+          "summary": "Experimented and deployed a multi-agent system to support and partially automate IS/FS staff workflows.",
           "highlights": [
-            "Designed multi-agent flow with LangGraph + Gemini",
-            "Combined Voicebot intake data with agentic decision making",
-            "Built memory and caching architecture for agents",
-            "Integrated with existing systems (S3, DynamoDB, Google Sheets)"
+            "Designed multi-agent workflow using LangGraph and Gemini",
+            "Applied Agent-to-Agent (A2A) communication standards to synchronize data between Voicebot and decision-making system",
+            "Optimized memory and caching mechanisms for agents",
+            "Flexibly integrated with existing infrastructure (S3, DynamoDB)"
           ],
           "stack": ["LangGraph", "Gemini", "Multi-Agent Architecture", "Python"]
         },
         {
           "name": "Message Management Tool (MMT)",
-          "summary": "Event-driven system for managing customer communications (automated + manual) in the second-hand goods market.",
+          "summary": "Participated in developing an event-driven customer communication management system for internal operations.",
           "highlights": [
-            "Event-driven with AWS SAM + Lambda for multi-source data synchronization",
-            "AWS EventBridge scheduled periodic data collection",
-            "NestJS managing messaging workflows, cron jobs, and MongoDB",
-            "ReactJS dashboard for operators + realtime webhooks across multi-platform (SMS, Gmail, Slack, Line)"
+            "Used AWS SAM, Lambda, and EventBridge for data synchronization and task scheduling",
+            "Built backend workflow with NestJS and MongoDB database",
+            "Created ReactJS interface for operations staff, integrated real-time webhooks (SMS, Gmail, Slack, Line)"
           ],
           "stack": ["NestJS", "ReactJS", "MongoDB", "AWS SAM", "Lambda", "EventBridge", "Webhooks"]
         },
         {
-          "name": "Chatbot RAG cho dự án công nghệ",
-          "summary": "Chatbot for analyzing and retrieving technical documents across projects with high accuracy.",
+          "name": "Internal RAG Chatbot",
+          "summary": "Researched and developed a chatbot tool to support retrieval and analysis of internal technical documents.",
           "highlights": [
-            "RAG framework with Word2Vec embeddings to improve accuracy",
-            "LLM (Ollama) deployed locally for data control, fine-tuned for company domain",
-            "Scalable, modular AI pipeline with low-latency inference optimization"
+            "Improved search result accuracy using Word2Vec embeddings",
+            "Deployed LLM model (Ollama) on internal network for information security",
+            "Designed modular pipeline, easy to extend and optimize response time"
           ],
           "stack": ["RAG", "Word2Vec", "LLM (Ollama)", "Python", "MongoDB", "ReactJS", "Docker"]
         }
@@ -157,21 +173,21 @@
       "projects": [
         {
           "name": "Bucco (Healthcare SaaS - France)",
-          "summary": "Application connecting dental clinics and customers in France. I joined to fix bugs and rapidly improve UI/UX based on real clinic feedback.",
+          "summary": "Participated in maintenance and feature development for an application connecting dental clinics in the French market.",
           "highlights": [
-            "Full-stack NestJS + Vue.js + Vuetify",
-            "Fast bugfix + iteration cycles based on clinic feedback",
-            "Remote collaboration with a European team"
+            "Full-stack development with NestJS, Vue.js, and Vuetify",
+            "Improved UI/UX and fixed bugs based on real user feedback",
+            "Developed communication and asynchronous collaboration skills with European team"
           ],
           "stack": ["NestJS", "Vue.js", "Vuetify", "Vuex", "Docker", "Git"]
         },
         {
           "name": "Synode (3D Instructions SaaS)",
-          "summary": "Self-service SaaS helping engineers create and share interactive 3D assembly instructions (manufacturing e-commerce). Solved real versioning and update challenges.",
+          "summary": "Contributed to developing a SaaS platform for creating and sharing interactive 3D assembly instructions.",
           "highlights": [
-            "3D visualization replacing manual 2D CAD — solved versioning and update challenges",
-            "Designed business logic APIs and built UI from Figma",
-            "Three.js + Strapi + NestJS + Docker"
+            "Integrated 3D display on web to replace manual 2D documents",
+            "Converted Figma designs to actual interfaces and built backend APIs",
+            "Combined Three.js, Strapi, and NestJS in Docker environment"
           ],
           "stack": ["NestJS", "Three.js", "Vuetify", "Strapi", "Docker"]
         }
@@ -187,11 +203,11 @@
       "projects": [
         {
           "name": "Crypto News & E-learning Platform",
-          "summary": "Crypto market news website + e-learning platform. My first time touching real on-chain data and writing technical content.",
+          "summary": "Participated in building interfaces for a cryptocurrency market learning and news platform.",
           "highlights": [
-            "Researched and analyzed on-chain data via APIs, wrote technical blog",
-            "Improved UI/UX with user-centered design",
-            "Upgraded e-learning with interactive content and progress tracking"
+            "Connected APIs to display on-chain data and supported technical documentation",
+            "Optimized user experience (UI/UX) across multiple devices",
+            "Developed learning progress tracking modules for e-learning platform"
           ],
           "stack": ["React", "UI/UX", "Responsive Web"]
         }
@@ -203,25 +219,20 @@
       "name": "VPhoto — E-comm Image AI Camera App",
       "period": "2025",
       "teamSize": 2,
-      "summary": "Smart camera app that helps e-commerce sellers automatically process and filter product photos with high quality and consistency.",
+      "summary": "Application supporting automated e-commerce product image processing and classification, focusing on data consistency.",
       "highlights": [
-        "Integrated Florence-2 for detailed captioning and object detection",
-        "Built automatic image filter pipeline (lighting, angle, background)",
-        "Optimized GPU inference and integrated into mobile app"
+        "Used Florence-2 for object detection and detailed labeling tasks",
+        "Built image quality checking flow (brightness, angle, background)",
+        "Researched GPU processing performance optimization for mobile integration"
       ],
       "stack": ["Florence-2", "Computer Vision", "GPU Acceleration", "Python"]
     },
     {
-      "name": "Bartending Course — NauPhaChe",
+      "name": "NauPhaChe — Bartending Course Platform",
       "period": "2022-10 — 2023-11",
       "teamSize": 2,
-      "summary": "Bartending course platform: login/register, payment to receive activation code, shopping cart, admin dashboard for course and revenue management.",
-      "stack": [
-        "Next.js",
-        "Bootstrap",
-        "NestJS",
-        "MongoDB"
-      ],
+      "summary": "Personal project building a course management platform: including payment module, activation code distribution, and content management.",
+      "stack": ["Next.js", "Bootstrap", "NestJS", "MongoDB"],
       "links": {
         "client": "https://course-tiktok-9ge7.vercel.app/",
         "admin": "https://dashboard-admin-course.vercel.app/"
@@ -231,13 +242,8 @@
       "name": "MyReview — Viettel (Myanmar)",
       "period": "2023-03 — 2023-05",
       "teamSize": 7,
-      "summary": "Movie streaming platform: SMS-based payment, OTP login via Mytel Myanmar carrier.",
-      "stack": [
-        "HTML5",
-        "CSS",
-        "ExpressJS",
-        "TypeScript"
-      ],
+      "summary": "Participated in web interface development for entertainment platform, integrated OTP authentication via Mytel carrier.",
+      "stack": ["HTML5", "CSS", "ExpressJS", "TypeScript"],
       "links": {
         "site": "https://myreview.asia"
       }
@@ -245,7 +251,7 @@
   ],
   "education": [
     {
-      "school": "Trường Đại học Công nghệ Thông tin (UIT)",
+      "school": "University of Information Technology (UIT)",
       "org": "Vietnam National University, Ho Chi Minh City",
       "degree": "Computer Engineering",
       "period": "2018 — 2021"
@@ -260,79 +266,55 @@
   "roadmap": [
     {
       "phase": "2026",
-      "label": "AI Core Forge",
-      "story": "Forging real-world AI core — turning every system into an intelligent entity.",
-      "focus": [
-        "Production RAG",
-        "LLM optimization",
-        "Observability",
-        "Inference tuning"
-      ],
+      "label": "AI Core Implementation",
+      "story": "Focus on applying AI to solve business problems, prioritizing system stability.",
+      "focus": ["Production RAG", "LLM optimization", "Observability", "Inference tuning"],
       "status": "in-progress"
     },
     {
       "phase": "2026–2027",
-      "label": "Mind at Scale",
-      "story": "Scaling artificial intelligence for large-scale use without sacrificing performance.",
-      "focus": [
-        "Distributed inference",
-        "MLOps",
-        "Serverless AI",
-        "Auto-scaling"
-      ],
+      "label": "Systems at Scale",
+      "story": "Research solutions to expand AI system processing capacity, balancing performance and cost.",
+      "focus": ["Distributed inference", "MLOps", "Serverless AI", "Auto-scaling"],
       "status": "planned"
     },
     {
       "phase": "2027–2028",
-      "label": "DevSecOps Ascent",
-      "story": "Armoring AI with steel — security and cost optimization from the inside out.",
-      "focus": [
-        "Zero-trust AI",
-        "Secure CI/CD",
-        "Cloud cost control",
-        "Compliance"
-      ],
+      "label": "DevSecOps & Compliance",
+      "story": "Strengthen security standards, risk management, and cloud resource optimization.",
+      "focus": ["Zero-trust AI", "Secure CI/CD", "Cloud cost control", "Compliance"],
       "status": "planned"
     },
     {
       "phase": "2028–2030",
-      "label": "AI Solutions Lead",
-      "story": "Leading large-scale AI architecture and shaping solutions for global enterprises.",
-      "focus": [
-        "Enterprise RAG",
-        "Agent orchestration",
-        "Platform architecture",
-        "AI governance"
-      ],
+      "label": "Solutions Architecture",
+      "story": "Develop overall design capabilities, shaping technology solutions meeting enterprise standards.",
+      "focus": ["Enterprise RAG", "Agent orchestration", "Platform architecture", "AI governance"],
       "status": "planned"
     },
     {
       "phase": "2030+",
-      "label": "N3 Global Bridge",
-      "story": "Connecting Vietnam with Japan and the world through AI — powered by N3+ Japanese proficiency.",
-      "focus": [
-        "Japanese N3+",
-        "Cross-border teams",
-        "AI ethics",
-        "Thought leadership"
-      ],
+      "label": "Cross-Border Engineering",
+      "story": "Improve language skills (N3+) and management abilities to work more effectively in international environments.",
+      "focus": ["Japanese N3+", "Cross-border teams", "AI ethics", "Thought leadership"],
       "status": "planned"
     }
   ],
+  "$comment_journey": "SOURCE OF TRUTH for /journey page. Focus on mindset changes, skills learned, and team contributions.",
   "journey": [
     {
       "id": "uit-foundation",
       "year": "2018–2021",
       "kind": "education",
-      "title": "Systems Thinking at UIT",
-      "narrative": "Built the foundation in algorithms and systems thinking — the advantage that later let me reason about scale.",
+      "title": "Building Technical Thinking at UIT",
+      "narrative": "Equipped with foundations in algorithms, computer architecture, and systems thinking — an important basis for approaching large-scale problems later.",
       "bullets": [
         "Computer Engineering, Vietnam National University HCMC",
-        "Focus on algorithms, architecture, and low-level reasoning",
-        "Parallel practical track via BTEC FPT"
+        "Focus on systems architecture and algorithms",
+        "Started learning web programming through BTEC FPT"
       ],
       "tags": ["Computer Engineering", "Algorithms", "Systems"],
-      "imageConcept": "University library at sunset, open laptop and books, beginning of the journey.",
+      "imageConcept": "University library at sunset, open laptop, books and aspirations.",
       "codename": "ORIGIN-01 // SYSTEMS-THINK",
       "chapter": "origins",
       "arc": "foundation",
@@ -342,15 +324,15 @@
       "id": "btec-practical",
       "year": "2021–2022",
       "kind": "education",
-      "title": "Crossing into Practice",
-      "narrative": "Moved from theory to shipping small real projects and learning how to deliver with others.",
+      "title": "Approaching Real-World Environment",
+      "narrative": "Participated in practical projects, initially transitioning from theory to software development processes and teamwork.",
       "bullets": [
         "Software Engineering — BTEC FPT",
-        "Course projects with real hand-off and collaboration",
-        "Bridge between academic foundation and first job"
+        "Deployed team projects following standard processes",
+        "Created stepping stone for first professional job"
       ],
       "tags": ["Software Engineering", "Teamwork"],
-      "imageConcept": "Lab room, code on screens, students doing code review.",
+      "imageConcept": "Lab room, code on screens, students doing review.",
       "codename": "ORIGIN-02 // PRACTICAL-BRIDGE",
       "chapter": "origins",
       "arc": "foundation",
@@ -361,15 +343,15 @@
       "id": "first-frontend-ship",
       "year": "2022",
       "kind": "frontend",
-      "title": "First Code That Reached Real Users",
-      "narrative": "Shipped production interfaces, touched on-chain data, and felt the rush of people actually using what I wrote.",
+      "title": "First Product Development Project",
+      "narrative": "Got familiar with on-chain data, wrote technical documentation, and directly received feedback to improve user experience.",
       "bullets": [
-        "Responsive ReactJS for crypto news + e-learning platform",
-        "On-chain analysis and technical writing published",
-        "Iterated UI from real user feedback"
+        "Built ReactJS interfaces for crypto and e-learning platforms",
+        "Processed API data and authored technical content",
+        "Improved UI/UX based on user behavior"
       ],
       "tags": ["ReactJS", "On-chain", "UI/UX"],
-      "imageConcept": "React code + blue crypto charts glowing in Saigon night.",
+      "imageConcept": "React screen + blue crypto charts glowing in Saigon night.",
       "codename": "FORGE-01 // FIRST-USERS",
       "chapter": "forge",
       "arc": "build",
@@ -380,15 +362,15 @@
       "id": "threejs-saas",
       "year": "2022–2023",
       "kind": "fullstack",
-      "title": "Built a Real 3D SaaS End-to-End",
-      "narrative": "Took an idea to production alone: interactive 3D assembly instructions replacing 2D CAD, solving real versioning pain.",
+      "title": "Participated in 3D SaaS Development",
+      "narrative": "Took on full-stack role, learned how to transform business requirements into solutions through 3D web graphics processing.",
       "bullets": [
-        "NestJS + Vue + Vuetify + Three.js + Strapi + Docker",
-        "Self-service SaaS for manufacturing engineers",
-        "Learned to design business-logic APIs from Figma specs"
+        "Used NestJS, Vue, Three.js, and Docker",
+        "Built 3D instruction tools for manufacturing engineers",
+        "Designed backend APIs following business workflows from blueprints"
       ],
       "tags": ["Three.js", "NestJS", "Full-Stack", "Docker"],
-      "imageConcept": "Rotating 3D model under green light, dual screens showing backend + frontend.",
+      "imageConcept": "Rotating 3D model, blue light, dual screens backend+frontend.",
       "codename": "FORGE-02 // 3D-SHIP",
       "chapter": "forge",
       "arc": "build",
@@ -399,15 +381,15 @@
       "id": "personal-platforms",
       "year": "2022–2023",
       "kind": "personal",
-      "title": "Side Projects That Taught Ownership",
-      "narrative": "Built two paid products with real billing and users — learned auth, payments, and running things alone the hard way.",
+      "title": "Learning Through Personal Projects",
+      "narrative": "Tried personal projects to directly engage with authentication, payment, and system administration challenges.",
       "bullets": [
-        "Bartending course platform (Next + Nest + Mongo, payments + admin dashboard)",
-        "MyReview Myanmar (Express + carrier SMS OTP)",
-        "True end-to-end ownership without a big team"
+        "Built course platform (Next.js, NestJS, MongoDB)",
+        "Integrated SMS OTP login flow for MyReview project",
+        "Learned more about comprehensive product development (A-Z)"
       ],
       "tags": ["Next.js", "Billing", "Ownership"],
-      "imageConcept": "Admin dashboard + SMS payment flow, bootstrap atmosphere.",
+      "imageConcept": "Admin dashboard + SMS payment screen, bootstrap atmosphere.",
       "codename": "FORGE-03 // SIDE-QUESTS",
       "chapter": "forge",
       "arc": "build",
@@ -418,15 +400,15 @@
       "id": "plogg-bucco",
       "year": "2022–2023",
       "kind": "fullstack",
-      "title": "Remote Full-Stack for French Dental Market",
-      "narrative": "Joined PloggMedia remote — rapid iteration on a real healthcare marketplace connecting clinics and patients.",
+      "title": "Remote Collaboration (Remote Developer)",
+      "narrative": "Worked remotely with international teams, developed flexible bug handling skills and system upgrades based on customer feedback.",
       "bullets": [
-        "NestJS + Vue.js + Vuetify + Docker",
-        "Fast bugfix + UX improvement cycles based on clinic feedback",
-        "First experience working remotely with a European team"
+        "Worked with NestJS, Vue.js in Docker environment",
+        "Handled bugs and updated features quickly",
+        "Improved asynchronous collaboration skills with European team"
       ],
       "tags": ["Vue.js", "Remote", "Healthcare"],
-      "imageConcept": "Clinic interface + booking flow, clean white and teal tones.",
+      "imageConcept": "Clinic + booking interface, white-teal lighting.",
       "codename": "FORGE-04 // REMOTE-SHIP",
       "chapter": "forge",
       "arc": "build",
@@ -437,15 +419,15 @@
       "id": "me-join",
       "year": "2023-06",
       "kind": "transition",
-      "title": "Entering Large-Scale Systems",
-      "narrative": "Joined MarketEnterprise — moving from solo/remote work into real enterprise codebase, processes, and expectations.",
+      "title": "Approaching Enterprise Architecture",
+      "narrative": "Joined MarketEnterprise, transitioning from small team environment to participating in large-scale systems, focusing on sustainability.",
       "bullets": [
-        "Learned NX Monorepo and clear service boundaries",
-        "Multi-environment CI/CD (dev/staging/prod) reality",
-        "Shifted mindset from 'ship something' to 'ship something maintainable at scale'"
+        "Got familiar with NX Monorepo and Microservices architecture",
+        "Used professional multi-environment CI/CD processes",
+        "Changed mindset from 'completing features' to 'easy to maintain and scale'"
       ],
       "tags": ["Transition", "Monorepo", "Enterprise"],
-      "imageConcept": "Large architecture diagram with many service boxes, serious engineering room.",
+      "imageConcept": "Large architecture diagram, many service boxes, engineering atmosphere.",
       "codename": "TRANSIT-01 // SCALE-UP",
       "chapter": "systems",
       "arc": "scale",
@@ -456,15 +438,15 @@
       "id": "oikura-modernize",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Modernizing Oikura (Japan's Largest Second-Hand Platform)",
-      "narrative": "Helped decompose and modernize a massive Japanese marketplace — real microservices, real cloud, real constraints.",
+      "title": "Restructuring Oikura",
+      "narrative": "Contributed to the platform modernization process, participated in decomposing monolithic system into independent services.",
       "bullets": [
-        "NX Monorepo + NestJS microservices with explicit APIs",
-        "MySQL optimization + AWS EC2 + CodePipeline across environments",
-        "Event-driven messaging via SQS + Lambda (SendGrid, SMS)"
+        "Deployed microservices with NestJS on Monorepo architecture",
+        "Optimized database and system operations on AWS",
+        "Applied event-driven architecture for notification system"
       ],
       "tags": ["NX", "Microservices", "AWS", "Japan"],
-      "imageConcept": "Complex glowing AWS architecture on a large enterprise screen.",
+      "imageConcept": "Complex glowing AWS diagram on enterprise screen.",
       "codename": "SYSTEMS-01 // OIKURA",
       "chapter": "systems",
       "arc": "scale",
@@ -475,15 +457,15 @@
       "id": "mmt-event-driven",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Event-Driven Customer Communication at Scale",
-      "narrative": "Built MMT: multi-source sync, scheduled collection, realtime operator dashboard across many channels.",
+      "title": "Message Management System (MMT)",
+      "narrative": "Participated in developing communication process automation tools, synchronizing multi-source data for internal operations.",
       "bullets": [
-        "AWS SAM + Lambda + EventBridge + SQS backbone",
-        "NestJS workflows + Mongo + webhooks (SMS, Gmail, Slack, Line)",
-        "React operator UI + cron automation"
+        "Applied AWS SAM, Lambda, and EventBridge",
+        "Connected APIs and webhooks with multiple platforms (SMS, Line, Slack)",
+        "Built operator control interface (Dashboard)"
       ],
       "tags": ["Event-Driven", "SAM", "Webhooks"],
-      "imageConcept": "Event bus diagram with arrows + operator dashboard.",
+      "imageConcept": "Event bus diagram, many arrows, operator dashboard.",
       "codename": "SYSTEMS-02 // MMT",
       "chapter": "systems",
       "arc": "scale",
@@ -494,15 +476,15 @@
       "id": "first-rag",
       "year": "2024",
       "kind": "ai",
-      "title": "First Production RAG",
-      "narrative": "Brought LLMs into real products by anchoring answers in actual company documents via embeddings and retrieval.",
+      "title": "Applying AI Internally",
+      "narrative": "Experimented with integrating large language models (LLMs) to build tools supporting internal technical document search.",
       "bullets": [
-        "Word2Vec embeddings + RAG retrieval framework",
-        "Local LLM (Ollama) deployment + domain fine-tuning",
-        "Controlled data, reduced hallucination"
+        "Used RAG architecture and embeddings for data extraction",
+        "Deployed Ollama model locally for information security",
+        "Minimized AI hallucination issues"
       ],
       "tags": ["RAG", "Embeddings", "Ollama"],
-      "imageConcept": "Purple-blue neural net with data flowing like a river of light.",
+      "imageConcept": "Purple-blue neural network, data flowing like river of light.",
       "codename": "INTEL-01 // RAG-FIRST",
       "chapter": "intelligence",
       "arc": "ai",
@@ -511,19 +493,19 @@
     },
     {
       "id": "ai-pipeline-prod",
-      "year": "2024–nay",
+      "year": "2024–present",
       "kind": "ai",
-      "title": "Weaving AI into the Event Fabric",
-      "narrative": "Made AI a first-class, observable, low-latency part of production event-driven systems instead of a side experiment.",
+      "title": "Integrating AI into Business Workflows",
+      "narrative": "Deployed AI pipelines into real systems, focusing on monitoring, response time optimization, and processing resource management.",
       "bullets": [
-        "Modular AI pipelines with low-latency inference",
-        "Retrieval optimization + re-ranking",
-        "Observability and cost control for production AI"
+        "Deployed AI processing flows as independent modules",
+        "Optimized queries and data extraction",
+        "Performance monitoring (Observability) and API cost control"
       ],
       "tags": ["AI Pipelines", "Observability", "Cost"],
-      "imageConcept": "Neural net + event arrows with monitoring HUD overlay.",
+      "imageConcept": "Neural net + event arrows, HUD monitoring overlay.",
       "photo": "/images/presenting.webp",
-      "photoAlt": "Do Xuan Loc presenting systems work",
+      "photoAlt": "Do Xuan Loc presenting system solutions",
       "codename": "INTEL-02 // AI-IN-SYSTEM",
       "chapter": "intelligence",
       "arc": "ai",
@@ -534,21 +516,20 @@
       "id": "horizon-lead",
       "year": "2025+",
       "kind": "future",
-      "title": "Preparing to Lead AI Solutions",
-      "narrative": "Transitioning from building systems that contain AI to shaping large-scale AI architecture and cross-border platforms.",
+      "title": "Developing Solutions Thinking",
+      "narrative": "Continue improving system architecture and language skills, toward consulting and providing comprehensive technology solutions.",
       "bullets": [
-        "Enterprise RAG, agent orchestration, platform architecture",
-        "DevSecOps, zero-trust, cloud cost governance",
-        "N3+ Japanese + leading 0→1 solutions for global teams"
+        "Research Enterprise RAG and Agent orchestration",
+        "Improve DevSecOps standards and cloud cost management",
+        "Target JLPT N3+ for more effective collaboration with Japanese partners"
       ],
       "tags": ["AI Architecture", "Leadership", "JP N3+"],
-      "imageConcept": "Glowing bridge of light connecting today's city to a benevolent AI future.",
+      "imageConcept": "Light bridge connecting current city to benevolent AI future.",
       "codename": "HORIZON-01 // AI-LEAD",
       "chapter": "horizon",
       "arc": "ai",
       "connectsTo": ["ai-pipeline-prod"],
       "order": 50
     }
-  ],
-  "$comment": "EN translation (Grok) of profile.json. Source of truth for content stays profile.json (VI)."
+  ]
 }

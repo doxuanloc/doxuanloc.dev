@@ -1,12 +1,12 @@
 {
-  "$comment": "Portfolio data v4 - Đầy đủ & Story-driven | Đỗ Xuân Lộc | June 2026",
+  "$comment": "Portfolio data v4 - Chuyên nghiệp, Thiết thực & Khiêm tốn | Đỗ Xuân Lộc | June 2026",
   "version": 4,
   "identity": {
     "name": "Đỗ Xuân Lộc",
     "nameEn": "Do Xuan Loc",
     "title": "AI & System Optimization Engineer",
     "subtitle": "Full-Stack Engineer · Solutions Architect (ML)",
-    "tagline": "Từ Full-Stack đến AI/System Optimization — hành trình kiến tạo hệ thống thực chiến, scalable và tối ưu chi phí cho thị trường Nhật Bản.",
+    "tagline": "Phát triển từ Full-Stack đến kiến trúc AI & Cloud — tập trung thiết kế các hệ thống thực tiễn, có khả năng mở rộng và tối ưu chi phí cho thị trường Nhật Bản.",
     "location": "Ho Chi Minh City, Vietnam",
     "yearsExperience": 3,
     "email": "locvkv1234@gmail.com",
@@ -17,27 +17,47 @@
       "github": null
     }
   },
-  "summary": "Kỹ sư máy tính với hành trình từ frontend thuần túy đến việc thiết kế và tối ưu toàn bộ hệ thống phức tạp. Bắt đầu bằng việc chạm vào dữ liệu on-chain thực tế, sau đó xây dựng sản phẩm full-stack có 3D tương tác, rồi chuyển sang kiến trúc microservices trên AWS cho nền tảng quy mô lớn tại Nhật Bản. Hiện đang dẫn dắt việc tích hợp AI (RAG, Voice AI, Multi-agent) vào sản phẩm thực tế một cách an toàn, chính xác và tối ưu chi phí. Luôn đặt câu hỏi: “Hệ thống này có thực sự tạo ra giá trị bền vững không?”",
+  "summary": "Kỹ sư phần mềm với kinh nghiệm phát triển từ frontend đến thiết kế kiến trúc hệ thống tổng thể. Quá trình làm việc đa dạng—từ các sản phẩm tương tác 3D đến kiến trúc microservices trên AWS cho các nền tảng quy mô lớn tại Nhật Bản—đã giúp tôi rèn luyện tư duy giải quyết vấn đề một cách có hệ thống. Hiện tại, tôi áp dụng các nguyên tắc thiết kế như SOLID và Feature-Based Design để tích hợp các giải pháp AI (RAG, Voice AI, Multi-agent) vào sản phẩm thực tiễn. Mục tiêu của tôi luôn là xây dựng những hệ thống đảm bảo tính an toàn, dễ bảo trì và mang lại giá trị vận hành bền vững cho doanh nghiệp.",
   "solves": [
     {
-      "problem": "Hệ thống lớn khó scale & bảo trì",
-      "approach": "Tách microservices trong NX Monorepo, API ranh giới rõ ràng, CI/CD tự động theo từng môi trường.",
-      "stack": ["NestJS", "NX Monorepo", "AWS", "CI/CD"]
+      "problem": "Nâng cao khả năng mở rộng và bảo trì hệ thống",
+      "approach": "Chuyển đổi sang kiến trúc microservices với NX Monorepo, xác định ranh giới API rõ ràng và tự động hóa quy trình CI/CD theo từng môi trường.",
+      "stack": [
+        "NestJS",
+        "NX Monorepo",
+        "AWS",
+        "CI/CD"
+      ]
     },
     {
-      "problem": "Đồng bộ & xử lý dữ liệu đa nguồn realtime",
-      "approach": "Kiến trúc event-driven serverless — hàng đợi và lịch tự động tách rời các service.",
-      "stack": ["AWS Lambda", "EventBridge", "SAM", "SQS"]
+      "problem": "Đồng bộ và xử lý dữ liệu đa nguồn theo thời gian thực",
+      "approach": "Áp dụng kiến trúc event-driven và serverless để giảm thiểu sự phụ thuộc giữa các dịch vụ, đảm bảo luồng dữ liệu hoạt động ổn định.",
+      "stack": [
+        "AWS Lambda",
+        "EventBridge",
+        "SAM",
+        "SQS"
+      ]
     },
     {
-      "problem": "Đưa LLM vào sản phẩm mà vẫn chính xác & an toàn",
-      "approach": "RAG neo câu trả lời vào tài liệu thật, embeddings + LLM deploy nội bộ để kiểm soát dữ liệu.",
-      "stack": ["RAG", "Embeddings", "LLM (Ollama)", "Python"]
+      "problem": "Ứng dụng LLM vào sản phẩm đảm bảo độ chính xác và bảo mật",
+      "approach": "Sử dụng kiến trúc RAG kết hợp embeddings để trích xuất thông tin từ tài liệu nội bộ, triển khai LLM cục bộ để kiểm soát hoàn toàn dữ liệu.",
+      "stack": [
+        "RAG",
+        "Embeddings",
+        "LLM (Ollama)",
+        "Python"
+      ]
     },
     {
-      "problem": "Xử lý giọng nói tiếng Nhật thực tế với độ chính xác cao",
-      "approach": "Kết hợp Amazon Connect + Lex V2 + Bedrock Claude Haiku, xử lý dead air, ASR error và flow phức tạp.",
-      "stack": ["Amazon Connect", "Lex V2", "Bedrock", "State Machine"]
+      "problem": "Xử lý giọng nói tiếng Nhật với các luồng hội thoại phức tạp",
+      "approach": "Tích hợp Amazon Connect, Lex V2 và Bedrock Claude Haiku để bóc tách ý định người dùng, xử lý các trường hợp nhiễu âm hoặc gián đoạn.",
+      "stack": [
+        "Amazon Connect",
+        "Lex V2",
+        "Bedrock",
+        "State Machine"
+      ]
     }
   ],
   "languages": [
@@ -55,20 +75,59 @@
     }
   ],
   "skills": {
-    "frontend": ["ReactJS", "Next.js", "Redux", "TailwindCSS", "VueJS", "Vuex", "Vuetify", "TypeScript"],
-    "backend": ["Node.js", "NestJS", "Express", "Socket.io", "SSE", "Three.js"],
-    "database": ["MySQL", "MongoDB", "Strapi", "Postgres", "S3 Tables (Iceberg)"],
+    "frontend": [
+      "ReactJS",
+      "Next.js",
+      "Redux",
+      "TailwindCSS",
+      "VueJS",
+      "Vuex",
+      "Vuetify",
+      "TypeScript"
+    ],
+    "backend": [
+      "Node.js",
+      "NestJS",
+      "Express",
+      "Socket.io",
+      "SSE",
+      "Three.js"
+    ],
+    "database": [
+      "MySQL",
+      "MongoDB",
+      "Strapi",
+      "Postgres",
+      "S3 Tables (Iceberg)"
+    ],
     "cloud_devops": [
       "AWS (EC2, ECS, Lambda, SAM, SQS, SNS, EventBridge, ECR, CodePipeline, SageMaker, Bedrock)",
-      "Docker", "GitHub Actions", "NX Monorepo", "CI/CD", "CloudFormation"
+      "Docker",
+      "GitHub Actions",
+      "NX Monorepo",
+      "CI/CD",
+      "CloudFormation"
     ],
     "ai_ml": [
-      "RAG", "Word2Vec / Embeddings", "LLM (Ollama, Claude, Gemini)", "Fine-tuning (LoRA/QLoRA)",
-      "Whisper + Pyannote", "Florence-2", "LangGraph", "Multi-Agent Systems", "AI Pipelines"
+      "RAG",
+      "Word2Vec / Embeddings",
+      "LLM (Ollama, Claude, Gemini)",
+      "Fine-tuning (LoRA/QLoRA)",
+      "Whisper + Pyannote",
+      "Florence-2",
+      "LangGraph",
+      "Multi-Agent Systems",
+      "AI Pipelines"
     ],
     "practices": [
-      "Microservices", "Event-Driven Architecture", "DevSecOps", "Scrum/Agile",
-      "Monitoring & Observability", "Business Intelligence", "Cost Optimization"
+      "Microservices",
+      "Event-Driven Architecture",
+      "DevSecOps",
+      "Feature-Based Design",
+      "SOLID Principles",
+      "Monitoring & Observability",
+      "Business Intelligence",
+      "Cost Optimization"
     ]
   },
   "experience": [
@@ -82,68 +141,109 @@
       "projects": [
         {
           "name": "Oikura Modernization",
-          "summary": "Hiện đại hóa Oikura — nền tảng giao dịch đồ cũ lớn nhất Nhật Bản. Tôi tham gia tái thiết kế kiến trúc từ monolithic sang microservices.",
+          "summary": "Tham gia nhóm phát triển tái thiết kế kiến trúc Oikura — nền tảng giao dịch đồ cũ tại Nhật Bản — từ mô hình monolithic sang microservices để tối ưu hóa hiệu suất.",
           "highlights": [
-            "Thiết kế NX Monorepo, tách private/public services rõ ràng",
-            "Microservices NestJS + API boundary rõ ràng, tối ưu MySQL query & index",
-            "Xây dựng CI/CD tự động theo môi trường trên AWS (EC2 + CodePipeline)",
-            "Tích hợp SendGrid + SMS qua AWS SQS & Lambda"
+            "Áp dụng NX Monorepo, thiết lập ranh giới rõ ràng giữa các service nội bộ và public",
+            "Phát triển microservices bằng NestJS, tuân thủ SOLID, tối ưu hóa các câu truy vấn MySQL",
+            "Đóng góp xây dựng luồng CI/CD tự động hóa trên AWS (EC2 + CodePipeline)",
+            "Tích hợp hệ thống gửi thông báo (SendGrid, SMS) thông qua kiến trúc hướng sự kiện với SQS & Lambda"
           ],
-          "stack": ["NX Monorepo", "NestJS", "Next.js", "AWS (EC2, ECR, SQS, Lambda, CodePipeline)", "MySQL"]
+          "stack": [
+            "NX Monorepo",
+            "NestJS",
+            "Next.js",
+            "AWS (EC2, ECR, SQS, Lambda, CodePipeline)",
+            "MySQL"
+          ]
         },
         {
           "name": "V-Voicebot (Japanese Buyback Voicebot)",
-          "summary": "Xây dựng hệ thống voicebot tự động thu thập thông tin sản phẩm và khách hàng cho dịch vụ mua bán đồ cũ tại Nhật (takakuureru.com). Kết hợp Amazon Connect + Lex V2 + Bedrock Claude Haiku.",
+          "summary": "Đóng góp phát triển hệ thống voicebot tự động hóa khâu thu thập thông tin cho dịch vụ takakuureru.com, ứng dụng bộ dịch vụ của AWS.",
           "highlights": [
-            "Thiết kế state machine và conversation flow cho intake automation",
-            "Tích hợp Bedrock Claude Haiku cho classify intent + extract structured data",
-            "Xử lý các pain point thực tế: dead air tại STARTING, ASR brand error, PostCode unreliable",
-            "Xây dựng guard system (rate limit, max turns, duration, empty turns)"
+            "Thiết kế state machine và luồng hội thoại để thu thập dữ liệu tự động",
+            "Tích hợp Bedrock Claude Haiku để phân loại ý định và trích xuất dữ liệu có cấu trúc",
+            "Xử lý các vấn đề thực tế trong giao tiếp thoại: khoảng lặng (dead air), lỗi nhận diện thương hiệu, định dạng PostCode",
+            "Thiết lập các cơ chế kiểm soát (rate limit, giới hạn lượt tương tác) để bảo vệ hệ thống"
           ],
-          "stack": ["Amazon Connect", "Lex V2 (ja_JP)", "Bedrock (Claude 3 Haiku)", "AWS Lambda", "DynamoDB", "S3"]
+          "stack": [
+            "Amazon Connect",
+            "Lex V2 (ja_JP)",
+            "Bedrock (Claude 3 Haiku)",
+            "AWS Lambda",
+            "DynamoDB",
+            "S3"
+          ]
         },
         {
           "name": "V-VoiceSummarize Pipeline",
-          "summary": "Dẫn dắt xây dựng pipeline tự động transcribe + summarize + extract structured data từ hàng loạt cuộc gọi IS/FS. Sử dụng Whisper + Pyannote + Bedrock/Gemini.",
+          "summary": "Thiết kế và triển khai pipeline tự động chuyển ngữ, tóm tắt và trích xuất dữ liệu từ các cuộc gọi nghiệp vụ IS/FS.",
           "highlights": [
-            "Thiết kế end-to-end pipeline: STT → Diarization → Summarization → Structured Extraction",
-            "Tối ưu chi phí và latency với SageMaker async endpoints + Lambda workers",
-            "Xử lý đa ngôn ngữ và chất lượng âm thanh thực tế (nhiễu, khoảng cách, crosstalk)",
-            "Kết nối output với S3 Tables và Google Sheets cho team IS review"
+            "Xây dựng luồng xử lý từ đầu đến cuối: STT → Diarization → Summarization → Structured Extraction",
+            "Sử dụng SageMaker async endpoints và Lambda workers để tối ưu chi phí và độ trễ",
+            "Tinh chỉnh để cải thiện độ chính xác trên dữ liệu âm thanh thực tế (nhiễu nền, đàm thoại chéo)",
+            "Lưu trữ và xuất dữ liệu qua S3 Tables và Google Sheets phục vụ cho đội ngũ vận hành"
           ],
-          "stack": ["Whisper Large-v3/Turbo", "Pyannote", "Bedrock", "Gemini", "SageMaker", "S3 Tables", "Lambda"]
+          "stack": [
+            "Whisper Large-v3/Turbo",
+            "Pyannote",
+            "Bedrock",
+            "Gemini",
+            "SageMaker",
+            "S3 Tables",
+            "Lambda"
+          ]
         },
         {
           "name": "Agent Buyback System",
-          "summary": "Xây dựng hệ thống multi-agent hỗ trợ quy trình buyback, kết hợp automation và human-in-the-loop để giảm tải cho nhân viên IS/FS.",
+          "summary": "Thử nghiệm và triển khai hệ thống multi-agent nhằm hỗ trợ và tự động hóa một phần quy trình làm việc của nhân viên IS/FS.",
           "highlights": [
-            "Thiết kế multi-agent flow với LangGraph + Gemini",
-            "Kết hợp Voicebot intake data với agentic decision making",
-            "Xây dựng memory và caching architecture cho agent",
-            "Tích hợp với hệ thống hiện có (S3, DynamoDB, Google Sheets)"
+            "Thiết kế luồng hoạt động multi-agent sử dụng LangGraph và Gemini",
+            "Áp dụng chuẩn giao tiếp Agent-to-Agent (A2A) để đồng bộ dữ liệu giữa Voicebot và hệ thống ra quyết định",
+            "Tối ưu hóa cơ chế bộ nhớ (memory) và bộ nhớ đệm (caching) cho các agents",
+            "Tích hợp linh hoạt với cơ sở hạ tầng hiện hữu (S3, DynamoDB)"
           ],
-          "stack": ["LangGraph", "Gemini", "Multi-Agent Architecture", "Python"]
+          "stack": [
+            "LangGraph",
+            "Gemini",
+            "Multi-Agent Architecture",
+            "Python"
+          ]
         },
         {
           "name": "Message Management Tool (MMT)",
-          "summary": "Hệ thống event-driven quản lý giao tiếp khách hàng (tự động + thủ công) trong thị trường đồ cũ.",
+          "summary": "Tham gia phát triển hệ thống quản lý giao tiếp khách hàng dựa trên kiến trúc hướng sự kiện, phục vụ quy trình vận hành nội bộ.",
           "highlights": [
-            "Event-driven với AWS SAM + Lambda đồng bộ dữ liệu đa nguồn",
-            "AWS EventBridge lập lịch thu thập dữ liệu định kỳ",
-            "NestJS quản lý workflow messaging, cron jobs, MongoDB",
-            "ReactJS dashboard cho operator + webhook realtime (SMS, Gmail, Slack, Line)"
+            "Sử dụng AWS SAM, Lambda và EventBridge để đồng bộ dữ liệu và lập lịch tác vụ",
+            "Xây dựng workflow backend với NestJS và cơ sở dữ liệu MongoDB",
+            "Tạo giao diện ReactJS cho nhân viên vận hành, tích hợp webhook theo thời gian thực (SMS, Gmail, Slack, Line)"
           ],
-          "stack": ["NestJS", "ReactJS", "MongoDB", "AWS SAM", "Lambda", "EventBridge", "Webhooks"]
+          "stack": [
+            "NestJS",
+            "ReactJS",
+            "MongoDB",
+            "AWS SAM",
+            "Lambda",
+            "EventBridge",
+            "Webhooks"
+          ]
         },
         {
-          "name": "Chatbot RAG cho dự án công nghệ",
-          "summary": "Chatbot phân tích & truy xuất tài liệu kỹ thuật xuyên dự án với độ chính xác cao.",
+          "name": "Internal RAG Chatbot",
+          "summary": "Nghiên cứu và phát triển công cụ chatbot hỗ trợ truy xuất và phân tích tài liệu kỹ thuật nội bộ của công ty.",
           "highlights": [
-            "RAG framework với Word2Vec embeddings tăng độ chính xác",
-            "LLM (Ollama) deploy local an toàn, fine-tune theo domain công ty",
-            "AI pipeline scalable, modular; tối ưu inference low-latency"
+            "Cải thiện độ chính xác của kết quả tìm kiếm bằng Word2Vec embeddings",
+            "Triển khai mô hình LLM (Ollama) trong mạng nội bộ để đảm bảo an toàn thông tin",
+            "Thiết kế pipeline module hóa, dễ dàng mở rộng và tối ưu hóa thời gian phản hồi"
           ],
-          "stack": ["RAG", "Word2Vec", "LLM (Ollama)", "Python", "MongoDB", "ReactJS", "Docker"]
+          "stack": [
+            "RAG",
+            "Word2Vec",
+            "LLM (Ollama)",
+            "Python",
+            "MongoDB",
+            "ReactJS",
+            "Docker"
+          ]
         }
       ]
     },
@@ -156,24 +256,37 @@
       "current": false,
       "projects": [
         {
-          "name": "Bucco (Healthcare SaaS - Pháp)",
-          "summary": "Ứng dụng kết nối phòng khám nha khoa & khách hàng tại Pháp. Tôi tham gia fix bug và nâng cấp UI/UX nhanh theo feedback thực tế.",
+          "name": "Bucco (Healthcare SaaS - France)",
+          "summary": "Tham gia bảo trì và phát triển tính năng cho ứng dụng kết nối phòng khám nha khoa tại thị trường Pháp.",
           "highlights": [
-            "Full-stack NestJS + Vue.js + Vuetify",
-            "Bug fixing + iteration nhanh theo feedback từ clinic",
-            "Làm việc remote với team châu Âu"
+            "Phát triển Full-stack với NestJS, Vue.js và Vuetify",
+            "Cải thiện UI/UX và khắc phục lỗi dựa trên phản hồi từ người dùng thực tế",
+            "Rèn luyện kỹ năng giao tiếp và làm việc bất đồng bộ với đội ngũ tại Châu Âu"
           ],
-          "stack": ["NestJS", "Vue.js", "Vuetify", "Vuex", "Docker", "Git"]
+          "stack": [
+            "NestJS",
+            "Vue.js",
+            "Vuetify",
+            "Vuex",
+            "Docker",
+            "Git"
+          ]
         },
         {
           "name": "Synode (3D Instructions SaaS)",
-          "summary": "SaaS self-service giúp kỹ sư tạo & chia sẻ hướng dẫn lắp ráp 3D tương tác (manufacturing e-commerce). Giải quyết bài toán versioning & cập nhật hướng dẫn.",
+          "summary": "Đóng góp phát triển nền tảng SaaS hỗ trợ tạo và chia sẻ tài liệu hướng dẫn lắp ráp 3D tương tác.",
           "highlights": [
-            "3D visualization thay manual 2D CAD — giải versioning & cập nhật",
-            "Thiết kế API business logic, dựng UI theo Figma",
-            "Three.js + Strapi + NestJS + Docker"
+            "Tích hợp hiển thị 3D trên nền web để thay thế tài liệu 2D thủ công",
+            "Chuyển đổi thiết kế Figma thành giao diện thực tế và xây dựng API backend",
+            "Phối hợp sử dụng Three.js, Strapi và NestJS trong môi trường Docker"
           ],
-          "stack": ["NestJS", "Three.js", "Vuetify", "Strapi", "Docker"]
+          "stack": [
+            "NestJS",
+            "Three.js",
+            "Vuetify",
+            "Strapi",
+            "Docker"
+          ]
         }
       ]
     },
@@ -187,13 +300,17 @@
       "projects": [
         {
           "name": "Crypto News & E-learning Platform",
-          "summary": "Website tin tức thị trường crypto + nền tảng học tập. Lần đầu tôi được chạm vào dữ liệu on-chain thật và viết technical content.",
+          "summary": "Tham gia xây dựng giao diện cho nền tảng học tập và tin tức về thị trường tiền điện tử.",
           "highlights": [
-            "Nghiên cứu phân tích on-chain data qua API, viết technical blog",
-            "Cải thiện UI/UX hướng người dùng",
-            "Nâng cấp e-learning: nội dung tương tác, progress tracking"
+            "Kết nối API để hiển thị dữ liệu on-chain và hỗ trợ viết tài liệu kỹ thuật",
+            "Tối ưu hóa trải nghiệm người dùng (UI/UX) trên nhiều thiết bị",
+            "Phát triển các module theo dõi tiến độ học tập cho nền tảng e-learning"
           ],
-          "stack": ["React", "UI/UX", "Responsive Web"]
+          "stack": [
+            "React",
+            "UI/UX",
+            "Responsive Web"
+          ]
         }
       ]
     }
@@ -203,19 +320,24 @@
       "name": "VPhoto — E-comm Image AI Camera App",
       "period": "2025",
       "teamSize": 2,
-      "summary": "Ứng dụng camera thông minh hỗ trợ người bán hàng e-commerce tự động xử lý và lọc ảnh sản phẩm với chất lượng cao và nhất quán.",
+      "summary": "Ứng dụng hỗ trợ xử lý và phân loại hình ảnh sản phẩm thương mại điện tử tự động, tập trung vào tính nhất quán của dữ liệu.",
       "highlights": [
-        "Tích hợp Florence-2 cho detailed captioning và object detection",
-        "Xây dựng pipeline filter ảnh tự động (ánh sáng, góc chụp, nền)",
-        "Tối ưu inference trên GPU và tích hợp vào mobile app"
+        "Sử dụng Florence-2 cho tác vụ phát hiện đối tượng và gán nhãn chi tiết",
+        "Xây dựng luồng kiểm tra chất lượng ảnh (độ sáng, góc chụp, nền)",
+        "Nghiên cứu tối ưu hóa hiệu năng xử lý trên GPU để tích hợp vào thiết bị di động"
       ],
-      "stack": ["Florence-2", "Computer Vision", "GPU Acceleration", "Python"]
+      "stack": [
+        "Florence-2",
+        "Computer Vision",
+        "GPU Acceleration",
+        "Python"
+      ]
     },
     {
-      "name": "Bartending Course — NauPhaChe",
+      "name": "NauPhaChe — Bartending Course Platform",
       "period": "2022-10 — 2023-11",
       "teamSize": 2,
-      "summary": "Nền tảng khoá học pha chế: login/register, thanh toán nhận code kích hoạt, giỏ hàng, admin quản lý khoá học & doanh thu.",
+      "summary": "Dự án cá nhân xây dựng nền tảng quản lý khóa học: bao gồm phân hệ thanh toán, cấp phát mã kích hoạt và quản trị nội dung.",
       "stack": [
         "Next.js",
         "Bootstrap",
@@ -231,7 +353,7 @@
       "name": "MyReview — Viettel (Myanmar)",
       "period": "2023-03 — 2023-05",
       "teamSize": 7,
-      "summary": "Nền tảng xem phim: thanh toán qua SMS, đăng nhập OTP qua nhà mạng Mytel Myanmar.",
+      "summary": "Tham gia phát triển giao diện web cho nền tảng giải trí, tích hợp hệ thống xác thực OTP qua nhà mạng Mytel.",
       "stack": [
         "HTML5",
         "CSS",
@@ -260,8 +382,8 @@
   "roadmap": [
     {
       "phase": "2026",
-      "label": "AI Core Forge",
-      "story": "Rèn lõi AI thực chiến — biến mỗi hệ thống thành một thực thể thông minh.",
+      "label": "AI Core Implementation",
+      "story": "Tập trung áp dụng AI vào giải quyết các bài toán nghiệp vụ, ưu tiên tính ổn định của hệ thống.",
       "focus": [
         "Production RAG",
         "LLM optimization",
@@ -272,8 +394,8 @@
     },
     {
       "phase": "2026–2027",
-      "label": "Mind at Scale",
-      "story": "Phóng đại trí tuệ nhân tạo phục vụ quy mô lớn mà không đánh đổi hiệu năng.",
+      "label": "Systems at Scale",
+      "story": "Nghiên cứu các phương án mở rộng năng lực xử lý của hệ thống AI, cân bằng giữa hiệu năng và chi phí.",
       "focus": [
         "Distributed inference",
         "MLOps",
@@ -284,8 +406,8 @@
     },
     {
       "phase": "2027–2028",
-      "label": "DevSecOps Ascent",
-      "story": "Khoác lớp giáp thép cho AI — bảo mật và tối ưu chi phí từ trong ra ngoài.",
+      "label": "DevSecOps & Compliance",
+      "story": "Tăng cường các tiêu chuẩn bảo mật, quản trị rủi ro và tối ưu hóa tài nguyên đám mây.",
       "focus": [
         "Zero-trust AI",
         "Secure CI/CD",
@@ -296,8 +418,8 @@
     },
     {
       "phase": "2028–2030",
-      "label": "AI Solutions Lead",
-      "story": "Dẫn dắt kiến trúc AI quy mô lớn, định hình giải pháp cho doanh nghiệp toàn cầu.",
+      "label": "Solutions Architecture",
+      "story": "Phát triển năng lực thiết kế tổng thể, định hình các giải pháp công nghệ đáp ứng tiêu chuẩn doanh nghiệp.",
       "focus": [
         "Enterprise RAG",
         "Agent orchestration",
@@ -308,8 +430,8 @@
     },
     {
       "phase": "2030+",
-      "label": "N3 Global Bridge",
-      "story": "Nối Việt Nam với Nhật Bản và thế giới bằng AI — cùng trình độ tiếng Nhật N3+.",
+      "label": "Cross-Border Engineering",
+      "story": "Trau dồi ngoại ngữ (N3+) và kỹ năng quản lý để làm việc hiệu quả hơn trong môi trường quốc tế.",
       "focus": [
         "Japanese N3+",
         "Cross-border teams",
@@ -319,20 +441,24 @@
       "status": "planned"
     }
   ],
-  "$comment_journey": "NGUỒN SỰ THẬT cho trang /journey (scrolly flight + story chapters). \n\nQUY TẮC CHỈNH SỬA (profile là nơi duy nhất cần sửa):\n- Thêm/sửa/xoá entry để kể chuyện mượt. Khuyến khích 9-12 beats nhỏ thay vì 4-6 mốc lớn.\n- Dùng 'chapter' (origins|forge|systems|intelligence|horizon) để nhóm theo logic câu chuyện (primary view).\n- Dùng 'arc' cho màu filament/thread (foundation|build|scale|ai).\n- Dùng 'connectsTo': [\"id-cũ\"] để vẽ đường story rõ ràng (không chỉ previous implicit).\n- 'codename' giữ phong cách HUD (ví dụ: \"FORGE-02 // 3D-SHIP\").\n- Ảnh: public/images/journey/<id>.webp (hoặc .png). Không có → placeholder gradient + icon theo kind.\n- Muốn gợi ý từ CV thật? Xem suggestBeatsFromProfile() trong src/components/journey/utils.ts (chỉ gợi ý, bạn viết narrative).\n\nCấu trúc khuyến nghị: 4-5 chương × 2-3 beats nhỏ. Timeline view vẫn sort theo year/order nếu user chọn.",
+  "$comment_journey": "NGUỒN SỰ THẬT cho trang /journey. Tập trung vào các mốc thay đổi tư duy, kỹ năng học được và đóng góp vào tập thể.",
   "journey": [
     {
       "id": "uit-foundation",
       "year": "2018–2021",
       "kind": "education",
-      "title": "Tư duy hệ thống tại UIT",
-      "narrative": "Xây nền móng thuật toán và tư duy hệ thống — cái sau này trở thành lợi thế khi scale thật.",
+      "title": "Xây dựng tư duy kỹ thuật tại UIT",
+      "narrative": "Trang bị nền tảng về thuật toán, kiến trúc máy tính và tư duy hệ thống — cơ sở quan trọng để tiếp cận các bài toán quy mô lớn sau này.",
       "bullets": [
         "Kỹ thuật Máy tính, Đại học Quốc gia TP.HCM",
-        "Tập trung algorithms, architecture, low-level thinking",
-        "Bắt đầu chạm web thực tế qua BTEC FPT song song"
+        "Tập trung vào kiến trúc hệ thống và thuật toán",
+        "Bắt đầu làm quen với lập trình web qua BTEC FPT"
       ],
-      "tags": ["Computer Engineering", "Algorithms", "Systems"],
+      "tags": [
+        "Computer Engineering",
+        "Algorithms",
+        "Systems"
+      ],
       "imageConcept": "Thư viện đại học hoàng hôn, laptop mở, sách và khát vọng.",
       "codename": "ORIGIN-01 // SYSTEMS-THINK",
       "chapter": "origins",
@@ -343,211 +469,280 @@
       "id": "btec-practical",
       "year": "2021–2022",
       "kind": "education",
-      "title": "Thực chiến qua BTEC",
-      "narrative": "Chuyển từ lý thuyết sang ship sản phẩm nhỏ — học cách làm việc nhóm và giao nộp.",
+      "title": "Tiếp cận môi trường thực tế",
+      "narrative": "Tham gia các dự án thực hành, bước đầu chuyển đổi từ lý thuyết sang quy trình phát triển phần mềm và làm việc nhóm.",
       "bullets": [
         "Kỹ thuật Phần mềm — BTEC FPT",
-        "Dự án môn học thực tế, collaboration",
-        "Cầu nối giữa trường và công việc đầu tiên"
+        "Triển khai dự án nhóm theo quy trình tiêu chuẩn",
+        "Tạo bước đệm cho công việc chuyên nghiệp đầu tiên"
       ],
-      "tags": ["Software Engineering", "Teamwork"],
+      "tags": [
+        "Software Engineering",
+        "Teamwork"
+      ],
       "imageConcept": "Phòng lab, màn hình code, nhóm sinh viên đang review.",
       "codename": "ORIGIN-02 // PRACTICAL-BRIDGE",
       "chapter": "origins",
       "arc": "foundation",
-      "connectsTo": ["uit-foundation"],
+      "connectsTo": [
+        "uit-foundation"
+      ],
       "order": 11
     },
     {
       "id": "first-frontend-ship",
       "year": "2022",
       "kind": "frontend",
-      "title": "Lần đầu ship cho user thật",
-      "narrative": "Chạm data on-chain, viết blog kỹ thuật, và cảm giác code của mình được người khác dùng.",
+      "title": "Dự án phát triển sản phẩm đầu tiên",
+      "narrative": "Làm quen với dữ liệu on-chain, viết tài liệu kỹ thuật và trực tiếp nhận phản hồi để cải thiện trải nghiệm người dùng.",
       "bullets": [
-        "ReactJS responsive cho nền tảng crypto + e-learning",
-        "Phân tích on-chain, viết technical content",
-        "Cải thiện UX theo feedback thực"
+        "Xây dựng giao diện ReactJS cho nền tảng crypto và e-learning",
+        "Xử lý dữ liệu API và biên soạn nội dung kỹ thuật",
+        "Cải thiện UI/UX dựa trên hành vi người dùng"
       ],
-      "tags": ["ReactJS", "On-chain", "UI/UX"],
+      "tags": [
+        "ReactJS",
+        "On-chain",
+        "UI/UX"
+      ],
       "imageConcept": "Màn hình React + chart crypto xanh trong đêm Sài Gòn.",
       "codename": "FORGE-01 // FIRST-USERS",
       "chapter": "forge",
       "arc": "build",
-      "connectsTo": ["btec-practical"],
+      "connectsTo": [
+        "btec-practical"
+      ],
       "order": 20
     },
     {
       "id": "threejs-saas",
       "year": "2022–2023",
       "kind": "fullstack",
-      "title": "Xây SaaS 3D với Three.js",
-      "narrative": "Tự mình làm full-stack từ ý tưởng đến production: 3D instructions thay 2D CAD, giải versioning.",
+      "title": "Tham gia phát triển SaaS 3D",
+      "narrative": "Đảm nhiệm vai trò full-stack, học cách chuyển đổi yêu cầu nghiệp vụ thành giải pháp qua việc xử lý đồ họa 3D trên nền web.",
       "bullets": [
-        "NestJS + Vue + Vuetify + Three.js + Strapi + Docker",
-        "SaaS self-service cho kỹ sư manufacturing",
-        "Học cách thiết kế API business logic từ Figma"
+        "Sử dụng NestJS, Vue, Three.js và Docker",
+        "Xây dựng công cụ hướng dẫn 3D phục vụ kỹ sư sản xuất",
+        "Thiết kế API backend đáp ứng luồng nghiệp vụ từ bản vẽ"
       ],
-      "tags": ["Three.js", "NestJS", "Full-Stack", "Docker"],
+      "tags": [
+        "Three.js",
+        "NestJS",
+        "Full-Stack",
+        "Docker"
+      ],
       "imageConcept": "Mô hình 3D xoay, ánh sáng xanh, hai màn hình backend+frontend.",
       "codename": "FORGE-02 // 3D-SHIP",
       "chapter": "forge",
       "arc": "build",
-      "connectsTo": ["first-frontend-ship"],
+      "connectsTo": [
+        "first-frontend-ship"
+      ],
       "order": 21
     },
     {
       "id": "personal-platforms",
       "year": "2022–2023",
       "kind": "personal",
-      "title": "Side quests: học qua sản phẩm thật",
-      "narrative": "Làm 2 dự án cá nhân có user trả tiền và thanh toán thực — hiểu rõ hơn về auth, billing, ops.",
+      "title": "Trải nghiệm qua dự án cá nhân",
+      "narrative": "Thử sức với các dự án cá nhân để cọ xát trực tiếp với các bài toán về xác thực, thanh toán và quản trị hệ thống.",
       "bullets": [
-        "Bartending course platform (Next + Nest + Mongo, thanh toán + admin)",
-        "MyReview Myanmar (Express + SMS OTP Viettel)",
-        "Học ownership từ A-Z khi không có team lớn"
+        "Xây dựng nền tảng khóa học (Next.js, NestJS, MongoDB)",
+        "Tích hợp luồng đăng nhập OTP qua SMS cho dự án MyReview",
+        "Hiểu thêm về quy trình phát triển sản phẩm toàn diện (A-Z)"
       ],
-      "tags": ["Next.js", "Billing", "Ownership"],
+      "tags": [
+        "Next.js",
+        "Billing",
+        "Ownership"
+      ],
       "imageConcept": "Dashboard admin + màn hình thanh toán SMS, không khí bootstrap.",
       "codename": "FORGE-03 // SIDE-QUESTS",
       "chapter": "forge",
       "arc": "build",
-      "connectsTo": ["threejs-saas"],
+      "connectsTo": [
+        "threejs-saas"
+      ],
       "order": 22
     },
     {
       "id": "plogg-bucco",
       "year": "2022–2023",
       "kind": "fullstack",
-      "title": "Remote full-stack cho thị trường Pháp",
-      "narrative": "Tham gia PloggMedia, fix và nâng cấp nhanh UI/UX + backend cho ứng dụng nha khoa.",
+      "title": "Cộng tác từ xa (Remote Developer)",
+      "narrative": "Làm việc từ xa với đội ngũ quốc tế, rèn luyện kỹ năng xử lý lỗi linh hoạt và nâng cấp hệ thống dựa trên phản hồi của khách hàng.",
       "bullets": [
-        "NestJS + Vue.js + Vuetify + Docker",
-        "Bug fixing + iteration nhanh theo feedback clinic",
-        "Làm việc remote với team châu Âu"
+        "Làm việc với NestJS, Vue.js trong môi trường Docker",
+        "Xử lý lỗi và cập nhật tính năng nhanh chóng",
+        "Cải thiện kỹ năng làm việc bất đồng bộ với team Châu Âu"
       ],
-      "tags": ["Vue.js", "Remote", "Healthcare"],
+      "tags": [
+        "Vue.js",
+        "Remote",
+        "Healthcare"
+      ],
       "imageConcept": "Phòng khám + interface booking, ánh sáng trắng-xanh.",
       "codename": "FORGE-04 // REMOTE-SHIP",
       "chapter": "forge",
       "arc": "build",
-      "connectsTo": ["personal-platforms"],
+      "connectsTo": [
+        "personal-platforms"
+      ],
       "order": 23
     },
     {
       "id": "me-join",
       "year": "2023-06",
       "kind": "transition",
-      "title": "Bước vào hệ thống quy mô lớn",
-      "narrative": "Gia nhập MarketEnterprise — từ solo/remote sang làm trong codebase enterprise thực thụ.",
+      "title": "Tiếp cận kiến trúc Enterprise",
+      "narrative": "Gia nhập MarketEnterprise, chuyển dịch từ môi trường làm việc nhóm nhỏ sang tham gia vào hệ thống quy mô lớn, chú trọng vào tính bền vững.",
       "bullets": [
-        "Học NX Monorepo, tách private/public services",
-        "Làm quen CI/CD đa môi trường (dev/staging/prod)",
-        "Chuyển tư duy từ 'làm xong' sang 'làm bền + scale'"
+        "Làm quen với kiến trúc NX Monorepo và Microservices",
+        "Sử dụng quy trình CI/CD chuyên nghiệp đa môi trường",
+        "Thay đổi tư duy từ 'hoàn thành tính năng' sang 'dễ bảo trì và mở rộng'"
       ],
-      "tags": ["Transition", "Monorepo", "Enterprise"],
+      "tags": [
+        "Transition",
+        "Monorepo",
+        "Enterprise"
+      ],
       "imageConcept": "Sơ đồ kiến trúc lớn, nhiều service box, không khí engineering.",
       "codename": "TRANSIT-01 // SCALE-UP",
       "chapter": "systems",
       "arc": "scale",
-      "connectsTo": ["plogg-bucco", "threejs-saas"],
+      "connectsTo": [
+        "plogg-bucco",
+        "threejs-saas"
+      ],
       "order": 30
     },
     {
       "id": "oikura-modernize",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Hiện đại hoá Oikura (Nhật)",
-      "narrative": "Tham gia tái kiến trúc nền tảng giao dịch đồ cũ lớn nhất Nhật — microservices + cloud thực chiến.",
+      "title": "Tái cấu trúc Oikura",
+      "narrative": "Đóng góp vào quá trình hiện đại hóa nền tảng giao dịch, tham gia bóc tách hệ thống monolithic thành các dịch vụ độc lập.",
       "bullets": [
-        "NX Monorepo + NestJS microservices, API boundary rõ",
-        "Tối ưu MySQL query/index + deploy AWS EC2 + CodePipeline",
-        "Event-driven: SQS + Lambda cho SendGrid/SMS"
+        "Triển khai microservices với NestJS trên kiến trúc Monorepo",
+        "Tối ưu hóa cơ sở dữ liệu và vận hành hệ thống trên AWS",
+        "Áp dụng kiến trúc hướng sự kiện cho hệ thống thông báo"
       ],
-      "tags": ["NX", "Microservices", "AWS", "Japan"],
+      "tags": [
+        "NX",
+        "Microservices",
+        "AWS",
+        "Japan"
+      ],
       "imageConcept": "AWS diagram phức tạp sáng trên màn hình enterprise.",
       "codename": "SYSTEMS-01 // OIKURA",
       "chapter": "systems",
       "arc": "scale",
-      "connectsTo": ["me-join"],
+      "connectsTo": [
+        "me-join"
+      ],
       "order": 31
     },
     {
       "id": "mmt-event-driven",
       "year": "2023–2024",
       "kind": "fullstack",
-      "title": "Event-driven cho giao tiếp khách hàng",
-      "narrative": "Xây hệ thống MMT: đồng bộ đa nguồn, lịch tự động, dashboard operator realtime.",
+      "title": "Hệ thống quản lý tin nhắn (MMT)",
+      "narrative": "Tham gia phát triển công cụ tự động hóa quy trình giao tiếp, đồng bộ dữ liệu đa nguồn phục vụ nghiệp vụ vận hành nội bộ.",
       "bullets": [
-        "AWS SAM + Lambda + EventBridge + SQS",
-        "NestJS workflow + Mongo + webhooks (SMS, Gmail, Slack, Line)",
-        "React dashboard cho operator + cron jobs"
+        "Ứng dụng AWS SAM, Lambda và EventBridge",
+        "Kết nối API và webhook với nhiều nền tảng (SMS, Line, Slack)",
+        "Xây dựng giao diện điều khiển (Dashboard) cho nhân viên"
       ],
-      "tags": ["Event-Driven", "SAM", "Webhooks"],
+      "tags": [
+        "Event-Driven",
+        "SAM",
+        "Webhooks"
+      ],
       "imageConcept": "Sơ đồ event bus, nhiều mũi tên, dashboard operator.",
       "codename": "SYSTEMS-02 // MMT",
       "chapter": "systems",
       "arc": "scale",
-      "connectsTo": ["oikura-modernize"],
+      "connectsTo": [
+        "oikura-modernize"
+      ],
       "order": 32
     },
     {
       "id": "first-rag",
       "year": "2024",
       "kind": "ai",
-      "title": "RAG đầu tiên đi vào sản phẩm",
-      "narrative": "Bắt đầu đưa LLM vào thực tế: embeddings + retrieval neo câu trả lời vào tài liệu nội bộ.",
+      "title": "Ứng dụng AI vào nội bộ",
+      "narrative": "Thử nghiệm tích hợp mô hình ngôn ngữ lớn (LLM) để xây dựng công cụ hỗ trợ tra cứu tài liệu chuyên môn nội bộ.",
       "bullets": [
-        "Word2Vec embeddings + RAG framework",
-        "LLM (Ollama) local deploy, fine-tune domain",
-        "Giảm hallucination, giữ data trong nhà"
+        "Sử dụng kiến trúc RAG và embeddings để trích xuất dữ liệu",
+        "Triển khai cục bộ mô hình Ollama nhằm bảo mật thông tin",
+        "Giảm thiểu tình trạng AI sinh thông tin sai lệch (hallucination)"
       ],
-      "tags": ["RAG", "Embeddings", "Ollama"],
+      "tags": [
+        "RAG",
+        "Embeddings",
+        "Ollama"
+      ],
       "imageConcept": "Mạng nơ-ron tím-xanh, dữ liệu chảy như sông ánh sáng.",
       "codename": "INTEL-01 // RAG-FIRST",
       "chapter": "intelligence",
       "arc": "ai",
-      "connectsTo": ["mmt-event-driven"],
+      "connectsTo": [
+        "mmt-event-driven"
+      ],
       "order": 40
     },
     {
       "id": "ai-pipeline-prod",
       "year": "2024–nay",
       "kind": "ai",
-      "title": "Kết nối AI với event fabric",
-      "narrative": "Biến AI thành một thành phần có thể quan sát, tối ưu latency, tích hợp sâu với hệ thống event-driven.",
+      "title": "Tích hợp AI vào luồng nghiệp vụ",
+      "narrative": "Đưa các pipeline AI vào hệ thống thực tế, chú trọng vào việc giám sát, tối ưu thời gian phản hồi và quản lý tài nguyên xử lý.",
       "bullets": [
-        "AI pipeline modular, low-latency inference",
-        "Tối ưu retrieval + re-ranking",
-        "Quan sát + cost control cho production AI"
+        "Triển khai luồng xử lý AI theo dạng module độc lập",
+        "Tối ưu hóa các truy vấn và trích xuất dữ liệu",
+        "Giám sát hiệu suất (Observability) và kiểm soát chi phí API"
       ],
-      "tags": ["AI Pipelines", "Observability", "Cost"],
+      "tags": [
+        "AI Pipelines",
+        "Observability",
+        "Cost"
+      ],
       "imageConcept": "Neural net + event arrows, HUD monitoring overlay.",
       "photo": "/images/presenting.webp",
-      "photoAlt": "Đỗ Xuân Lộc thuyết trình về hệ thống",
+      "photoAlt": "Đỗ Xuân Lộc trình bày về giải pháp hệ thống",
       "codename": "INTEL-02 // AI-IN-SYSTEM",
       "chapter": "intelligence",
       "arc": "ai",
-      "connectsTo": ["first-rag", "mmt-event-driven"],
+      "connectsTo": [
+        "first-rag",
+        "mmt-event-driven"
+      ],
       "order": 41
     },
     {
       "id": "horizon-lead",
       "year": "2025+",
       "kind": "future",
-      "title": "Chuẩn bị dẫn dắt giải pháp AI",
-      "narrative": "Từ người làm hệ thống có AI → người định hình kiến trúc AI cho quy mô lớn, sẵn sàng cho thị trường Nhật.",
+      "title": "Hoàn thiện tư duy Giải pháp (Solutions)",
+      "narrative": "Tiếp tục trau dồi về kiến trúc hệ thống và ngoại ngữ, hướng tới khả năng tư vấn và cung cấp các giải pháp công nghệ toàn diện.",
       "bullets": [
-        "Enterprise RAG, agent orchestration, platform thinking",
-        "DevSecOps + zero-trust + cloud cost governance",
-        "N3+ Japanese + cross-border collaboration"
+        "Nghiên cứu Enterprise RAG và điều phối Agent",
+        "Nâng cao tiêu chuẩn DevSecOps và quản lý chi phí đám mây",
+        "Mục tiêu JLPT N3+ để cộng tác hiệu quả hơn với đối tác Nhật Bản"
       ],
-      "tags": ["AI Architecture", "Leadership", "JP N3+"],
+      "tags": [
+        "AI Architecture",
+        "Leadership",
+        "JP N3+"
+      ],
       "imageConcept": "Cầu ánh sáng nối thành phố hiện tại với tương lai AI nhân từ.",
       "codename": "HORIZON-01 // AI-LEAD",
       "chapter": "horizon",
       "arc": "ai",
-      "connectsTo": ["ai-pipeline-prod"],
+      "connectsTo": [
+        "ai-pipeline-prod"
+      ],
       "order": 50
     }
   ]
