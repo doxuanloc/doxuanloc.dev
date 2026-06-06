@@ -6,3 +6,4 @@ dist/
 .env
 .env.*
 .vercel
+public/images/me/
