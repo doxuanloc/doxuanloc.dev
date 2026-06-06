@@ -555,28 +555,20 @@ for (const m of milestones) {
     .jp-panel {
       position: absolute; inset: clamp(12px,1.5vh,20px) clamp(20px,3vw,40px);
       opacity: 0;
-      transform: translateY(16px) scale(0.988);
       pointer-events: none;
-      transition: opacity 0.38s cubic-bezier(0.4,0,0.2,1),
-                  transform 0.38s cubic-bezier(0.4,0,0.2,1);
-      will-change: opacity, transform;
-    }
-    .jp-panel.is-active {
-      opacity: 1; transform: none; pointer-events: auto;
+      /* JS sets opacity directly each RAF — no CSS delay for scroll-locked feel */
     }
 
     .jp-glass {
       height: 100%;
-      background: rgba(6,10,26,0.6);
-      backdrop-filter: blur(14px) saturate(1.1);
-      -webkit-backdrop-filter: blur(14px) saturate(1.1);
+      background: rgba(4,7,20,0.94);
       border: 1px solid rgba(255,255,255,0.07);
       border-left: none;
       border-radius: 20px;
       display: grid;
       grid-template-rows: 44px 1fr;
       overflow: hidden;
-      transition: border-color 0.4s, box-shadow 0.4s;
+      transition: border-color 0.25s, box-shadow 0.25s;
     }
     .jp-panel.is-active .jp-glass {
       border-color: color-mix(in srgb, var(--c1) 30%, rgba(255,255,255,0.07));
@@ -727,27 +719,44 @@ for (const m of milestones) {
       scrollTotal = root.offsetHeight - window.innerHeight;
     }
 
-    function setActive(i: number, globalPct: number, inPanelPct: number) {
-      const clamped = Math.max(0, Math.min(1, globalPct));
-      fills.forEach(f    => { f.style.height = (clamped * 100).toFixed(1) + '%'; });
-      progBars.forEach(b => { b.style.width  = (clamped * 100).toFixed(1) + '%'; });
-      if (counter) counter.textContent = String(i + 1).padStart(2, '0');
+    // render(): scroll-driven, called every RAF — opacity tied 1:1 to scroll position
+    function render(scrolled: number) {
+      const p       = scrolled / scrollTotal;
+      // clamp raw to avoid floor hitting n
+      const raw     = Math.min(p * n, n - 0.0001);
+      const i       = Math.floor(raw);
+      const inPanel = raw - i;          // 0 → 1 within panel i
+      const BLEND   = 0.25;            // last 25% of each panel is crossfade zone
 
-      // --scroll-in: -1 (entering) → 0 (mid) → 1 (leaving) — drives image drift
-      const panel = panels[i];
-      if (panel) panel.style.setProperty('--scroll-in', ((inPanelPct - 0.5) * 2).toFixed(3));
+      fills.forEach(f => { f.style.height = (p * 100).toFixed(1) + '%'; });
+      progBars.forEach(b => { b.style.width  = (p * 100).toFixed(1) + '%'; });
 
-      if (i === activeIdx) return;
-      activeIdx = i;
+      // Opacity: directly scroll-locked, no CSS transition
+      panels.forEach((el, k) => {
+        let op = 0;
+        if (k === i)     op = inPanel < (1 - BLEND) ? 1 : (1 - inPanel) / BLEND;
+        else if (k === i + 1) op = inPanel < (1 - BLEND) ? 0 : (inPanel - (1 - BLEND)) / BLEND;
+        const v = Math.max(0, Math.min(1, op));
+        el.style.opacity      = v <= 0 ? '0' : v.toFixed(3);
+        el.style.pointerEvents = v > 0.5 ? 'auto' : 'none';
+        // Promote only panels currently in transition
+        el.style.willChange   = (k === i || k === i + 1) ? 'opacity' : 'auto';
+      });
 
-      // Preload current panel + 2 ahead so transitions are seamless
-      for (let k = Math.max(0, i - 1); k <= Math.min(n - 1, i + 2); k++) loadPanel(k);
+      // Parallax scroll-in for current panel
+      panels[i]?.style.setProperty('--scroll-in', ((inPanel - 0.5) * 2).toFixed(3));
 
-      panels.forEach((el, k) => el.classList.toggle('is-active', k === i));
-      nodes.forEach((el, k)  => el.classList.toggle('is-active', k === i));
+      // is-active switches at the blend midpoint (50% through crossfade)
+      const newActive = inPanel > (1 - BLEND * 0.5) ? Math.min(n - 1, i + 1) : i;
+      if (counter) counter.textContent = String(newActive + 1).padStart(2, '0');
 
-      const activeNode = nodes[i];
-      if (activeNode) activeNode.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      if (newActive !== activeIdx) {
+        activeIdx = newActive;
+        panels.forEach((el, k) => el.classList.toggle('is-active', k === newActive));
+        nodes.forEach((el, k)  => el.classList.toggle('is-active', k === newActive));
+        for (let k = Math.max(0, newActive - 1); k <= Math.min(n - 1, newActive + 2); k++) loadPanel(k);
+        nodes[newActive]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
     }
 
     function onScroll() {
@@ -755,11 +764,7 @@ for (const m of milestones) {
       scrollTick = true;
       requestAnimationFrame(() => {
         if (scrollTotal <= 0) { scrollTick = false; return; }
-        const scrolled  = Math.max(0, Math.min(window.scrollY - rootTop, scrollTotal));
-        const p         = scrolled / scrollTotal;
-        const idx       = Math.min(n - 1, Math.floor(p * n));
-        const inPanel   = (p * n) - idx;  // 0→1 within current panel
-        setActive(idx, p, inPanel);
+        render(Math.max(0, Math.min(window.scrollY - rootTop, scrollTotal)));
         scrollTick = false;
       });
     }
