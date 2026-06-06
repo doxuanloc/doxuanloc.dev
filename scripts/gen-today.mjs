@@ -53,7 +53,7 @@ console.log(`▶ Grok đang sinh nội dung cho ${today}...`);
 
 const res = spawnSync(
   'grok',
-  ['-p', prompt, '--always-approve', '--tools', 'web_search,web_fetch,read,write'],
+  ['-p', prompt, '--always-approve', '--tools', 'web_search,web_fetch,read,write', '--disallowed-tools', 'run_terminal_cmd'],
   { cwd: root, stdio: 'inherit', env: process.env }
 );
 
