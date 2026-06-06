@@ -1,14 +1,17 @@
 ---
-import { profile } from '../lib/content';
-const roadmap = profile.roadmap ?? [];
-const statusLabel: Record<string, string> = { done: 'Hoàn thành', 'in-progress': 'Đang thực hiện', planned: 'Kế hoạch' };
+import { getProfile } from '../lib/content';
+import { getLangFromUrl, useTranslations } from '../i18n/ui';
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const roadmap = getProfile(lang).roadmap ?? [];
+const statusLabel: Record<string, string> = { done: t('status.done'), 'in-progress': t('status.in-progress'), planned: t('status.planned') };
 const statusColor: Record<string, string> = { done: 'var(--accent-2)', 'in-progress': 'var(--accent)', planned: 'var(--accent-3)' };
 ---
 <section>
   <div class="container">
-    <p class="eyebrow" data-reveal>Trajectory // Roadmap</p>
-    <h2 class="section-title" data-reveal style="--reveal-delay:60ms">Lộ trình tương lai</h2>
-    <p class="section-sub" data-reveal style="--reveal-delay:100ms">Từ lõi AI hôm nay đến tầm nhìn xa — nơi mình đang phóng tới.</p>
+    <p class="eyebrow" data-reveal>{t('roadmap.eyebrow')}</p>
+    <h2 class="section-title" data-reveal style="--reveal-delay:60ms">{t('roadmap.title')}</h2>
+    <p class="section-sub" data-reveal style="--reveal-delay:100ms">{t('roadmap.sub')}</p>
     <div class="aurora-line" data-reveal style="--reveal-delay:140ms;max-width:120px;margin-bottom:28px"></div>
 
     <div class="rmap">

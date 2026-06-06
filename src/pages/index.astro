@@ -2,8 +2,12 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Roadmap from '../components/Roadmap.astro';
-import { profile, getAllPosts, getAllNews } from '../lib/content';
+import { getProfile, getAllPosts, getAllNews } from '../lib/content';
+import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const profile = getProfile(lang);
 const latestPosts = getAllPosts().slice(0, 3);
 const latestNews = getAllNews().slice(0, 4);
 const skills = profile.skills;
@@ -21,9 +25,9 @@ const skillGroups: { label: string; key: string }[] = [
   {(profile.solves ?? []).length > 0 && (
     <section style="padding-top:24px">
       <div class="container">
-        <p class="eyebrow" data-reveal>What I solve</p>
-        <h2 class="section-title" data-reveal style="--reveal-delay:60ms">Bài toán mình giải quyết</h2>
-        <p class="section-sub" data-reveal style="--reveal-delay:100ms">Mỗi bài toán kèm cách tiếp cận thực tế — đúc kết từ kinh nghiệm.</p>
+        <p class="eyebrow" data-reveal>{t('home.solve.eyebrow')}</p>
+        <h2 class="section-title" data-reveal style="--reveal-delay:60ms">{t('home.solve.title')}</h2>
+        <p class="section-sub" data-reveal style="--reveal-delay:100ms">{t('home.solve.sub')}</p>
         <div class="grid grid-2">
           {(profile.solves ?? []).map((s: any, i: number) => (
             <div class="card" data-reveal data-tilt style={`--reveal-delay:${i * 80}ms;display:grid;gap:8px`}>
@@ -42,9 +46,9 @@ const skillGroups: { label: string; key: string }[] = [
   <!-- Skills -->
   <section style="padding-top:0">
     <div class="container">
-      <p class="eyebrow" data-reveal>Tech stack</p>
-      <h2 class="section-title" data-reveal style="--reveal-delay:60ms">Kỹ năng</h2>
-      <p class="section-sub" data-reveal style="--reveal-delay:100ms">Full-stack + cloud + AI, đúc kết qua các dự án thật.</p>
+      <p class="eyebrow" data-reveal>{t('home.skills.eyebrow')}</p>
+      <h2 class="section-title" data-reveal style="--reveal-delay:60ms">{t('home.skills.title')}</h2>
+      <p class="section-sub" data-reveal style="--reveal-delay:100ms">{t('home.skills.sub')}</p>
       <div class="grid grid-2">
         {skillGroups.map((g, i) => (
           <div class="card" data-reveal style={`--reveal-delay:${i * 80}ms`}>
@@ -66,15 +70,15 @@ const skillGroups: { label: string; key: string }[] = [
       <div class="container">
         <div style="display:flex;justify-content:space-between;align-items:baseline" data-reveal>
           <div>
-            <p class="eyebrow">Blog</p>
-            <h2 class="section-title">Bài viết mới nhất</h2>
+            <p class="eyebrow">{t('home.blog.eyebrow')}</p>
+            <h2 class="section-title">{t('home.blog.title')}</h2>
           </div>
-          <a href="/blog" class="mono" style="font-size:.9rem">Tất cả ↗</a>
+          <a href={localizedPath('/blog', lang)} class="mono" style="font-size:.9rem">{t('common.all')}</a>
         </div>
         <div class="grid grid-3" style="margin-top:24px">
           {latestPosts.map((p, i) => (
-            <a href={`/blog/${p.slug}`} class="card" data-reveal style={`--reveal-delay:${i * 80}ms;text-decoration:none;color:inherit;display:grid;gap:8px`}>
-              <span class="mono muted" style="font-size:.78rem">{p.date}{p.readingTimeMin ? ` · ${p.readingTimeMin} phút đọc` : ''}</span>
+            <a href={localizedPath(`/blog/${p.slug}`, lang)} class="card" data-reveal style={`--reveal-delay:${i * 80}ms;text-decoration:none;color:inherit;display:grid;gap:8px`}>
+              <span class="mono muted" style="font-size:.78rem">{p.date}{p.readingTimeMin ? ` · ${t('common.readmin', { n: p.readingTimeMin })}` : ''}</span>
               <strong style="font-size:1.05rem">{p.title}</strong>
               <span class="muted" style="font-size:.92rem">{p.excerpt}</span>
             </a>
@@ -90,10 +94,10 @@ const skillGroups: { label: string; key: string }[] = [
       <div class="container">
         <div style="display:flex;justify-content:space-between;align-items:baseline" data-reveal>
           <div>
-            <p class="eyebrow">Tech radar</p>
-            <h2 class="section-title">Tin công nghệ Grok cập nhật</h2>
+            <p class="eyebrow">{t('home.news.eyebrow')}</p>
+            <h2 class="section-title">{t('home.news.title')}</h2>
           </div>
-          <a href="/news" class="mono" style="font-size:.9rem">Tất cả ↗</a>
+          <a href={localizedPath('/news', lang)} class="mono" style="font-size:.9rem">{t('common.all')}</a>
         </div>
         <div class="grid grid-2" style="margin-top:24px">
           {latestNews.map((n, i) => (

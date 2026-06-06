@@ -9,13 +9,15 @@ interface Props {
   current?: boolean;
   projects?: Project[];
 }
+import { getLangFromUrl } from '../i18n/ui';
 const { company, role, location, start, end, current, projects = [] } = Astro.props;
+const present = getLangFromUrl(Astro.url) === 'vi' ? 'nay' : 'Present';
 function fmt(d?: string | null) {
   if (!d) return '';
   const [y, m] = d.split('-');
   return m ? `${m}/${y}` : y;
 }
-const period = `${fmt(start)} — ${current ? 'nay' : fmt(end)}`;
+const period = `${fmt(start)} — ${current ? present : fmt(end)}`;
 ---
 <article class="card" style="padding:26px 26px">
   <header style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">

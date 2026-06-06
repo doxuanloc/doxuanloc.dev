@@ -7,14 +7,16 @@ interface Props {
   date?: string;
   importance?: number;
 }
+import { getLangFromUrl, useTranslations } from '../i18n/ui';
 const { title, summary, source, tags = [], date, importance = 1 } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
 let host = '';
 try { host = new URL(source).hostname.replace(/^www\./, ''); } catch {}
 ---
 <article class="card" style="display:grid;gap:8px">
   <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
     {date && <span class="mono muted" style="font-size:.78rem">{date}</span>}
-    {importance >= 3 && <span class="chip accent" style="font-size:.7rem">★ nổi bật</span>}
+    {importance >= 3 && <span class="chip accent" style="font-size:.7rem">{t('news.featured')}</span>}
   </div>
   <h3 style="margin:0;font-size:1.08rem;line-height:1.35">{title}</h3>
   <p class="muted" style="margin:0">{summary}</p>

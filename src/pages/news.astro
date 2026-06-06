@@ -2,14 +2,18 @@
 import Base from '../layouts/Base.astro';
 import NewsCard from '../components/NewsCard.astro';
 import { getAllNews, getDailyContent } from '../lib/content';
+import { getLangFromUrl, useTranslations } from '../i18n/ui';
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const itemWord = lang === 'vi' ? 'tin' : 'items';
 const news = getAllNews();
 const days = getDailyContent().length;
 
 // Tag duy nhất, sắp theo tần suất giảm dần — để làm filter bar.
 const tagCount = new Map<string, number>();
-for (const n of news) for (const t of n.tags ?? []) tagCount.set(t, (tagCount.get(t) ?? 0) + 1);
-const tags = [...tagCount.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
+for (const n of news) for (const tg of n.tags ?? []) tagCount.set(tg, (tagCount.get(tg) ?? 0) + 1);
+const tags = [...tagCount.entries()].sort((a, b) => b[1] - a[1]).map(([tg]) => tg);
 
 // Nhóm theo ngày (mới nhất trước). news đã sort desc theo date.
 const groupsMap = new Map<string, typeof news>();
@@ -26,10 +30,17 @@ function dayDiff(d: string) {
 }
 function relLabel(d: string) {
   const diff = dayDiff(d);
-  if (diff <= 0) return 'Hôm nay';
-  if (diff === 1) return 'Hôm qua';
-  if (diff < 7) return `${diff} ngày trước`;
-  if (diff < 14) return 'Tuần trước';
+  if (lang === 'vi') {
+    if (diff <= 0) return 'Hôm nay';
+    if (diff === 1) return 'Hôm qua';
+    if (diff < 7) return `${diff} ngày trước`;
+    if (diff < 14) return 'Tuần trước';
+    return d;
+  }
+  if (diff <= 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  if (diff < 7) return `${diff} days ago`;
+  if (diff < 14) return 'Last week';
   return d;
 }
 
@@ -39,17 +50,17 @@ const digest = latestDay
   ? [...latestDay[1]].sort((a, b) => (b.importance ?? 1) - (a.importance ?? 1)).slice(0, 4)
   : [];
 ---
-<Base title="News" description="Tin công nghệ được Grok cập nhật hàng ngày">
+<Base title={t('news.title')} description={t('news.title')}>
   <section style="padding-top:56px">
     <div class="container">
-      <p class="eyebrow">Tech radar · auto-updated</p>
-      <h1 class="section-title" style="font-size:2rem">Tin công nghệ</h1>
+      <p class="eyebrow">{t('news.eyebrow')}</p>
+      <h1 class="section-title" style="font-size:2rem">{t('news.title')}</h1>
       <p class="section-sub">
-        {news.length} tin qua {days} ngày — Grok tự quét realtime mỗi ngày, lọc theo stack của mình.
+        {t('news.sub', { count: news.length, days })}
       </p>
 
       {news.length === 0 ? (
-        <div class="card muted">Chưa có tin. Pipeline Grok sẽ tự sinh nội dung ngày đầu tiên.</div>
+        <div class="card muted">{t('news.empty')}</div>
       ) : (
         <>
           {/* TL;DR digest — catch-up trong vài giây */}
@@ -72,22 +83,22 @@ const digest = latestDay
 
           {/* Tag filter */}
           {tags.length > 1 && (
-            <div class="chips news-filter" role="group" aria-label="Lọc theo tag" style="margin-bottom:24px">
-              <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">Tất cả</button>
-              {tags.map((t) => (
-                <button class="chip filter-btn" data-tag={t} aria-pressed="false">{t}</button>
+            <div class="chips news-filter" role="group" aria-label="Filter by tag" style="margin-bottom:24px">
+              <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">{t('news.filterAll')}</button>
+              {tags.map((tg) => (
+                <button class="chip filter-btn" data-tag={tg} aria-pressed="false">{tg}</button>
               ))}
             </div>
           )}
 
           {/* Nhóm theo ngày — ngày mới nhất mở sẵn, ngày cũ thu gọn */}
-          <p class="muted news-empty" hidden style="margin:0 0 18px">Không có tin nào khớp tag này.</p>
+          <p class="muted news-empty" hidden style="margin:0 0 18px">{t('news.noMatch')}</p>
           <div id="news-groups" style="display:grid;gap:28px">
             {groups.map(([date, items], i) => (
               <section class="news-group" data-date={date}>
                 <div class="group-head">
                   <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
-                  <span class="mono muted" style="font-size:.78rem">{date} · {items.length} tin</span>
+                  <span class="mono muted" style="font-size:.78rem">{date} · {items.length} {itemWord}</span>
                 </div>
                 <div class="grid grid-2">
                   {items.map((n) => (

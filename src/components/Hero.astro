@@ -1,7 +1,11 @@
 ---
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { profile } from '../lib/content';
+import { getProfile } from '../lib/content';
+import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const profile = getProfile(lang);
 const id = profile.identity;
 const avatar = existsSync(join(process.cwd(), 'public/images/avatar.png')) ? '/images/avatar.png' : null;
 const skillHighlights = [
@@ -19,7 +23,7 @@ const totalSkills = Object.values(profile.skills).flat().length;
     )}
     <div class="badge" data-reveal style="--reveal-delay:40ms;margin-bottom:22px">
       <span class="pulse"></span>
-      <span>{id.location} · {profile.identity.yearsExperience}+ năm kinh nghiệm</span>
+      <span>{id.location} · {t('hero.years', { n: id.yearsExperience })}</span>
     </div>
 
     <h1 data-reveal style="--reveal-delay:110ms;font-size:clamp(2.3rem,6.5vw,3.7rem);line-height:1.06;letter-spacing:-0.035em;margin:.1em 0 .15em;font-weight:700">
@@ -31,12 +35,12 @@ const totalSkills = Object.values(profile.skills).flat().length;
 
     <div class="chips" data-reveal style="--reveal-delay:330ms;margin:22px 0 26px">
       {skillHighlights.map((s: string) => <span class="chip accent">{s}</span>)}
-      <span class="chip">+{totalSkills} skills</span>
+      <span class="chip">{t('hero.skills', { n: totalSkills })}</span>
     </div>
 
     <div data-reveal style="--reveal-delay:380ms;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-      <a class="btn btn-primary" href="/journey">Xem hành trình →</a>
-      <a class="btn btn-ghost" href="/experience">Kinh nghiệm</a>
+      <a class="btn btn-primary" href={localizedPath('/journey', lang)}>{t('hero.cta1')}</a>
+      <a class="btn btn-ghost" href={localizedPath('/experience', lang)}>{t('hero.cta2')}</a>
       <div class="social" style="margin-left:4px">
         {id.links?.linkedin && (
           <a href={id.links.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">

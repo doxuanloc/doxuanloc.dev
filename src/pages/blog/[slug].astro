@@ -1,12 +1,16 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getAllPosts, profile } from '../../lib/content';
+import { getAllPosts, getProfile } from '../../lib/content';
+import { getLangFromUrl, useTranslations, localizedPath } from '../../i18n/ui';
 import { marked } from 'marked';
 
 export function getStaticPaths() {
   return getAllPosts().map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
 }
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const profile = getProfile(lang);
 const { post } = Astro.props;
 const html = marked.parse(post.contentMarkdown ?? '', { async: false }) as string;
 
@@ -28,16 +32,16 @@ const blogLd = {
   <div class="read-progress" id="read-progress"></div>
   <section style="padding-top:56px">
     <div class="container">
-      <a href="/blog" class="mono muted" style="font-size:.85rem">← Blog</a>
-      <p class="eyebrow" style="margin-top:18px">{post.date}{post.readingTimeMin ? ` · ${post.readingTimeMin} phút đọc` : ''}</p>
+      <a href={localizedPath('/blog', lang)} class="mono muted" style="font-size:.85rem">← {t('nav.blog')}</a>
+      <p class="eyebrow" style="margin-top:18px">{post.date}{post.readingTimeMin ? ` · ${t('common.readmin', { n: post.readingTimeMin })}` : ''}</p>
       <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.15;margin:.1em 0 .3em">{post.title}</h1>
-      <div class="chips" style="margin-bottom:8px">{(post.tags ?? []).map((t) => <span class="chip">{t}</span>)}</div>
+      <div class="chips" style="margin-bottom:8px">{(post.tags ?? []).map((tag) => <span class="chip">{tag}</span>)}</div>
 
       <article class="prose" set:html={html} />
 
       <hr style="border:none;border-top:1px solid var(--border);margin:40px 0 20px" />
       <p class="muted" style="font-size:.85rem">
-        Bài viết được tạo tự động bởi Grok (realtime) và xuất bản qua pipeline Claude × Grok.
+        {t('blog.backToGrok')}
       </p>
     </div>
   </section>

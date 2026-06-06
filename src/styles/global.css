@@ -210,6 +210,17 @@ a:hover { color: var(--accent-2); }
   background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 2px;
 }
 
+/* Language switcher */
+.lang-switch {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em;
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px;
+  color: var(--text-mute); background: var(--bg-soft); white-space: nowrap;
+}
+.lang-switch:hover { border-color: var(--accent); color: var(--text); }
+.lang-switch .on { color: var(--accent-2); }
+.lang-switch .sep { color: var(--text-mute); }
+
 /* Sections */
 section { padding: 64px 0; }
 .section-title { font-size: clamp(1.4rem, 3vw, 1.7rem); font-weight: 700; letter-spacing: -0.025em; margin: 0 0 6px; }

@@ -1,0 +1,8 @@
+---
+import Page from '../../blog/[slug].astro';
+import { getAllPosts } from '../../../lib/content';
+export function getStaticPaths() {
+  return getAllPosts().map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+---
+<Page {...Astro.props} />

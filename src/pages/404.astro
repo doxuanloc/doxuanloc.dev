@@ -1,41 +1,42 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getAllPosts, getAllNews } from '../lib/content';
+import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 const latestPosts = getAllPosts().slice(0, 3);
 const latestNews = getAllNews().slice(0, 3);
 ---
-<Base title="404 — Không tìm thấy" description="Trang không tồn tại.">
+<Base title="404" description={t('notfound.body')}>
   <section style="padding-top:72px">
     <div class="container" style="max-width:760px">
-      <p class="eyebrow">Error 404</p>
+      <p class="eyebrow">{t('notfound.eyebrow')}</p>
       <h1 style="font-size:clamp(2.4rem,8vw,4rem);line-height:1.05;margin:.1em 0 .2em">
-        Lạc đường rồi <span style="color:var(--accent-2)">⚡</span>
+        {t('notfound.title')} <span style="color:var(--accent-2)">⚡</span>
       </h1>
-      <p class="muted" style="font-size:1.05rem;max-width:560px">
-        Trang bạn tìm không tồn tại hoặc đã đổi địa chỉ. Quay về trang chủ hoặc khám phá nội dung mới nhất bên dưới.
-      </p>
+      <p class="muted" style="font-size:1.05rem;max-width:560px">{t('notfound.body')}</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 8px">
-        <a class="btn btn-primary" href="/">Về trang chủ</a>
-        <a class="btn btn-ghost" href="/blog">Đọc blog</a>
-        <a class="btn btn-ghost" href="/news">Tin công nghệ</a>
+        <a class="btn btn-primary" href={localizedPath('/', lang)}>{t('notfound.home')}</a>
+        <a class="btn btn-ghost" href={localizedPath('/blog', lang)}>{t('nav.blog')}</a>
+        <a class="btn btn-ghost" href={localizedPath('/news', lang)}>{t('nav.news')}</a>
       </div>
 
       {(latestPosts.length > 0 || latestNews.length > 0) && (
         <div class="grid grid-2" style="margin-top:32px">
           {latestPosts.length > 0 && (
             <div class="card">
-              <strong style="color:var(--accent-2)">Blog mới nhất</strong>
+              <strong style="color:var(--accent-2)">{t('notfound.latestBlog')}</strong>
               <ul style="list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px">
                 {latestPosts.map((p) => (
-                  <li><a href={`/blog/${p.slug}`}>{p.title}</a></li>
+                  <li><a href={localizedPath(`/blog/${p.slug}`, lang)}>{p.title}</a></li>
                 ))}
               </ul>
             </div>
           )}
           {latestNews.length > 0 && (
             <div class="card">
-              <strong style="color:var(--accent-2)">Tech radar</strong>
+              <strong style="color:var(--accent-2)">{t('notfound.radar')}</strong>
               <ul style="list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px">
                 {latestNews.map((n) => (
                   <li class="muted" style="font-size:.92rem">{n.title}</li>

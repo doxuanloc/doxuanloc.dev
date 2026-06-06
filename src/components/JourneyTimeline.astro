@@ -1,9 +1,10 @@
 ---
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { profile } from '../lib/content';
+import { getProfile } from '../lib/content';
+import { getLangFromUrl } from '../i18n/ui';
 
-const milestones = (profile.journey ?? []) as any[];
+const milestones = (getProfile(getLangFromUrl(Astro.url)).journey ?? []) as any[];
 
 // Build-time: tìm ảnh trong public/ (thử nhiều đuôi). Không có -> null -> hiện gradient.
 function resolvePublic(p?: string): string | null {

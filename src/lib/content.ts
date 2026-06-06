@@ -1,5 +1,12 @@
 // Loaders đọc dữ liệu từ /content (repo root). Grok ghi vào content/news/*.json mỗi ngày.
 import profileJson from '../../content/profile.json';
+import profileEnJson from '../../content/profile.en.json';
+import type { Lang } from '../i18n/ui';
+
+/** Profile theo ngôn ngữ. EN mặc định, VI là nguồn gốc nội dung. */
+export function getProfile(lang: Lang) {
+  return (lang === 'vi' ? profileJson : profileEnJson) as any;
+}
 
 export interface NewsItem {
   title: string;

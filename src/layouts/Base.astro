@@ -2,7 +2,8 @@
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import SiteBackground from '../components/SiteBackground.astro';
-import { profile } from '../lib/content';
+import { getProfile } from '../lib/content';
+import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
 
 interface Props {
   title?: string;
@@ -13,10 +14,20 @@ interface Props {
   animatedBg?: boolean;
 }
 const { title, description, schema, animatedBg = true } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const profile = getProfile(lang);
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const basePath = path.replace(/^\/vi(?=\/|$)/, '') || '/'; // path không gồm locale
 const fullTitle = title ? `${title} · ${profile.identity.nameEn}` : `${profile.identity.nameEn} · ${profile.identity.title}`;
 const desc = description ?? profile.summary;
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const canonical = new URL(path, Astro.site ?? 'https://doxuanloc.dev').href;
+const site = Astro.site ?? new URL('https://doxuanloc.dev');
+const canonical = new URL(path, site).href;
+const altEn = new URL(basePath, site).href;
+const altVi = new URL('/vi' + (basePath === '/' ? '' : basePath), site).href;
+const otherLang = lang === 'vi' ? 'en' : 'vi';
+const switchHref = otherLang === 'vi' ? '/vi' + (basePath === '/' ? '' : basePath) : basePath;
 
 const id = profile.identity;
 const sameAs = [id.links?.linkedin, id.links?.github, id.links?.currentPortfolio].filter(Boolean);
@@ -38,20 +49,20 @@ const personLd = {
 const jsonLdBlocks = [personLd, ...(Array.isArray(schema) ? schema : schema ? [schema] : [])];
 
 const nav = [
-  { href: '/', label: 'Home' },
-  { href: '/journey', label: 'Journey' },
-  { href: '/experience', label: 'Experience' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/news', label: 'News' },
-  { href: '/about', label: 'About' },
-];
-function current(href: string) {
-  if (href === '/') return path === '/';
-  return path === href || path.startsWith(href + '/');
+  { p: '/', label: t('nav.home') },
+  { p: '/journey', label: t('nav.journey') },
+  { p: '/experience', label: t('nav.experience') },
+  { p: '/blog', label: t('nav.blog') },
+  { p: '/news', label: t('nav.news') },
+  { p: '/about', label: t('nav.about') },
+].map((n) => ({ href: localizedPath(n.p, lang), label: n.label, logical: n.p }));
+function current(logical: string) {
+  if (logical === '/') return basePath === '/';
+  return basePath === logical || basePath.startsWith(logical + '/');
 }
 ---
 <!doctype html>
-<html lang="vi">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -61,6 +72,9 @@ function current(href: string) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Tektur:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="vi" href={altVi} />
+    <link rel="alternate" hreflang="x-default" href={altEn} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
     <meta property="og:type" content="website" />
@@ -88,17 +102,22 @@ function current(href: string) {
     </div>
     {animatedBg && <SiteBackground />}
     <div class="noise" aria-hidden="true"></div>
-    <a href="#main" class="skip-link">Tới nội dung</a>
+    <a href="#main" class="skip-link">{t('skip')}</a>
     <header class="site-header">
       <div class="container nav">
-        <a class="brand" href="/">{profile.identity.nameEn}<span>.</span></a>
-        <nav aria-label="Chính">
-          <ul>
-            {nav.map((n) => (
-              <li><a href={n.href} aria-current={current(n.href) ? 'page' : undefined}>{n.label}</a></li>
-            ))}
-          </ul>
-        </nav>
+        <a class="brand" href={localizedPath('/', lang)}>{profile.identity.nameEn}<span>.</span></a>
+        <div style="display:flex;align-items:center;gap:14px">
+          <nav aria-label="Main">
+            <ul>
+              {nav.map((n) => (
+                <li><a href={n.href} aria-current={current(n.logical) ? 'page' : undefined}>{n.label}</a></li>
+              ))}
+            </ul>
+          </nav>
+          <a class="lang-switch" href={switchHref} aria-label={`Switch to ${otherLang === 'vi' ? 'Tiếng Việt' : 'English'}`} data-astro-reload>
+            <span class={lang === 'en' ? 'on' : ''}>EN</span><span class="sep">/</span><span class={lang === 'vi' ? 'on' : ''}>VI</span>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -112,7 +131,7 @@ function current(href: string) {
           <div style="font-weight:600;color:var(--text)">{profile.identity.nameEn}<span style="color:var(--accent)">.</span></div>
           <div class="muted" style="margin-top:4px">{profile.identity.title}</div>
           <div class="mono" style="margin-top:10px;font-size:.78rem;color:var(--text-mute)">
-            Tự cập nhật hằng ngày · Grok × Claude · Astro
+            {t('footer.tagline')}
           </div>
         </div>
         <nav aria-label="Footer">
@@ -135,7 +154,7 @@ function current(href: string) {
         </div>
       </div>
       <div class="container" style="margin-top:24px;font-size:.82rem;color:var(--text-mute)">
-        © {new Date().getFullYear()} {profile.identity.nameEn}. Built with Astro.
+        © {new Date().getFullYear()} {profile.identity.nameEn}. {t('footer.built')}
       </div>
     </footer>
 
