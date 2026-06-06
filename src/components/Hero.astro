@@ -8,12 +8,28 @@ const t = useTranslations(lang);
 const profile = getProfile(lang);
 const id = profile.identity;
 const heroVisual = existsSync(join(process.cwd(), 'public/images/hero-astronaut.webp')) ? '/images/hero-astronaut.webp' : null;
-const skillHighlights = [
-  ...(profile.skills.backend ?? []).slice(0, 2),
-  ...(profile.skills.cloud_devops ?? []).slice(0, 1),
-  ...(profile.skills.ai_ml ?? []).slice(0, 2),
-];
 const totalSkills = Object.values(profile.skills).flat().length;
+
+const caps = lang === 'vi' ? [
+  { color: '#5b8cff', label: 'Kiến trúc Hệ thống',  detail: 'Microservices · Event-driven · Phân tán' },
+  { color: '#f0b232', label: 'AI Engineering',        detail: 'RAG · LLM · Voice AI → production' },
+  { color: '#36d6c3', label: 'Cloud & Tối ưu',        detail: 'AWS-native · Cost-first · IaC end-to-end' },
+] : [
+  { color: '#5b8cff', label: 'System Architecture',   detail: 'Microservices · Event-driven · Distributed' },
+  { color: '#f0b232', label: 'AI Engineering',         detail: 'RAG · LLM · Voice AI → production ready' },
+  { color: '#36d6c3', label: 'Cloud & Optimization',   detail: 'AWS-native · Cost-first · IaC end-to-end' },
+];
+
+const stackCols = [
+  { label: 'UI · DX',        color: '#5b8cff',
+    items: ['React / Next.js', 'TypeScript', 'Tailwind · Astro', 'Realtime (SSE, WS)'] },
+  { label: 'Backend · API',  color: '#36d6c3',
+    items: ['NestJS · Node.js', 'NX Monorepo', 'Event-driven', 'Microservices · SOLID'] },
+  { label: 'Cloud · Infra',  color: '#b58cff',
+    items: ['AWS (ECS, Lambda)', 'SAM · CloudFormation', 'CI/CD pipelines', 'Docker · DevOps'] },
+  { label: 'AI · ML',        color: '#f0b232',
+    items: ['RAG · Embeddings', 'LLM (Claude, Ollama)', 'Voice AI (Whisper)', 'Fine-tuning (LoRA)'] },
+];
 ---
 <section class="hero-section">
   <div class="container">
@@ -30,12 +46,35 @@ const totalSkills = Object.values(profile.skills).flat().length;
           <span class="grad">{id.name}</span>
         </h1>
         <p data-reveal style="--reveal-delay:180ms;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--text);margin:.1em 0 .1em;font-weight:600;letter-spacing:-0.02em">{id.title}</p>
-        <p class="muted" data-reveal style="--reveal-delay:230ms;font-size:1.02rem;margin:.1em 0 1.1em">{id.subtitle}</p>
-        <p data-reveal style="--reveal-delay:280ms;max-width:600px;color:#cfd6ea;font-size:1.08rem;line-height:1.6">{id.tagline}</p>
+        <p data-reveal style="--reveal-delay:230ms;max-width:600px;color:#cfd6ea;font-size:1.05rem;line-height:1.62;margin:.3em 0 0">{id.tagline}</p>
 
-        <div class="chips" data-reveal style="--reveal-delay:330ms;margin:22px 0 26px">
-          {skillHighlights.map((s: string) => <span class="chip accent">{s}</span>)}
-          <span class="chip">{t('hero.skills', { n: totalSkills })}</span>
+        <!-- Capability lines -->
+        <ul class="hero-caps" data-reveal style="--reveal-delay:300ms">
+          {caps.map(c => (
+            <li style={`--cc:${c.color}`}>
+              <span class="cap-dot"></span>
+              <b>{c.label}</b>
+              <span class="cap-sep">—</span>
+              <span class="cap-detail">{c.detail}</span>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Full-stack to AI — stack depth -->
+        <div class="hero-stack" data-reveal style="--reveal-delay:350ms">
+          <div class="stack-head">
+            <span class="stack-title">Full-stack to AI <span style="color:var(--text-mute)">—</span> the complete stack</span>
+            <span class="stack-count mono">{totalSkills}+ tools</span>
+          </div>
+          <p class="stack-desc">Every layer from UI to inference pipeline, hardened through production.</p>
+          <div class="stack-cols">
+            {stackCols.map(col => (
+              <div class="stack-col" style={`--cc:${col.color}`}>
+                <span class="col-lbl mono">{col.label}</span>
+                <ul>{col.items.map(i => <li>{i}</li>)}</ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div data-reveal style="--reveal-delay:380ms;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
@@ -194,6 +233,62 @@ const totalSkills = Object.values(profile.skills).flat().length;
     .hud-bracket { width: 14px; height: 14px; }
     .hud-bracket.tl { top: 6px; left: 6px; }
     .hud-bracket.br { bottom: 6px; right: 6px; }
+  }
+
+  /* ── Capability lines ─────────────────── */
+  .hero-caps {
+    list-style: none; padding: 0; margin: 20px 0 20px;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .hero-caps li {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
+    font-size: 0.88rem;
+  }
+  .cap-dot {
+    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    background: var(--cc, var(--accent));
+    box-shadow: 0 0 7px var(--cc, var(--accent));
+  }
+  .hero-caps b { color: var(--text); font-weight: 600; white-space: nowrap; }
+  .cap-sep { color: var(--border); }
+  .cap-detail { color: var(--text-mute); font-size: 0.81rem; }
+
+  /* ── Stack depth section ─────────────── */
+  .hero-stack {
+    margin: 0 0 26px;
+    padding: 16px 18px 18px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .stack-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    margin-bottom: 4px; flex-wrap: wrap;
+  }
+  .stack-title { font-size: 0.84rem; font-weight: 600; color: var(--text); }
+  .stack-count { font-size: 0.7rem; color: var(--text-mute); }
+  .stack-desc {
+    font-size: 0.79rem; color: var(--text-mute); margin: 0 0 14px; line-height: 1.55;
+  }
+  .stack-cols {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+  }
+  .col-lbl {
+    display: block; font-size: 0.65rem; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--cc, var(--accent)); margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid color-mix(in srgb, var(--cc) 28%, transparent);
+  }
+  .stack-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+  .stack-col li { font-size: 0.77rem; color: var(--text-dim); line-height: 1.4; }
+
+  @media (max-width: 820px) {
+    .stack-cols { grid-template-columns: repeat(2,1fr); gap: 12px; }
+  }
+  @media (max-width: 500px) {
+    .hero-stack { padding: 14px 14px 16px; }
+    .stack-cols { grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .hero-caps li { gap: 5px; font-size: 0.84rem; }
   }
 
   @keyframes heroFloat {
