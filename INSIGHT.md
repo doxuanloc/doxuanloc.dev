@@ -12,7 +12,7 @@ Portfolio cá nhân của Đỗ Xuân Lộc (AI & System Optimization Engineer).
 
 | Page | Trạng thái | Ghi chú |
 |------|-----------|---------|
-| `/` | ✅ Done | Hero, skills, journey teaser, solves |
+| `/` | 🔄 Renewal in progress | Home UI/UX renewal (web3/futuristic space style + rich scroll-driven animations & visit interactions). Master plan `docs/home-ui-renewal-plan.md` (research + catalog + phases). Detailed logic `docs/home-implementation-spec.md`. Claude implements per plan. |
 | `/journey` | ✅ Done | Sticky scrollytelling, scroll-driven crossfade, mobile sticky |
 | `/experience` | ✅ Done | Work history, education, tech stack |
 | `/blog` | ✅ Done | Auto-gen daily (Grok), markdown render |

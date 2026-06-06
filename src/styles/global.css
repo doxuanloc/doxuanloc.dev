@@ -529,3 +529,149 @@ section { padding: 64px 0; }
   * { animation: none !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
 }
+
+/* ── HOME: TRAJECTORY BAR ───────────────────────────────────── */
+.home-trajectory {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  z-index: 100; pointer-events: none;
+  background: rgba(255,255,255,0.035);
+}
+.home-trajectory-fill {
+  height: 100%;
+  width: calc(var(--home-scroll-p, 0) * 100%);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+  transition: width 0.1s linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-trajectory-fill { transition: none; }
+}
+
+/* ── HOME: SECTOR HUD (desktop right rail) ──────────────────── */
+.sector-hud {
+  position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
+  z-index: 40; display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 0; pointer-events: auto;
+}
+@media (max-width: 1024px) { .sector-hud { display: none; } }
+
+.hud-rail-title {
+  font-size: 0.48rem; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text-mute); padding: 0 12px 8px; opacity: 0.5;
+}
+.sector-nav { display: flex; flex-direction: column; gap: 1px; }
+
+.sector-item {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer;
+  padding: 4px 10px 4px 8px; text-align: left;
+  border-radius: 6px; transition: background 0.2s;
+}
+.sector-item:hover { background: rgba(255,255,255,0.04); }
+
+.sector-dot {
+  width: 4px; height: 4px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--text-mute);
+  transition: background 0.25s, box-shadow 0.25s, width 0.25s, height 0.25s;
+}
+.sector-item.is-active .sector-dot {
+  width: 6px; height: 6px;
+  background: var(--accent-2);
+  box-shadow: 0 0 8px var(--accent-2);
+}
+
+.sector-label {
+  font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-mute); white-space: nowrap;
+  transition: color 0.25s;
+}
+.sector-item.is-active .sector-label { color: var(--accent-2); }
+
+.hud-progress-wrap {
+  margin-top: 10px; padding: 0 12px;
+  display: flex; align-items: center; gap: 5px;
+}
+.hud-progress-bar {
+  width: 2px; height: 36px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px; overflow: hidden; position: relative;
+}
+.hud-progress-fill {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, var(--accent), var(--accent-2));
+  transition: height 0.15s linear;
+}
+.hud-progress-pct {
+  font-size: 0.5rem; letter-spacing: 1px; color: var(--text-mute);
+  writing-mode: vertical-rl;
+}
+
+/* ── HOME: MOBILE SECTOR BAR ────────────────────────────────── */
+.mobile-sector-bar {
+  display: none;
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 40; pointer-events: none;
+  flex-direction: column; align-items: center; gap: 5px;
+}
+@media (max-width: 899px) {
+  .mobile-sector-bar { display: flex; }
+}
+.mobile-sector-dots { display: flex; gap: 5px; align-items: center; }
+.mobile-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(255,255,255,0.18); transition: all 0.25s;
+}
+.mobile-dot.is-active {
+  background: var(--accent-2);
+  width: 6px; height: 6px;
+  box-shadow: 0 0 6px var(--accent-2);
+}
+.mobile-sector-label {
+  font-size: 0.5rem; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--text-mute); opacity: 0.6;
+}
+
+/* ── HOME: SOLVE CARD CHARGE BAR ────────────────────────────── */
+/* Reduced-motion: restore static border (background override lives in index.astro scoped style) */
+@media (prefers-reduced-motion: reduce) {
+  .solve-card { border-left: 3px solid var(--sc) !important; }
+}
+
+/* ── HOME: HERO ORBITAL RINGS ───────────────────────────────── */
+.orbital-rings {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  border-radius: inherit;
+}
+.orbital-ring {
+  position: absolute; top: 50%; left: 50%; border-radius: 50%;
+  border: 1px solid; transform-origin: center;
+}
+.orbital-ring:nth-child(1) {
+  width: 130%; aspect-ratio: 1; margin: -65% 0 0 -65%;
+  border-color: rgba(91,140,255,0.1);
+  animation: orbSpin 22s linear infinite;
+}
+.orbital-ring:nth-child(2) {
+  width: 160%; aspect-ratio: 1; margin: -80% 0 0 -80%;
+  border-color: rgba(54,214,195,0.07);
+  animation: orbSpin 36s linear infinite reverse;
+}
+.orbital-ring:nth-child(3) {
+  width: 100%; aspect-ratio: 1; margin: -50% 0 0 -50%;
+  border-color: rgba(181,140,255,0.06);
+  animation: orbSpin 16s linear infinite;
+}
+@keyframes orbSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .orbital-ring { animation: none; }
+}
+
+/* ── HOME: HERO VISUAL DEPTH RECESSION ──────────────────────── */
+.hero-visual-wrapper {
+  transform:
+    translateY(calc(var(--hero-depth, 0) * 18px))
+    scale(calc(1 - var(--hero-depth, 0) * 0.035));
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual-wrapper { transform: none; will-change: auto; }
+}

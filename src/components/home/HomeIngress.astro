@@ -1,0 +1,79 @@
+---
+// Home Sector HUD — right rail desktop + compact mobile bar
+// Scroll controller is wired in Base.astro astro:page-load for home pages
+const sectors = [
+  { id: 'directive', label: '01 DIRECTIVE' },
+  { id: 'anomaly',   label: '02 ANOMALY'   },
+  { id: 'constell',  label: '03 CONSTELL'  },
+  { id: 'vector',    label: '04 VECTOR'    },
+  { id: 'stargate',  label: '05 STARGATE'  },
+  { id: 'plan',      label: '06 PLAN'      },
+  { id: 'logs',      label: '07 LOGS'      },
+];
+---
+
+<!-- Trajectory bar (home-only top progress) -->
+<div class="home-trajectory" aria-hidden="true">
+  <div class="home-trajectory-fill"></div>
+</div>
+
+<!-- Desktop: right rail sector HUD -->
+<aside class="sector-hud" data-home-hud aria-hidden="true">
+  <div class="hud-rail-title mono">SYS MAP</div>
+  <nav class="sector-nav">
+    {sectors.map(s => (
+      <button class="sector-item" data-sector-id={s.id} type="button">
+        <span class="sector-dot"></span>
+        <span class="sector-label mono">{s.label}</span>
+      </button>
+    ))}
+  </nav>
+  <div class="hud-progress-wrap">
+    <div class="hud-progress-bar">
+      <div class="hud-progress-fill"></div>
+    </div>
+    <span class="hud-progress-pct mono">0%</span>
+  </div>
+</aside>
+
+<!-- Mobile: compact dots + current sector name -->
+<div class="mobile-sector-bar" aria-hidden="true">
+  <div class="mobile-sector-dots">
+    {sectors.map(s => (
+      <span class="mobile-dot" data-sector-id={s.id}></span>
+    ))}
+  </div>
+  <span class="mobile-sector-label mono">DIRECTIVE</span>
+</div>
+
+<script>
+  import { initHomeScrollSync } from '../../lib/scroll';
+
+  const SELECTORS: Record<string, string> = {
+    directive: '.manifesto',
+    anomaly:   '.section-solve',
+    constell:  '.section-skills',
+    vector:    '.mission-bar',
+    stargate:  '.section-journey-teaser',
+    plan:      '#roadmap',
+    logs:      '[data-sector="logs"]',
+  };
+
+  let cleanup: (() => void) | undefined;
+
+  document.addEventListener('astro:page-load', () => {
+    cleanup?.();
+    const hud = document.querySelector<HTMLElement>('[data-home-hud]');
+    if (!hud) return;
+
+    hud.querySelectorAll<HTMLButtonElement>('.sector-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sel = SELECTORS[btn.dataset.sectorId ?? ''];
+        if (!sel) return;
+        document.querySelector<HTMLElement>(sel)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    cleanup = initHomeScrollSync();
+  });
+</script>

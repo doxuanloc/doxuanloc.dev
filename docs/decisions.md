@@ -117,3 +117,33 @@
 - `nodes[]` rỗng trên mobile → `forEach` no-op, an toàn
 
 **Trade-off**: iOS momentum scroll có thể làm panels flash nhanh khi flick mạnh. Không có rail nav → user phải scroll tuần tự (không jump). Acceptable vì mobile thường đọc tuyến tính.
+
+---
+
+## ADR-008 — Home: Lightweight Scroll-Synchronized Layers + Floating Sector HUD (normal flow, not pinned scrolly)
+
+**Date**: 2026-06  
+**Status**: Accepted (spec phase)
+
+**Quyết định**: Trang home dùng normal document flow + **một** central throttled scroll controller (RAF + passive listener) để drive CSS custom properties (`--home-scroll-p`, `--home-scroll-vel`, `--home-active-sector`, `--hero-depth`, per-card `--solve-charge-*`, etc.) + floating Live Sector HUD. Không chuyển sang pinned 100vh scrollytelling như Journey.
+
+**Lý do**:
+- Home phải vẫn là **fast overview + marketing surface** (scannable cho recruiter, easy blog/news consumption, good SEO). Pinned scrolly sẽ làm lower sections (Roadmap, Blog, News) khó tiếp cận và phá vỡ linear reading.
+- Scroll vẫn là "primary input" cho first-visit immersion (depth recession, filaments drawing, charge bars, active sector, subtle velocity on canvas) — đạt được mục tiêu UX mà không trả giá về scanability.
+- Tái sử dụng pattern đã chứng minh ở Journey (computeMostVisible với visibility ratio, RAF ticking, reduced-motion early exit, astro:page-load init) → ít code mới, behavior nhất quán.
+- Chỉ một listener + batch CSS var writes → perf overhead rất thấp (giữ Lighthouse).
+- Floating HUD (right rail desktop / compact mobile) cung cấp "sense of place" và quick navigation mà không chiếm không gian nội dung.
+
+**Trade-off**:
+- Hiệu ứng "spatial flight" nhẹ hơn Journey (không có pinned crossfade 1:1). Bù lại bằng progressive layers, filaments, và HUD telemetry.
+- Cần duy trì ~7-8 CSS var + một số per-element states → nhiều hơn pure CSS reveal hiện tại. Đã giới hạn rõ contract trong spec để tránh scope creep.
+- Mobile HUD phải collapse mạnh (không rail) — chấp nhận được vì mobile user thường scroll tuyến tính.
+
+**Implementation constraints locked**:
+- Vanilla + 1 small island (client:visible) hoặc attach vào Base script.
+- Tối đa 1 RAF scroll loop cho toàn bộ home effects.
+- Tất cả advanced effects có static fallback khi `prefers-reduced-motion`.
+- Không thêm dependency. Re-use existing data-reveal, data-tilt, hud-bracket, space-bg, SiteBackground canvas.
+- Content 100% từ profile + i18n (không hardcode copy mới trừ HUD codenames — giữ English cho flavor).
+
+**References**: home-redesign-spec.md (vision), home-implementation-spec.md (detailed logic + phases), codebase-overview.md (Journey scroll pattern), ADR-004 (why pinned only for Journey).

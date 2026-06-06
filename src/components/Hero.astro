@@ -98,20 +98,27 @@ const stackCols = [
         </div>
       </div>
 
-      <!-- Cột phải: ảnh astronaut -->
+      <!-- Cột phải: ảnh astronaut + depth recession wrapper -->
       {heroVisual && (
-        <div class="hero-visual" data-reveal style="--reveal-delay:150ms" aria-hidden="true">
-          <span class="hud-bracket tl"></span>
-          <span class="hud-bracket br"></span>
-          <img
-            src={heroVisual}
-            alt={id.name + ' — AI & System Optimization Engineer'}
-            width="1280" height="720"
-            loading="eager"
-            fetchpriority="high"
-            decoding="async"
-          />
-          <div class="hero-visual-scan"></div>
+        <div class="hero-visual-wrapper">
+          <div class="hero-visual" data-reveal style="--reveal-delay:150ms" aria-hidden="true">
+            <span class="hud-bracket tl"></span>
+            <span class="hud-bracket br"></span>
+            <div class="orbital-rings" aria-hidden="true">
+              <div class="orbital-ring"></div>
+              <div class="orbital-ring"></div>
+              <div class="orbital-ring"></div>
+            </div>
+            <img
+              src={heroVisual}
+              alt={id.name + ' — AI & System Optimization Engineer'}
+              width="1280" height="720"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            />
+            <div class="hero-visual-scan"></div>
+          </div>
         </div>
       )}
     </div>
@@ -148,6 +155,13 @@ const stackCols = [
   }
 
 
+  /* Hero visual wrapper — depth recession driven by --hero-depth */
+  .hero-visual-wrapper {
+    position: relative;
+    margin-top: 40px;
+  }
+  @media (min-width: 820px) { .hero-visual-wrapper { margin-top: 0; } }
+
   /* Hero visual — cột phải */
   .hero-visual {
     position: relative;
@@ -160,9 +174,7 @@ const stackCols = [
       0 0 100px rgba(181, 140, 255, 0.1),
       0 24px 60px rgba(0, 0, 0, 0.55);
     animation: heroFloat 8s var(--ease, ease-in-out) infinite;
-    margin-top: 40px;
   }
-  @media (min-width: 820px) { .hero-visual { margin-top: 0; } }
 
   .hero-visual img {
     display: block; width: 100%; height: 100%;
@@ -180,15 +192,12 @@ const stackCols = [
 
   /* Hero visual responsive */
   @media (max-width: 819px) {
-    .hero-visual {
-      margin-top: 32px;
-      aspect-ratio: 16 / 9;
-      border-radius: 14px;
-    }
+    .hero-visual-wrapper { margin-top: 32px; }
+    .hero-visual { aspect-ratio: 16 / 9; border-radius: 14px; }
   }
   @media (max-width: 600px) {
+    .hero-visual-wrapper { margin-top: 24px; }
     .hero-visual {
-      margin-top: 24px;
       border-radius: 12px;
       box-shadow:
         0 0 0 1px rgba(91, 140, 255, 0.15),
@@ -197,10 +206,8 @@ const stackCols = [
     }
   }
   @media (max-width: 400px) {
-    .hero-visual {
-      margin-top: 20px;
-      border-radius: 10px;
-    }
+    .hero-visual-wrapper { margin-top: 20px; }
+    .hero-visual { border-radius: 10px; }
   }
 
   /* Dải quét ngang HUD kiểu sci-fi */

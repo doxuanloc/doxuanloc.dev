@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Roadmap from '../components/Roadmap.astro';
+import HomeIngress from '../components/home/HomeIngress.astro';
 import { getProfile, getAllPosts, getAllNews } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
 
@@ -53,7 +54,8 @@ const totalGroups = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).le
             class="solve-card"
             data-reveal
             data-tilt
-            style={`--reveal-delay:${i * 80 + 120}ms; --sc:${solveAccents[i % solveAccents.length]}`}
+            data-chargeable
+            style={`--reveal-delay:${i * 80 + 120}ms; --sc:${solveAccents[i % solveAccents.length]}; --charge: var(--solve-charge-${i})`}
           >
             <span class="solve-ghost-num mono">{String(i + 1).padStart(2, '0')}</span>
             <div class="solve-body">
@@ -140,58 +142,61 @@ const totalGroups = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).le
     <Roadmap />
   </div>
 
-  <!-- ── LATEST BLOG ───────────────────────────── -->
-  {latestPosts.length > 0 && (
-    <section style="padding-top:0">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <div>
-            <p class="eyebrow">{t('home.blog.eyebrow')}</p>
-            <h2 class="section-title">{t('home.blog.title')}</h2>
+  <!-- ── LATEST BLOG + TECH RADAR (sector: logs) ── -->
+  <div data-sector="logs">
+    {latestPosts.length > 0 && (
+      <section style="padding-top:0">
+        <div class="container">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="eyebrow">{t('home.blog.eyebrow')}</p>
+              <h2 class="section-title">{t('home.blog.title')}</h2>
+            </div>
+            <a href={localizedPath('/blog', lang)} class="mono see-all">{t('common.all')}</a>
           </div>
-          <a href={localizedPath('/blog', lang)} class="mono see-all">{t('common.all')}</a>
+          <div class="grid grid-3" style="margin-top:24px">
+            {latestPosts.map((p, i) => (
+              <a
+                href={localizedPath(`/blog/${p.slug}`, lang)}
+                class="card blog-card"
+                data-reveal
+                style={`--reveal-delay:${i * 80}ms`}
+              >
+                <span class="mono muted" style="font-size:.78rem">{p.date}{p.readingTimeMin ? ` · ${t('common.readmin', { n: p.readingTimeMin })}` : ''}</span>
+                <strong style="font-size:1.05rem;display:block;margin:6px 0 4px">{p.title}</strong>
+                <span class="muted" style="font-size:.92rem">{p.excerpt}</span>
+              </a>
+            ))}
+          </div>
         </div>
-        <div class="grid grid-3" style="margin-top:24px">
-          {latestPosts.map((p, i) => (
-            <a
-              href={localizedPath(`/blog/${p.slug}`, lang)}
-              class="card blog-card"
-              data-reveal
-              style={`--reveal-delay:${i * 80}ms`}
-            >
-              <span class="mono muted" style="font-size:.78rem">{p.date}{p.readingTimeMin ? ` · ${t('common.readmin', { n: p.readingTimeMin })}` : ''}</span>
-              <strong style="font-size:1.05rem;display:block;margin:6px 0 4px">{p.title}</strong>
-              <span class="muted" style="font-size:.92rem">{p.excerpt}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )}
 
-  <!-- ── TECH RADAR ────────────────────────────── -->
-  {latestNews.length > 0 && (
-    <section style="padding-top:0">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <div>
-            <p class="eyebrow">{t('home.news.eyebrow')}</p>
-            <h2 class="section-title">{t('home.news.title')}</h2>
+    {latestNews.length > 0 && (
+      <section style="padding-top:0">
+        <div class="container">
+          <div class="section-head" data-reveal>
+            <div>
+              <p class="eyebrow">{t('home.news.eyebrow')}</p>
+              <h2 class="section-title">{t('home.news.title')}</h2>
+            </div>
+            <a href={localizedPath('/news', lang)} class="mono see-all">{t('common.all')}</a>
           </div>
-          <a href={localizedPath('/news', lang)} class="mono see-all">{t('common.all')}</a>
+          <div class="news-grid" style="margin-top:24px">
+            {latestNews.map((n, i) => (
+              <article class="card news-card" data-reveal style={`--reveal-delay:${i * 70}ms`}>
+                <span class="mono muted news-date">{n.date}</span>
+                <strong class="news-title">{n.title}</strong>
+                <span class="muted news-summary">{n.summary}</span>
+              </article>
+            ))}
+          </div>
         </div>
-        <div class="news-grid" style="margin-top:24px">
-          {latestNews.map((n, i) => (
-            <article class="card news-card" data-reveal style={`--reveal-delay:${i * 70}ms`}>
-              <span class="mono muted news-date">{n.date}</span>
-              <strong class="news-title">{n.title}</strong>
-              <span class="muted news-summary">{n.summary}</span>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )}
+  </div>
+
+  <HomeIngress />
 </Base>
 
 <style>
@@ -235,15 +240,21 @@ const totalGroups = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).le
   .solve-card {
     position: relative;
     padding: 28px 24px 24px 20px;
-    background: rgba(12, 18, 40, 0.65);
+    /* border-box origin paints the 3px charge gradient strip into the transparent border area */
+    background:
+      linear-gradient(
+        to top,
+        var(--sc) calc(var(--charge, 0) * 100%),
+        color-mix(in srgb, var(--sc) 18%, transparent) calc(var(--charge, 0) * 100%)
+      ) 0 0 / 3px 100% no-repeat border-box border-box,
+      rgba(12, 18, 40, 0.65);
     border: 1px solid var(--border);
-    border-left: 3px solid var(--sc);
+    border-left: 3px solid transparent;
     border-radius: var(--radius);
     overflow: hidden;
-    transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    transition: box-shadow 0.3s var(--ease);
   }
   .solve-card:hover {
-    border-color: var(--sc);
     box-shadow: 0 0 28px color-mix(in srgb, var(--sc) 18%, transparent), var(--shadow-lg);
   }
   .solve-ghost-num {
