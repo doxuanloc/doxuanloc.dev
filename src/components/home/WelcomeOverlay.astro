@@ -243,7 +243,7 @@ const id = getProfile(lang).identity;
     height: 100%;
     background: linear-gradient(90deg, #5b8cff, #36d6c3);
     width: 0%;
-    animation: wProgress var(--w-duration, 3200ms) linear 0.2s forwards;
+    animation: wProgress var(--w-duration, 3000ms) linear 0.2s forwards;
   }
   @keyframes wProgress {
     from { width: 0% } to { width: 100% }
@@ -272,13 +272,13 @@ const id = getProfile(lang).identity;
 </style>
 
 <script>
-  const DURATION = 3200; // ms — must match --w-duration and wProgress
+  const DURATION = 3000;   // auto-dismiss after 3s
+  const MIN_TIME = 2800;   // prevent early dismiss for first 2.8s
 
   function initOverlay() {
     const overlay = document.getElementById('welcome-overlay');
     if (!overlay) return;
 
-    // Show only on first visit per session
     if (sessionStorage.getItem('welcomed')) {
       overlay.classList.add('w-gone');
       return;
@@ -288,10 +288,17 @@ const id = getProfile(lang).identity;
       return;
     }
 
-    // Lock body scroll while overlay is up
     document.body.style.overflow = 'hidden';
 
-    function dismiss() {
+    // Force-play overlay video (autoplay attribute alone is unreliable)
+    const wVideo = overlay.querySelector<HTMLVideoElement>('.w-video');
+    if (wVideo) wVideo.play().catch(() => {});
+
+    let canDismiss = false;
+    setTimeout(() => { canDismiss = true; }, MIN_TIME);
+
+    function dismiss(force = false) {
+      if (!canDismiss && !force) return;
       if (overlay.classList.contains('w-exit') || overlay.classList.contains('w-gone')) return;
       sessionStorage.setItem('welcomed', '1');
       document.body.style.overflow = '';
@@ -299,19 +306,19 @@ const id = getProfile(lang).identity;
       setTimeout(() => overlay.classList.add('w-gone'), 520);
     }
 
-    // Auto-dismiss
-    const timer = setTimeout(dismiss, DURATION + 200);
+    // Auto-dismiss (force = true bypasses MIN_TIME guard)
+    setTimeout(() => dismiss(true), DURATION);
 
-    // Manual dismiss: click, scroll, key
-    overlay.addEventListener('click', () => { clearTimeout(timer); dismiss(); });
-    window.addEventListener('scroll', () => { clearTimeout(timer); dismiss(); }, { once: true, passive: true });
+    // Manual dismiss — gated by canDismiss
+    overlay.addEventListener('click', () => dismiss());
+    window.addEventListener('scroll', () => dismiss(), { once: true, passive: true });
     window.addEventListener('keydown', (e) => {
-      if (['Escape', 'Enter', ' '].includes(e.key)) { clearTimeout(timer); dismiss(); }
+      if (['Escape', 'Enter', ' '].includes(e.key)) dismiss();
     }, { once: true });
 
-    // Skip button
+    // SKIP bypasses guard
     const skip = overlay.querySelector('.w-skip');
-    if (skip) skip.addEventListener('click', (e) => { e.stopPropagation(); clearTimeout(timer); dismiss(); });
+    if (skip) skip.addEventListener('click', (e) => { e.stopPropagation(); dismiss(true); });
   }
 
   document.addEventListener('astro:page-load', initOverlay);

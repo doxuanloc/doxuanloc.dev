@@ -3,322 +3,239 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { getProfile } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
+
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const profile = getProfile(lang);
 const id = profile.identity;
-const heroVisual = existsSync(join(process.cwd(), 'public/images/hero-astronaut.webp')) ? '/images/hero-astronaut.webp' : null;
 const heroVideo = existsSync(join(process.cwd(), 'public/videos/hero-welcome.mp4')) ? '/videos/hero-welcome.mp4' : null;
 const totalSkills = Object.values(profile.skills).flat().length;
-
-const caps = lang === 'vi' ? [
-  { color: '#5b8cff', label: 'Kiến trúc Hệ thống',  detail: 'Microservices · Event-driven · Phân tán' },
-  { color: '#f0b232', label: 'AI Engineering',        detail: 'RAG · LLM · Voice AI → production' },
-  { color: '#36d6c3', label: 'Cloud & Tối ưu',        detail: 'AWS-native · Cost-first · IaC end-to-end' },
-] : [
-  { color: '#5b8cff', label: 'System Architecture',   detail: 'Microservices · Event-driven · Distributed' },
-  { color: '#f0b232', label: 'AI Engineering',         detail: 'RAG · LLM · Voice AI → production ready' },
-  { color: '#36d6c3', label: 'Cloud & Optimization',   detail: 'AWS-native · Cost-first · IaC end-to-end' },
-];
-
 const totalDomains = Object.keys(profile.skills ?? {}).filter(k => (profile.skills[k] ?? []).length > 0).length;
 const totalProtocols = (profile.languages ?? []).length;
+
+const caps = lang === 'vi' ? [
+  { color: '#5b8cff', label: 'Kiến trúc Hệ thống' },
+  { color: '#f0b232', label: 'AI Engineering' },
+  { color: '#36d6c3', label: 'Cloud & Tối ưu' },
+] : [
+  { color: '#5b8cff', label: 'System Architecture' },
+  { color: '#f0b232', label: 'AI Engineering' },
+  { color: '#36d6c3', label: 'Cloud & Optimization' },
+];
 ---
+
 <section class="hero-section">
+  {heroVideo && (
+    <video
+      class="hero-bg-video"
+      src={heroVideo}
+      autoplay loop muted playsinline
+      preload="none"
+      aria-hidden="true"
+      width="1280" height="720"
+    />
+  )}
+  <div class="hero-gradient" aria-hidden="true"></div>
+
   <div class="container">
-    <div class={`hero-inner${heroVisual ? ' has-visual' : ''}`}>
+    <div class="hero-body">
 
-      <!-- Cột trái: nội dung -->
-      <div class="hero-content">
-        <!-- Vector lock mark — sequence step 0 -->
+      <div class="hero-top" data-reveal style="--reveal-delay:0ms">
         <div class="hero-lockmark" aria-hidden="true">
-          <img src="/images/logo.png" alt="" class="lockmark-img" width="44" height="44" />
-          <span class="hud-bracket tl"></span>
-          <span class="hud-bracket br"></span>
+          <img src="/images/logo.png" alt="" class="lockmark-img" width="40" height="40" />
+          <span class="lm-tl"></span>
+          <span class="lm-br"></span>
         </div>
-
-        <div class="badge" data-reveal style="--reveal-delay:10ms;margin-bottom:22px">
+        <div class="badge">
           <span class="pulse"></span>
           <span>{id.location}</span>
         </div>
+      </div>
 
-        <h1 data-reveal style="--reveal-delay:110ms;font-size:clamp(2.3rem,6.5vw,3.7rem);line-height:1.06;letter-spacing:-0.035em;margin:.1em 0 .15em;font-weight:700">
-          <span class="grad">{id.name}</span>
-        </h1>
-        <p data-reveal style="--reveal-delay:180ms;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--text);margin:.1em 0 .1em;font-weight:600;letter-spacing:-0.02em">{id.title}</p>
-        <p data-reveal style="--reveal-delay:230ms;max-width:600px;color:#cfd6ea;font-size:1.05rem;line-height:1.62;margin:.3em 0 0">{id.tagline}</p>
+      <h1 class="hero-name" data-reveal style="--reveal-delay:80ms">
+        <span class="grad">{id.name}</span>
+      </h1>
 
-        <!-- Capability lines -->
-        <ul class="hero-caps" data-reveal style="--reveal-delay:300ms">
-          {caps.map(c => (
-            <li style={`--cc:${c.color}`}>
-              <span class="cap-dot"></span>
-              <b>{c.label}</b>
-              <span class="cap-sep">—</span>
-              <span class="cap-detail">{c.detail}</span>
-            </li>
-          ))}
-        </ul>
+      <div class="hero-rule" data-reveal style="--reveal-delay:148ms" aria-hidden="true">
+        <span class="rule-short"></span>
+        <span class="rule-label mono">{id.title}</span>
+        <span class="rule-long"></span>
+      </div>
 
-        <!-- Live telemetry readout -->
-        <div class="hero-telemetry mono" data-reveal style="--reveal-delay:330ms">
-          <span class="tele-val">{totalDomains}</span><span class="tele-key">DOMAINS</span>
-          <span class="tele-sep">·</span>
-          <span class="tele-val">{totalSkills}</span><span class="tele-key">NODES</span>
-          <span class="tele-sep">·</span>
-          <span class="tele-val">{totalProtocols}</span><span class="tele-key">PROTOCOLS</span>
-        </div>
+      <p class="hero-tagline" data-reveal style="--reveal-delay:205ms">
+        {id.tagline}
+      </p>
 
-        <div data-reveal style="--reveal-delay:380ms;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-          <a class="btn btn-primary" href={localizedPath('/journey', lang)}>{t('hero.cta1')}</a>
-          <a class="btn btn-ghost" href={localizedPath('/experience', lang)}>{t('hero.cta2')}</a>
-          <div class="social" style="margin-left:4px">
-            {id.links?.linkedin && (
-              <a href={id.links.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77Z"/></svg>
-              </a>
-            )}
-            {id.links?.github && (
-              <a href={id.links.github} target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
-              </a>
-            )}
-            <a href={`mailto:${id.email}`} aria-label="Email" title="Email">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-            </a>
+      <div class="hero-caps" data-reveal style="--reveal-delay:268ms">
+        {caps.map(c => (
+          <div class="cap-item" style={`--cc:${c.color}`}>
+            <span class="cap-dot"></span>
+            <span>{c.label}</span>
           </div>
+        ))}
+      </div>
+
+      <div class="hero-telemetry mono" data-reveal style="--reveal-delay:314ms">
+        <span class="tele-val">{totalDomains}</span><span class="tele-key"> DOMAINS</span>
+        <span class="tele-sep"> · </span>
+        <span class="tele-val">{totalSkills}</span><span class="tele-key"> NODES</span>
+        <span class="tele-sep"> · </span>
+        <span class="tele-val">{totalProtocols}</span><span class="tele-key"> PROTOCOLS</span>
+      </div>
+
+      <div class="hero-actions" data-reveal style="--reveal-delay:362ms">
+        <a class="btn btn-primary" href={localizedPath('/journey', lang)}>{t('hero.cta1')}</a>
+        <a class="btn btn-ghost" href={localizedPath('/experience', lang)}>{t('hero.cta2')}</a>
+        <div class="social" style="margin-left:4px">
+          {id.links?.linkedin && (
+            <a href={id.links.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77Z"/></svg>
+            </a>
+          )}
+          {id.links?.github && (
+            <a href={id.links.github} target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+            </a>
+          )}
+          <a href={`mailto:${id.email}`} aria-label="Email" title="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </a>
         </div>
       </div>
 
-      <!-- Cột phải: ảnh astronaut + depth recession wrapper -->
-      {heroVisual && (
-        <div class="hero-visual-wrapper">
-          <div class="hero-visual" data-reveal style="--reveal-delay:150ms" aria-hidden="true">
-            <span class="hud-bracket tl"></span>
-            <span class="hud-bracket br"></span>
-            <div class="orbital-rings" aria-hidden="true">
-              <div class="orbital-ring"></div>
-              <div class="orbital-ring"></div>
-              <div class="orbital-ring"></div>
-            </div>
-            {heroVideo ? (
-              <video
-                class="hero-welcome-video"
-                src={heroVideo}
-                poster={heroVisual ?? undefined}
-                autoplay
-                loop
-                muted
-                playsinline
-                preload="none"
-                aria-hidden="true"
-                width="1280"
-                height="720"
-              />
-            ) : heroVisual ? (
-              <img
-                src={heroVisual}
-                alt={id.name + ' — AI & System Optimization Engineer'}
-                width="1280" height="720"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-              />
-            ) : null}
-            <div class="hero-visual-scan"></div>
-          </div>
-        </div>
-      )}
     </div>
   </div>
 </section>
 
 <style>
-  .hero-section { position: relative; padding-top: 84px; padding-bottom: 44px; }
-  .hero-inner { position: relative; z-index: 1; }
-
-  /* 2-col desktop — video chiếm nhiều hơn */
-  @media (min-width: 820px) {
-    .hero-inner.has-visual {
-      display: grid;
-      grid-template-columns: 1fr clamp(380px, 50%, 640px);
-      gap: clamp(28px, 4vw, 60px);
-      align-items: center;
-    }
-  }
-
-  /* Large desktop: video full-bleed background */
-  @media (min-width: 1300px) {
-    .hero-section { min-height: 92vh; display: flex; align-items: center; }
-    .hero-inner.has-visual { display: block; position: relative; width: 100%; }
-    .hero-visual-wrapper {
-      position: absolute; inset: -84px -50vw 0 -50vw;
-      margin: 0; z-index: 0; pointer-events: none;
-    }
-    .hero-visual {
-      height: 100%; aspect-ratio: unset;
-      border-radius: 0; border: none; animation: none;
-      box-shadow: none;
-    }
-    .hero-visual::after {
-      background:
-        linear-gradient(100deg, rgba(4,6,14,0.92) 0%, rgba(4,6,14,0.75) 40%, rgba(4,6,14,0.2) 75%, rgba(4,6,14,0.05) 100%),
-        linear-gradient(180deg, rgba(4,6,14,0.5) 0%, transparent 15%, transparent 80%, rgba(4,6,14,0.6) 100%);
-    }
-    .hero-content {
-      position: relative; z-index: 1;
-      max-width: 620px;
-    }
-    .orbital-rings { opacity: 0.45; }
-    .hero-visual-scan::before { opacity: 0.5; }
-    .hud-bracket { opacity: 0.4; }
-  }
-
-  /* Tablet */
-  @media (max-width: 819px) and (min-width: 600px) {
-    .hero-section { padding-top: 64px; padding-bottom: 36px; }
-  }
-
-  /* Mobile */
-  @media (max-width: 599px) {
-    .hero-section { padding-top: 48px; padding-bottom: 28px; }
-  }
-
-  /* Small phones */
-  @media (max-width: 399px) {
-    .hero-section { padding-top: 36px; padding-bottom: 24px; }
-  }
-
-
-  /* Hero visual wrapper — depth recession driven by --hero-depth */
-  .hero-visual-wrapper {
+  /* ── HERO SECTION ─────────────────────────────────── */
+  .hero-section {
     position: relative;
-    margin-top: 40px;
-  }
-  @media (min-width: 820px) { .hero-visual-wrapper { margin-top: 0; } }
-
-  /* Hero visual — cột phải */
-  .hero-visual {
-    position: relative;
-    border-radius: 18px;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
     overflow: hidden;
-    aspect-ratio: 16 / 11;
-    box-shadow:
-      0 0 0 1px rgba(91, 140, 255, 0.18),
-      0 0 48px rgba(91, 140, 255, 0.18),
-      0 0 100px rgba(181, 140, 255, 0.1),
-      0 24px 60px rgba(0, 0, 0, 0.55);
-    animation: heroFloat 8s var(--ease, ease-in-out) infinite;
+    padding: 96px 0 80px;
   }
 
-  .hero-visual img,
-  .hero-welcome-video {
-    display: block; width: 100%; height: 100%;
+  /* True full-bleed ambient background — no overflow hacks needed */
+  .hero-bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
     object-fit: cover;
     object-position: center center;
+    opacity: 0.20;
+    z-index: 0;
+    pointer-events: none;
   }
-  /* Overlay hoà với nền vũ trụ: fade cạnh trái + top/bottom + tint xanh nhẹ */
-  .hero-visual::after {
-    content: ""; position: absolute; inset: 0; pointer-events: none;
+
+  /* Atmospheric gradient over video */
+  .hero-gradient {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
     background:
-      linear-gradient(90deg, rgba(4,6,14,0.45) 0%, transparent 38%),
-      linear-gradient(180deg, rgba(4,6,14,0.25) 0%, transparent 25%, transparent 70%, rgba(4,6,14,0.5) 100%),
-      radial-gradient(80% 70% at 75% 15%, rgba(91,140,255,0.09), transparent 65%);
+      linear-gradient(108deg, rgba(4,6,14,0.97) 0%, rgba(4,6,14,0.88) 48%, rgba(4,6,14,0.38) 100%),
+      linear-gradient(180deg, rgba(4,6,14,0.60) 0%, transparent 10%, transparent 84%, rgba(4,6,14,0.95) 100%);
   }
 
-  /* Hero visual responsive */
-  @media (max-width: 819px) {
-    .hero-visual-wrapper { margin-top: 32px; }
-    .hero-visual { aspect-ratio: 16 / 9; border-radius: 14px; }
-  }
-  @media (max-width: 600px) {
-    .hero-visual-wrapper { margin-top: 24px; }
-    .hero-visual {
-      border-radius: 12px;
-      box-shadow:
-        0 0 0 1px rgba(91, 140, 255, 0.15),
-        0 0 32px rgba(91, 140, 255, 0.12),
-        0 16px 40px rgba(0, 0, 0, 0.45);
-    }
-  }
-  @media (max-width: 400px) {
-    .hero-visual-wrapper { margin-top: 20px; }
-    .hero-visual { border-radius: 10px; }
+  /* Content sits above gradients */
+  .hero-body {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
   }
 
-  /* Dải quét ngang HUD kiểu sci-fi */
-  .hero-visual-scan {
-    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
-  }
-  .hero-visual-scan::before {
-    content: ""; position: absolute; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent 0%, rgba(91,140,255,0.55) 40%, rgba(54,214,195,0.45) 60%, transparent 100%);
-    animation: scanLine 6s linear infinite; top: -2px;
-  }
-  @keyframes scanLine {
-    0% { top: -2px; opacity: 0; }
-    5% { opacity: 1; }
-    95% { opacity: 0.6; }
-    100% { top: 100%; opacity: 0; }
+  /* ── TOP ROW: lockmark + status ─────────────────── */
+  .hero-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
   }
 
-  /* HUD brackets */
-  .hud-bracket { position: absolute; width: 22px; height: 22px; z-index: 3; pointer-events: none; }
-  .hud-bracket.tl { top: 10px; left: 10px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
-  .hud-bracket.br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--accent-2); border-right: 2px solid var(--accent-2); }
-
-  /* HUD brackets responsive */
-  @media (max-width: 600px) {
-    .hud-bracket { width: 18px; height: 18px; }
-    .hud-bracket.tl { top: 8px; left: 8px; }
-    .hud-bracket.br { bottom: 8px; right: 8px; }
-  }
-  @media (max-width: 400px) {
-    .hud-bracket { width: 14px; height: 14px; }
-    .hud-bracket.tl { top: 6px; left: 6px; }
-    .hud-bracket.br { bottom: 6px; right: 6px; }
-  }
-
-  /* ── Capability lines ─────────────────── */
-  .hero-caps {
-    list-style: none; padding: 0; margin: 20px 0 20px;
-    display: flex; flex-direction: column; gap: 9px;
-  }
-  .hero-caps li {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
-    font-size: 0.88rem;
-  }
-  .cap-dot {
-    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-    background: var(--cc, var(--accent));
-    box-shadow: 0 0 7px var(--cc, var(--accent));
-  }
-  .hero-caps b { color: var(--text); font-weight: 600; white-space: nowrap; }
-  .cap-sep { color: var(--border); }
-  .cap-detail { color: var(--text-mute); font-size: 0.81rem; }
-
-  /* ── Vector lock mark ───────────────── */
   .hero-lockmark {
     position: relative;
-    display: inline-flex; align-items: center; justify-content: center;
     width: 48px; height: 48px;
-    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
   .lockmark-img {
-    width: 44px; height: 44px;
+    width: 40px; height: 40px;
     object-fit: contain;
     mix-blend-mode: screen;
-    filter: drop-shadow(0 0 8px rgba(91,140,255,0.5));
+    filter: drop-shadow(0 0 8px rgba(91,140,255,0.55));
   }
-  .hero-lockmark .hud-bracket { width: 10px; height: 10px; z-index: 1; }
-  .hero-lockmark .hud-bracket.tl { top: 2px; left: 2px; border-width: 1.5px; }
-  .hero-lockmark .hud-bracket.br { bottom: 2px; right: 2px; border-width: 1.5px; }
+  .lm-tl, .lm-br { position: absolute; width: 9px; height: 9px; }
+  .lm-tl { top: 1px; left: 1px; border-top: 1.5px solid #5b8cff; border-left: 1.5px solid #5b8cff; }
+  .lm-br { bottom: 1px; right: 1px; border-bottom: 1.5px solid #36d6c3; border-right: 1.5px solid #36d6c3; }
 
-  /* ── Live telemetry readout ──────────── */
+  /* ── NAME — flagship typography ─────────────────── */
+  .hero-name {
+    font-size: clamp(3.2rem, 9.5vw, 6.8rem);
+    font-weight: 800;
+    letter-spacing: -0.048em;
+    line-height: 0.95;
+    margin: 0 0 20px;
+  }
+
+  /* ── TITLE SEPARATOR RULE ───────────────────────── */
+  .hero-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 24px;
+  }
+  .rule-short {
+    display: block; height: 1px; width: 32px;
+    background: rgba(91,140,255,0.55);
+    flex-shrink: 0;
+  }
+  .rule-label {
+    font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.47); white-space: nowrap;
+  }
+  .rule-long {
+    display: block; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(91,140,255,0.32), transparent);
+  }
+
+  /* ── TAGLINE ────────────────────────────────────── */
+  .hero-tagline {
+    max-width: 580px;
+    color: #cfd6ea;
+    font-size: clamp(0.98rem, 1.9vw, 1.12rem);
+    line-height: 1.68;
+    margin: 0 0 26px;
+  }
+
+  /* ── CAPABILITY PILLS ───────────────────────────── */
+  .hero-caps {
+    display: flex; flex-wrap: wrap; gap: 9px;
+    margin: 0 0 22px;
+  }
+  .cap-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 14px 5px 9px;
+    border: 1px solid color-mix(in srgb, var(--cc) 28%, transparent);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--cc) 6%, transparent);
+    font-size: 0.82rem; font-weight: 500;
+    color: var(--cc);
+  }
+  .cap-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cc);
+    box-shadow: 0 0 6px var(--cc);
+    flex-shrink: 0;
+  }
+
+  /* ── TELEMETRY READOUT ──────────────────────────── */
   .hero-telemetry {
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase;
-    margin: 14px 0 26px;
+    display: flex; align-items: center; flex-wrap: wrap;
+    font-size: 0.67rem; letter-spacing: 1.5px; text-transform: uppercase;
+    margin: 0 0 28px;
     padding: 7px 12px;
     border: 1px solid rgba(91,140,255,0.12);
     border-radius: 6px;
@@ -326,36 +243,26 @@ const totalProtocols = (profile.languages ?? []).length;
     width: fit-content;
   }
   .tele-val { color: var(--accent-2); font-weight: 600; }
-  .tele-key { color: var(--text-mute); font-size: 0.62rem; margin-left: 2px; }
-  .tele-sep { color: rgba(255,255,255,0.15); margin: 0 2px; }
+  .tele-key { color: var(--text-mute); font-size: 0.62rem; }
+  .tele-sep { color: rgba(255,255,255,0.15); }
 
-  @media (max-width: 500px) {
-    .hero-caps li { gap: 5px; font-size: 0.84rem; }
-    .hero-telemetry { font-size: 0.62rem; padding: 6px 10px; }
+  /* ── ACTIONS ────────────────────────────────────── */
+  .hero-actions {
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
   }
 
-  @keyframes heroFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+  /* ── RESPONSIVE ─────────────────────────────────── */
+  @media (max-width: 599px) {
+    .hero-section { padding: 72px 0 56px; }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-avatar::before { animation: none; }
-    .hero-visual { animation: none; }
-    .hero-visual-scan::before { animation: none; }
-    .hero-welcome-video { display: none; }
+  @media (max-width: 399px) {
+    .hero-section { padding: 60px 0 44px; }
   }
 </style>
 
-{heroVideo && (
-  <script>
-    // Trigger video play after page load (preload="none" needs manual trigger on some browsers)
-    function initHeroVideo() {
-      const v = document.querySelector<HTMLVideoElement>('.hero-welcome-video');
-      if (!v || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      v.play().catch(() => {});
-    }
-    document.addEventListener('astro:page-load', initHeroVideo);
-  </script>
-)}
-
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const v = document.querySelector<HTMLVideoElement>('.hero-bg-video');
+    if (v) v.play().catch(() => {});
+  });
+</script>
