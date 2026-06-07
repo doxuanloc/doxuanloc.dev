@@ -137,14 +137,41 @@ const totalProtocols = (profile.languages ?? []).length;
   .hero-section { position: relative; padding-top: 84px; padding-bottom: 44px; }
   .hero-inner { position: relative; z-index: 1; }
 
-  /* 2-col trên desktop khi có ảnh */
+  /* 2-col desktop — video chiếm nhiều hơn */
   @media (min-width: 820px) {
     .hero-inner.has-visual {
       display: grid;
-      grid-template-columns: 1fr clamp(320px, 44%, 520px);
-      gap: clamp(32px, 5vw, 72px);
+      grid-template-columns: 1fr clamp(380px, 50%, 640px);
+      gap: clamp(28px, 4vw, 60px);
       align-items: center;
     }
+  }
+
+  /* Large desktop: video full-bleed background */
+  @media (min-width: 1300px) {
+    .hero-section { min-height: 92vh; display: flex; align-items: center; }
+    .hero-inner.has-visual { display: block; position: relative; width: 100%; }
+    .hero-visual-wrapper {
+      position: absolute; inset: -84px -50vw 0 -50vw;
+      margin: 0; z-index: 0; pointer-events: none;
+    }
+    .hero-visual {
+      height: 100%; aspect-ratio: unset;
+      border-radius: 0; border: none; animation: none;
+      box-shadow: none;
+    }
+    .hero-visual::after {
+      background:
+        linear-gradient(100deg, rgba(4,6,14,0.92) 0%, rgba(4,6,14,0.75) 40%, rgba(4,6,14,0.2) 75%, rgba(4,6,14,0.05) 100%),
+        linear-gradient(180deg, rgba(4,6,14,0.5) 0%, transparent 15%, transparent 80%, rgba(4,6,14,0.6) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 620px;
+    }
+    .orbital-rings { opacity: 0.45; }
+    .hero-visual-scan::before { opacity: 0.5; }
+    .hud-bracket { opacity: 0.4; }
   }
 
   /* Tablet */

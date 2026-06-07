@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import HomeIngress from '../components/home/HomeIngress.astro';
+import WelcomeOverlay from '../components/home/WelcomeOverlay.astro';
 import { getProfile, getAllPosts, getAllNews } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
 
@@ -279,6 +280,7 @@ const activeHubs = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map
   </div>
 
   <HomeIngress />
+  <WelcomeOverlay />
 </Base>
 
 <style>

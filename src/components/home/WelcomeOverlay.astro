@@ -1,0 +1,318 @@
+---
+import { getProfile } from '../../lib/content';
+import { getLangFromUrl } from '../../i18n/ui';
+const lang = getLangFromUrl(Astro.url);
+const id = getProfile(lang).identity;
+---
+
+<div id="welcome-overlay" class="w-overlay" aria-hidden="true" role="presentation">
+  <!-- Layer 1: video full-screen -->
+  <video class="w-video" src="/videos/hero-welcome.mp4"
+    autoplay muted loop playsinline preload="auto" aria-hidden="true">
+  </video>
+
+  <!-- Layer 2: vignette + atmosphere -->
+  <div class="w-vignette"></div>
+
+  <!-- Layer 3: subtle dot grid -->
+  <div class="w-grid"></div>
+
+  <!-- Layer 4: orbital rings (CSS) -->
+  <div class="w-rings">
+    <div class="w-ring r1"></div>
+    <div class="w-ring r2"></div>
+    <div class="w-ring r3"></div>
+  </div>
+
+  <!-- Layer 5: HUD corner brackets -->
+  <div class="w-corner tl"></div>
+  <div class="w-corner tr"></div>
+  <div class="w-corner bl"></div>
+  <div class="w-corner br"></div>
+
+  <!-- Layer 6: horizontal scanline -->
+  <div class="w-scanline"></div>
+
+  <!-- Layer 7: center content -->
+  <div class="w-content">
+    <div class="w-mark">
+      <span class="w-mark-l">L</span>
+      <div class="w-mark-corner tl"></div>
+      <div class="w-mark-corner tr"></div>
+      <div class="w-mark-corner bl"></div>
+      <div class="w-mark-corner br"></div>
+    </div>
+    <div class="w-name">{id.name}</div>
+    <div class="w-title mono">{id.title}</div>
+    <div class="w-hint mono">SCROLL · CLICK · ESC TO ENTER</div>
+  </div>
+
+  <!-- Layer 8: bottom progress bar -->
+  <div class="w-progress-wrap">
+    <div class="w-progress-fill"></div>
+  </div>
+
+  <!-- Skip button -->
+  <button class="w-skip mono" type="button" aria-label="Skip intro">SKIP ›</button>
+</div>
+
+<style>
+  /* ── BASE OVERLAY ───────────────────────── */
+  .w-overlay {
+    position: fixed; inset: 0; z-index: 9000;
+    background: #04060e;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    /* entrance: already visible, layers animate in */
+    opacity: 1;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .w-overlay.w-exit {
+    opacity: 0;
+    transform: scale(1.03);
+    pointer-events: none;
+  }
+  .w-overlay.w-gone { display: none; }
+
+  /* ── LAYER 1: VIDEO ─────────────────────── */
+  .w-video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    animation: wVideoIn 1s ease 0.1s forwards;
+  }
+  @keyframes wVideoIn {
+    from { opacity: 0; } to { opacity: 0.38; }
+  }
+
+  /* ── LAYER 2: VIGNETTE ──────────────────── */
+  .w-vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(4,6,14,0.75) 100%),
+      linear-gradient(180deg, rgba(4,6,14,0.4) 0%, transparent 20%, transparent 80%, rgba(4,6,14,0.6) 100%);
+  }
+
+  /* ── LAYER 3: DOT GRID ──────────────────── */
+  .w-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(91,140,255,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0;
+    animation: wFadeIn 0.8s ease 0.5s forwards;
+  }
+
+  /* ── LAYER 4: ORBITAL RINGS ─────────────── */
+  .w-rings { position: absolute; inset: 0; pointer-events: none; }
+  .w-ring {
+    position: absolute;
+    left: 50%; top: 50%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    border: 1px solid rgba(91,140,255,0.15);
+    animation: wRingIn 0.7s ease forwards, wRingSpin 25s linear infinite;
+  }
+  .r1 { width: 280px; height: 280px; animation-delay: 0.3s, 0s; }
+  .r2 {
+    width: 480px; height: 480px;
+    border-color: rgba(54,214,195,0.1);
+    border-style: dashed;
+    animation-delay: 0.45s, 0s;
+    animation-direction: normal, reverse;
+  }
+  .r3 {
+    width: 680px; height: 680px;
+    border-color: rgba(91,140,255,0.06);
+    animation-delay: 0.6s, 0s;
+    animation-duration: 0.7s, 45s;
+  }
+  @keyframes wRingIn {
+    from { opacity: 0; transform: translate(-50%,-50%) scale(0.85); }
+    to   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  }
+  @keyframes wRingSpin {
+    to { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+
+  /* ── LAYER 5: HUD CORNERS ───────────────── */
+  .w-corner {
+    position: absolute;
+    width: 28px; height: 28px;
+    opacity: 0;
+    animation: wFadeIn 0.4s ease 0.25s forwards;
+  }
+  .w-corner.tl { top: 20px; left: 20px; border-top: 2px solid var(--accent, #5b8cff); border-left: 2px solid var(--accent, #5b8cff); }
+  .w-corner.tr { top: 20px; right: 20px; border-top: 2px solid var(--accent, #5b8cff); border-right: 2px solid var(--accent, #5b8cff); }
+  .w-corner.bl { bottom: 36px; left: 20px; border-bottom: 2px solid var(--accent-2, #36d6c3); border-left: 2px solid var(--accent-2, #36d6c3); }
+  .w-corner.br { bottom: 36px; right: 20px; border-bottom: 2px solid var(--accent-2, #36d6c3); border-right: 2px solid var(--accent-2, #36d6c3); }
+  @media (max-width: 600px) {
+    .w-corner { width: 18px; height: 18px; }
+    .w-corner.tl, .w-corner.tr { top: 12px; }
+    .w-corner.bl, .w-corner.br { bottom: 28px; }
+    .w-corner.tl, .w-corner.bl { left: 12px; }
+    .w-corner.tr, .w-corner.br { right: 12px; }
+  }
+
+  /* ── LAYER 6: SCANLINE ──────────────────── */
+  .w-scanline {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(54,214,195,0.5) 30%, rgba(91,140,255,0.4) 70%, transparent 100%);
+    animation: wScanMove 5s linear infinite;
+    top: -1px;
+    opacity: 0.7;
+  }
+  @keyframes wScanMove {
+    0%   { top: -1px; opacity: 0; }
+    5%   { opacity: 0.7; }
+    95%  { opacity: 0.4; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* ── LAYER 7: CENTER CONTENT ────────────── */
+  .w-content {
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px; text-align: center;
+    padding: 0 24px;
+  }
+
+  /* Lock mark */
+  .w-mark {
+    position: relative;
+    width: 80px; height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: wMarkIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.7s forwards;
+  }
+  @keyframes wMarkIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .w-mark-l {
+    font-family: 'Tektur', sans-serif;
+    font-size: 2.8rem; font-weight: 700; line-height: 1;
+    color: #36d6c3;
+    text-shadow: 0 0 32px rgba(54,214,195,0.7), 0 0 60px rgba(54,214,195,0.3);
+  }
+  .w-mark-corner {
+    position: absolute;
+    width: 12px; height: 12px;
+  }
+  .w-mark-corner.tl { top: 0; left: 0; border-top: 1.5px solid #5b8cff; border-left: 1.5px solid #5b8cff; }
+  .w-mark-corner.tr { top: 0; right: 0; border-top: 1.5px solid #5b8cff; border-right: 1.5px solid #5b8cff; }
+  .w-mark-corner.bl { bottom: 0; left: 0; border-bottom: 1.5px solid #5b8cff; border-left: 1.5px solid #5b8cff; }
+  .w-mark-corner.br { bottom: 0; right: 0; border-bottom: 1.5px solid #5b8cff; border-right: 1.5px solid #5b8cff; }
+
+  .w-name {
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    font-weight: 700; letter-spacing: -0.035em;
+    background: linear-gradient(90deg, #5b8cff, #36d6c3);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: wSlideUp 0.6s ease 1.1s forwards;
+  }
+  .w-title {
+    font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    opacity: 0;
+    animation: wFadeIn 0.5s ease 1.5s forwards;
+  }
+  .w-hint {
+    font-size: 0.62rem; letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(91,140,255,0.5);
+    margin-top: 8px;
+    opacity: 0;
+    animation: wFadeIn 0.5s ease 1.9s forwards;
+  }
+
+  @keyframes wFadeIn  { from { opacity:0 } to { opacity:1 } }
+  @keyframes wSlideUp { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:none } }
+
+  /* ── LAYER 8: PROGRESS BAR ──────────────── */
+  .w-progress-wrap {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: rgba(255,255,255,0.06);
+    z-index: 11;
+  }
+  .w-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5b8cff, #36d6c3);
+    width: 0%;
+    animation: wProgress var(--w-duration, 3200ms) linear 0.2s forwards;
+  }
+  @keyframes wProgress {
+    from { width: 0% } to { width: 100% }
+  }
+
+  /* ── SKIP BUTTON ────────────────────────── */
+  .w-skip {
+    position: absolute; top: 18px; right: 64px;
+    font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    background: none; border: none; cursor: pointer; z-index: 12;
+    transition: color 0.2s;
+    padding: 6px 8px;
+    opacity: 0;
+    animation: wFadeIn 0.4s ease 0.5s forwards;
+  }
+  .w-skip:hover { color: rgba(255,255,255,0.75); }
+  @media (max-width: 600px) {
+    .w-skip { right: 14px; top: 12px; }
+  }
+
+  /* ── REDUCED MOTION ─────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .w-overlay { display: none !important; }
+  }
+</style>
+
+<script>
+  const DURATION = 3200; // ms — must match --w-duration and wProgress
+
+  function initOverlay() {
+    const overlay = document.getElementById('welcome-overlay');
+    if (!overlay) return;
+
+    // Show only on first visit per session
+    if (sessionStorage.getItem('welcomed')) {
+      overlay.classList.add('w-gone');
+      return;
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      overlay.classList.add('w-gone');
+      return;
+    }
+
+    // Lock body scroll while overlay is up
+    document.body.style.overflow = 'hidden';
+
+    function dismiss() {
+      if (overlay.classList.contains('w-exit') || overlay.classList.contains('w-gone')) return;
+      sessionStorage.setItem('welcomed', '1');
+      document.body.style.overflow = '';
+      overlay.classList.add('w-exit');
+      setTimeout(() => overlay.classList.add('w-gone'), 520);
+    }
+
+    // Auto-dismiss
+    const timer = setTimeout(dismiss, DURATION + 200);
+
+    // Manual dismiss: click, scroll, key
+    overlay.addEventListener('click', () => { clearTimeout(timer); dismiss(); });
+    window.addEventListener('scroll', () => { clearTimeout(timer); dismiss(); }, { once: true, passive: true });
+    window.addEventListener('keydown', (e) => {
+      if (['Escape', 'Enter', ' '].includes(e.key)) { clearTimeout(timer); dismiss(); }
+    }, { once: true });
+
+    // Skip button
+    const skip = overlay.querySelector('.w-skip');
+    if (skip) skip.addEventListener('click', (e) => { e.stopPropagation(); clearTimeout(timer); dismiss(); });
+  }
+
+  document.addEventListener('astro:page-load', initOverlay);
+</script>
