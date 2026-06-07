@@ -209,8 +209,9 @@ a:hover { color: var(--accent-2); }
   border-bottom: 1px solid var(--border-soft);
 }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 62px; gap: 16px; }
-.nav .brand { font-family: var(--display); font-weight: 700; font-size: 1.08rem; letter-spacing: 0.02em; color: var(--text); white-space: nowrap; }
+.nav .brand { font-family: var(--display); font-weight: 700; font-size: 1.08rem; letter-spacing: 0.02em; color: var(--text); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
 .nav .brand span { color: var(--accent); }
+.brand-logo { width: 28px; height: 28px; object-fit: contain; mix-blend-mode: screen; flex-shrink: 0; }
 .nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
 .nav ul::-webkit-scrollbar { display: none; }
 .nav ul a {

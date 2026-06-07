@@ -32,7 +32,7 @@ const totalProtocols = (profile.languages ?? []).length;
       <div class="hero-content">
         <!-- Vector lock mark — sequence step 0 -->
         <div class="hero-lockmark" aria-hidden="true">
-          <span class="lockmark-l">L</span>
+          <img src="/images/logo.png" alt="" class="lockmark-img" width="44" height="44" />
           <span class="hud-bracket tl"></span>
           <span class="hud-bracket br"></span>
         </div>
@@ -304,11 +304,11 @@ const totalProtocols = (profile.languages ?? []).length;
     width: 48px; height: 48px;
     margin-bottom: 20px;
   }
-  .lockmark-l {
-    font-family: 'Tektur', sans-serif;
-    font-size: 1.6rem; font-weight: 700; line-height: 1;
-    color: var(--accent-2);
-    text-shadow: 0 0 16px color-mix(in srgb, var(--accent-2) 60%, transparent);
+  .lockmark-img {
+    width: 44px; height: 44px;
+    object-fit: contain;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 8px rgba(91,140,255,0.5));
   }
   .hero-lockmark .hud-bracket { width: 10px; height: 10px; z-index: 1; }
   .hero-lockmark .hud-bracket.tl { top: 2px; left: 2px; border-width: 1.5px; }
