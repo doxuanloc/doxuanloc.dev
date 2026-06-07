@@ -26,6 +26,19 @@ const skillGroups = [
 ];
 const totalSkills = Object.values(skills).flat().length;
 const totalGroups = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).length;
+
+// Constellation Core — precompute hub positions (server-side, no trig in browser)
+const CONST_R = 130; const CONST_CX = 190; const CONST_CY = 190;
+const activeHubs = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map((g, i, arr) => {
+  const angle = (Math.PI * 2 / arr.length) * i - Math.PI / 2;
+  return {
+    ...g,
+    count: (skills[g.key] ?? []).length,
+    hx: CONST_CX + CONST_R * Math.cos(angle),
+    hy: CONST_CY + CONST_R * Math.sin(angle),
+    hi: i,
+  };
+});
 ---
 <Base>
   <Hero />
@@ -72,31 +85,106 @@ const totalGroups = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).le
     </div>
   </section>
 
-  <!-- ── TECH DNA ──────────────────────────────── -->
+  <!-- ── TECH DNA — CONSTELLATION CORE ───────────── -->
   <section class="section-skills" style="padding-top:0">
     <div class="container">
       <p class="eyebrow" data-reveal>{t('home.skills.eyebrow')}</p>
       <h2 class="section-title" data-reveal style="--reveal-delay:60ms">{t('home.skills.title')}</h2>
       <p class="section-sub" data-reveal style="--reveal-delay:100ms">{t('home.skills.sub')}</p>
 
-      <div class="dna-grid">
-        {skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map((g, i) => (
-          <div class="dna-row" data-reveal style={`--reveal-delay:${i * 70 + 120}ms; --dc:${g.c}`}>
-            <div class="dna-label">
-              <span class="dna-dot"></span>
-              <span class="dna-cat">{g.label}</span>
-              <span class="dna-count mono">{(skills[g.key] ?? []).length}</span>
-            </div>
-            <div class="dna-chips">
-              {(skills[g.key] ?? []).map((s: string) => <span class="chip dna-chip">{s}</span>)}
+      <div class="const-display">
+        <!-- Left col: Constellation visual -->
+        <div class="const-visual-col">
+          <!-- Desktop circular constellation -->
+          <div class="constellation-wrap" data-reveal style="--reveal-delay:120ms">
+            <div class="constellation-core" aria-hidden="true">
+              <!-- Orbital background rings -->
+              <div class="const-orbit const-orbit-1"></div>
+              <div class="const-orbit const-orbit-2"></div>
+
+              <!-- SVG filaments (center-to-hub + adjacent hub connections) -->
+              <svg class="const-svg" viewBox="0 0 380 380" aria-hidden="true">
+                {/* Lines from center to each hub */}
+                {activeHubs.map((h) => (
+                  <line
+                    x1={CONST_CX} y1={CONST_CY}
+                    x2={h.hx.toFixed(1)} y2={h.hy.toFixed(1)}
+                    stroke={h.c} stroke-width="1" stroke-opacity="0.2"
+                    class="const-filament" style={`--fi:${h.hi}`}
+                    pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"
+                  />
+                ))}
+                {/* Adjacent hub ring */}
+                {activeHubs.map((h, i) => {
+                  const next = activeHubs[(i + 1) % activeHubs.length];
+                  return (
+                    <line
+                      x1={h.hx.toFixed(1)} y1={h.hy.toFixed(1)}
+                      x2={next.hx.toFixed(1)} y2={next.hy.toFixed(1)}
+                      stroke={h.c} stroke-width="0.5" stroke-opacity="0.12"
+                      class="const-filament" style={`--fi:${activeHubs.length + i}`}
+                      pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"
+                    />
+                  );
+                })}
+              </svg>
+
+              <!-- Center node -->
+              <div class="const-center">
+                <span class="const-count">{totalSkills}</span>
+                <span class="const-unit mono">NODES</span>
+              </div>
+
+              <!-- Domain hubs -->
+              {activeHubs.map((h) => (
+                <div
+                  class="const-hub"
+                  style={`left:${h.hx.toFixed(1)}px;top:${h.hy.toFixed(1)}px;--hc:${h.c};--hi:${h.hi}`}
+                >
+                  <div class="hub-inner">
+                    <div class="hub-orb">
+                      <span class="hub-count">{h.count}</span>
+                    </div>
+                    <span class="hub-label">{h.label}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
 
-      <p class="dna-total mono" data-reveal>
-        {t('home.skills.total', { n: totalSkills, g: totalGroups })}
-      </p>
+          <!-- Mobile compact hub grid -->
+          <div class="const-hub-grid" aria-hidden="true">
+            {activeHubs.map(h => (
+              <div class="hub-grid-item" data-reveal style={`--hc:${h.c};--reveal-delay:${h.hi * 60}ms`}>
+                <span class="hub-grid-orb"></span>
+                <span class="hub-grid-label">{h.label}</span>
+                <span class="hub-grid-count mono">{h.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Right col: skill rows -->
+        <div class="const-rows-col">
+          <div class="dna-grid">
+            {activeHubs.map((h, i) => (
+              <div class="dna-row" data-reveal style={`--reveal-delay:${i * 70 + 120}ms; --dc:${h.c}`}>
+                <div class="dna-label">
+                  <span class="dna-dot"></span>
+                  <span class="dna-cat">{h.label}</span>
+                  <span class="dna-count mono">{h.count}</span>
+                </div>
+                <div class="dna-chips">
+                  {(skills[h.key] ?? []).map((s: string) => <span class="chip dna-chip">{s}</span>)}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p class="dna-total mono" data-reveal>
+            {t('home.skills.total', { n: totalSkills, g: totalGroups })}
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -302,8 +390,183 @@ const totalGroups = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).le
     color: var(--text-dim); font-size: 0.93rem; line-height: 1.6; margin: 0;
   }
 
+  /* ── CONSTELLATION CORE ───────────────── */
+  .const-display {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-top: 40px;
+  }
+  @media (max-width: 960px) {
+    .const-display { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* Desktop: sticky visual col */
+  .const-visual-col {
+    position: sticky;
+    top: 84px;
+  }
+  @media (max-width: 960px) {
+    .const-visual-col { position: static; }
+  }
+
+  /* Circular constellation (desktop only) */
+  .constellation-wrap {
+    display: flex;
+    justify-content: center;
+  }
+  @media (max-width: 960px) {
+    .constellation-wrap { display: none; }
+  }
+
+  .constellation-core {
+    position: relative;
+    width: 380px; height: 380px;
+    flex-shrink: 0;
+  }
+
+  /* Orbital background rings */
+  .const-orbit {
+    position: absolute;
+    left: 50%; top: 50%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px dashed rgba(91,140,255,0.1);
+  }
+  .const-orbit-1 { width: 270px; height: 270px; }
+  .const-orbit-2 {
+    width: 368px; height: 368px;
+    border-color: rgba(54,214,195,0.06);
+    border-style: solid;
+    animation: constRingSpin 60s linear infinite;
+  }
+  @keyframes constRingSpin {
+    to { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+
+  /* SVG filaments */
+  .const-svg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; overflow: visible;
+  }
+  .const-filament {
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    transition: stroke-dashoffset 0.9s ease calc(var(--fi, 0) * 0.12s + 0.3s);
+  }
+  .constellation-wrap.in .const-filament {
+    stroke-dashoffset: 0;
+  }
+
+  /* Center node */
+  .const-center {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    text-align: center;
+  }
+  .const-count {
+    font-family: 'Tektur', sans-serif;
+    font-size: 2rem; font-weight: 700; line-height: 1;
+    color: var(--accent-2);
+    text-shadow: 0 0 24px color-mix(in srgb, var(--accent-2) 45%, transparent);
+  }
+  .const-unit {
+    font-size: 0.55rem; letter-spacing: 2.5px; color: var(--text-mute);
+  }
+
+  /* Domain hubs */
+  .const-hub {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 84px; text-align: center;
+  }
+  .hub-inner {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    animation: hubFloat 8s ease-in-out infinite;
+    animation-delay: calc(var(--hi, 0) * 1.5s);
+  }
+  .hub-orb {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: color-mix(in srgb, var(--hc) 10%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--hc) 45%, transparent);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--hc) 20%, transparent);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease calc(var(--hi, 0) * 0.15s + 0.4s),
+                box-shadow 0.3s ease;
+  }
+  .constellation-wrap.in .hub-orb { opacity: 1; }
+  .const-hub:hover .hub-orb {
+    box-shadow: 0 0 26px color-mix(in srgb, var(--hc) 50%, transparent);
+    border-color: var(--hc);
+  }
+  .hub-count {
+    font-family: 'Tektur', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--hc);
+  }
+  .hub-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.56rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-mute); white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.4s ease calc(var(--hi, 0) * 0.15s + 0.6s);
+  }
+  .constellation-wrap.in .hub-label { opacity: 1; }
+
+  @keyframes hubFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  /* Mobile hub grid (visible only < 960px) */
+  .const-hub-grid {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  @media (max-width: 960px) {
+    .const-hub-grid { display: grid; }
+  }
+  .hub-grid-item {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 12px 8px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    text-align: center;
+  }
+  .hub-grid-orb {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--hc);
+    box-shadow: 0 0 8px var(--hc);
+  }
+  .hub-grid-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-mute);
+  }
+  .hub-grid-count {
+    font-family: 'Tektur', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--hc);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .const-orbit-2 { animation: none; }
+    .hub-inner { animation: none; }
+    .const-filament { transition: none; stroke-dashoffset: 0; }
+    .hub-orb { transition: none; opacity: 1; }
+    .hub-label { transition: none; opacity: 1; }
+  }
+
   /* ── TECH DNA ──────────────────────────── */
-  .dna-grid { display: grid; gap: 0; margin-top: 28px; }
+  .dna-grid { display: grid; gap: 0; margin-top: 0; }
   .dna-row {
     display: grid;
     grid-template-columns: 140px 1fr;
