@@ -14,6 +14,12 @@ const profile = getProfile(lang);
 const { post } = Astro.props;
 const html = marked.parse(post.contentMarkdown ?? '', { async: false }) as string;
 
+const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
+const postUrl = `${siteOrigin}/blog/${post.slug}/`;
+const postImage = post.coverImage
+  ? (post.coverImage.startsWith('http') ? post.coverImage : `${siteOrigin}${post.coverImage}`)
+  : `${siteOrigin}/images/hero-astronaut.webp`;
+
 const blogLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
@@ -22,13 +28,22 @@ const blogLd = {
   datePublished: post.date,
   dateModified: post.date,
   keywords: (post.tags ?? []).join(', '),
-  inLanguage: 'vi',
-  author: { '@type': 'Person', name: profile.identity.name },
-  publisher: { '@type': 'Person', name: profile.identity.name },
-  mainEntityOfPage: `${Astro.site ?? 'https://doxuanloc.space'}blog/${post.slug}/`,
+  inLanguage: lang === 'vi' ? 'vi' : 'en',
+  image: postImage,
+  url: postUrl,
+  author: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
+  publisher: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
 };
 ---
-<Base title={post.title} description={post.excerpt} schema={blogLd}>
+<Base
+  title={post.title}
+  description={post.excerpt}
+  image={post.coverImage ?? undefined}
+  schema={blogLd}
+  ogType="article"
+  articleMeta={{ publishedTime: post.date, tags: post.tags ?? [] }}
+>
   <div class="read-progress" id="read-progress"></div>
   <section style="padding-top:56px">
     <div class="container">

@@ -12,10 +12,14 @@ interface Props {
   image?: string;
   /** JSON-LD bổ sung cho từng trang (vd BlogPosting). Person + WebSite luôn được nhúng sẵn. */
   schema?: Record<string, any> | Record<string, any>[];
+  /** og:type override — mặc định "website", blog dùng "article". */
+  ogType?: 'website' | 'article';
+  /** Article meta (og:article:*) — chỉ dùng khi ogType = "article". */
+  articleMeta?: { publishedTime?: string; tags?: string[] };
   /** Nền động global (constellation). Tắt ở trang có nền riêng (vd /journey starfield). */
   animatedBg?: boolean;
 }
-const { title, description, image, schema, animatedBg = true } = Astro.props;
+const { title, description, image, schema, ogType = 'website', articleMeta, animatedBg = true } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const profile = getProfile(lang);
@@ -36,6 +40,9 @@ const switchHref = otherLang === 'vi' ? '/vi' + (basePath === '/' ? '' : basePat
 
 const id = profile.identity;
 const sameAs = [id.links?.linkedin, id.links?.github, id.links?.currentPortfolio].filter(Boolean);
+const ogLocale = lang === 'vi' ? 'vi_VN' : 'en_US';
+const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
+const avatarUrl = `${siteOrigin}/favicon-512.png`;
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -44,14 +51,26 @@ const personLd = {
   jobTitle: id.title,
   description: profile.summary,
   email: `mailto:${id.email}`,
-  url: (Astro.site ?? new URL('https://doxuanloc.space')).toString(),
+  url: `${siteOrigin}/`,
+  image: avatarUrl,
   address: { '@type': 'PostalAddress', addressLocality: id.location },
   knowsLanguage: (profile.languages ?? []).map((l: any) => l.name),
   knowsAbout: Object.values(profile.skills ?? {}).flat(),
   worksFor: { '@type': 'Organization', name: profile.experience?.[0]?.company },
   sameAs,
 };
-const jsonLdBlocks = [personLd, ...(Array.isArray(schema) ? schema : schema ? [schema] : [])];
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: id.nameEn,
+  url: `${siteOrigin}/`,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${siteOrigin}/blog?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+};
+const jsonLdBlocks = [personLd, websiteLd, ...(Array.isArray(schema) ? schema : schema ? [schema] : [])];
 
 const nav = [
   { p: '/', label: t('nav.home') },
@@ -73,6 +92,8 @@ function current(logical: string) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
+    <meta name="author" content={profile.identity.nameEn} />
+    <meta name="theme-color" content="#04060e" />
     {basePath === '/' && (
       <link rel="preload" as="image" href="/images/hero-astronaut.webp" fetchpriority="high" />
     )}
@@ -85,11 +106,19 @@ function current(logical: string) {
     <link rel="alternate" hreflang="x-default" href={altEn} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    {ogType === 'article' && articleMeta?.publishedTime && (
+      <meta property="article:published_time" content={articleMeta.publishedTime} />
+    )}
+    {ogType === 'article' && (articleMeta?.tags ?? []).map((tag) => (
+      <meta property="article:tag" content={tag} />
+    ))}
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="720" />
+    <meta property="og:site_name" content={profile.identity.nameEn} />
+    <meta property="og:locale" content={ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={desc} />
