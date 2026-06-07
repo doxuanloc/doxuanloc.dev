@@ -8,8 +8,9 @@ Portfolio cá nhân của Đỗ Xuân Lộc (doxuanloc.dev) — Astro 5 static s
 - **Claude** = implement, refactor, test, debug
 - **User** = priority, tie-breaker
 
-→ Mọi thay đổi lớn về UI/UX hoặc architecture: tham khảo Grok trước.
-→ Bug fix, nhỏ hơn 2h: Claude implement trực tiếp.
+→ **Bất kỳ task nào có planning/design** (UI mới, section mới, layout thay đổi): thảo luận với Grok trước, lấy spec rồi Claude mới implement.
+→ Bug fix hoặc tweak nhỏ (< 30 phút, không thay đổi layout): Claude implement trực tiếp.
+→ Claude KHÔNG tự lên kế hoạch UI/UX rồi implement — phải có Grok spec trước.
 
 ## Stack
 - **Framework**: Astro 5, islands architecture, View Transitions
