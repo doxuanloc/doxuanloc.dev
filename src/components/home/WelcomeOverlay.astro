@@ -83,15 +83,15 @@ const id = getProfile(lang).identity;
     animation: wVideoIn 1s ease 0.1s forwards;
   }
   @keyframes wVideoIn {
-    from { opacity: 0; } to { opacity: 0.38; }
+    from { opacity: 0; } to { opacity: 0.72; }
   }
 
   /* ── LAYER 2: VIGNETTE ──────────────────── */
   .w-vignette {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(4,6,14,0.75) 100%),
-      linear-gradient(180deg, rgba(4,6,14,0.4) 0%, transparent 20%, transparent 80%, rgba(4,6,14,0.6) 100%);
+      radial-gradient(ellipse 70% 70% at 50% 50%, transparent 20%, rgba(4,6,14,0.55) 100%),
+      linear-gradient(180deg, rgba(4,6,14,0.3) 0%, transparent 20%, transparent 80%, rgba(4,6,14,0.5) 100%);
   }
 
   /* ── LAYER 3: DOT GRID ──────────────────── */
