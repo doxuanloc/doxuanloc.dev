@@ -95,8 +95,9 @@ function current(logical: string) {
     <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImage} />
     <link rel="alternate" type="application/rss+xml" title={`${profile.identity.nameEn} — Blog & Tech radar`} href="/rss.xml" />
-    <link rel="icon" href="/images/logo.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/images/logo.png" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon-512.png" type="image/png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/favicon-192.png" />
     {jsonLdBlocks.map((block) => (
       <script type="application/ld+json" set:html={JSON.stringify(block)} />
     ))}
