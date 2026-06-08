@@ -6,12 +6,12 @@ import { getLangFromUrl, useTranslations } from '../i18n/ui';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const itemWord = lang === 'vi' ? 'tin' : 'items';
+const isVi = lang === 'vi';
+const itemWord = isVi ? 'tin' : 'items';
 const news = getAllNews();
 const financeNews = getAllFinanceNews();
 const days = getDailyContent().length;
 
-// Tag duy nhất, sắp theo tần suất giảm dần — để làm filter bar.
 const tagCount = new Map<string, number>();
 for (const n of news) for (const tg of n.tags ?? []) tagCount.set(tg, (tagCount.get(tg) ?? 0) + 1);
 const tags = [...tagCount.entries()].sort((a, b) => b[1] - a[1]).map(([tg]) => tg);
@@ -20,7 +20,6 @@ const finTagCount = new Map<string, number>();
 for (const n of financeNews) for (const tg of n.tags ?? []) finTagCount.set(tg, (finTagCount.get(tg) ?? 0) + 1);
 const finTags = [...finTagCount.entries()].sort((a, b) => b[1] - a[1]).map(([tg]) => tg);
 
-// Nhóm theo ngày (mới nhất trước). news đã sort desc theo date.
 const groupsMap = new Map<string, typeof news>();
 for (const n of news) {
   if (!groupsMap.has(n.date)) groupsMap.set(n.date, []);
@@ -35,59 +34,69 @@ for (const n of financeNews) {
 }
 const finGroups = [...finGroupsMap.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
-// Nhãn tương đối so với hôm nay (ngày build, UTC).
 const todayStr = new Date().toISOString().slice(0, 10);
-function dayDiff(d: string) {
-  return Math.round((Date.parse(todayStr) - Date.parse(d)) / 86400000);
-}
+function dayDiff(d: string) { return Math.round((Date.parse(todayStr) - Date.parse(d)) / 86400000); }
 function relLabel(d: string) {
   const diff = dayDiff(d);
-  if (lang === 'vi') {
-    if (diff <= 0) return 'Hôm nay';
-    if (diff === 1) return 'Hôm qua';
-    if (diff < 7) return `${diff} ngày trước`;
-    if (diff < 14) return 'Tuần trước';
-    return d;
+  if (isVi) {
+    if (diff <= 0) return 'Hôm nay'; if (diff === 1) return 'Hôm qua';
+    if (diff < 7) return `${diff} ngày trước`; if (diff < 14) return 'Tuần trước'; return d;
   }
-  if (diff <= 0) return 'Today';
-  if (diff === 1) return 'Yesterday';
-  if (diff < 7) return `${diff} days ago`;
-  if (diff < 14) return 'Last week';
-  return d;
+  if (diff <= 0) return 'Today'; if (diff === 1) return 'Yesterday';
+  if (diff < 7) return `${diff} days ago`; if (diff < 14) return 'Last week'; return d;
 }
 
-// TL;DR: tin nổi bật nhất của ngày mới nhất (importance desc), tối đa 4.
 const latestDay = groups[0];
 const digest = latestDay
   ? [...latestDay[1]].sort((a, b) => (b.importance ?? 1) - (a.importance ?? 1)).slice(0, 4)
   : [];
 
 const categoryLabel: Record<string, string> = {
-  fintech: 'FinTech',
-  crypto: 'Crypto',
-  'vc-startup': 'VC & Startup',
-  market: 'Thị trường',
-  macro: 'Vĩ mô',
+  fintech: 'FinTech', crypto: 'Crypto', 'vc-startup': 'VC & Startup',
+  market: isVi ? 'Thị trường' : 'Market', macro: isVi ? 'Vĩ mô' : 'Macro',
 };
+
+const aiPrompts = isVi
+  ? ['Tóm tắt tin hôm nay', 'Xu hướng nổi bật', 'So sánh với tuần trước']
+  : ['Summarise today', 'Top trends', 'Compare with last week'];
+const aiPlaceholder = isVi ? 'Hỏi về tin tức hôm nay…' : 'Ask about today\'s news…';
 ---
 <Base title={t('news.title')} description={t('news.title')}>
-  <section style="padding-top:56px">
-    <div class="container">
-      <p class="eyebrow">{t('news.eyebrow')}</p>
-      <h1 class="section-title" style="font-size:2rem">{t('news.title')}</h1>
-      <p class="section-sub">
-        {t('news.sub', { count: news.length, days })}
-      </p>
+  <section class="news-section">
+    <div class="container news-layout">
 
-      {/* Category tabs */}
-      <div class="category-tabs" role="tablist" style="margin-bottom:28px">
-        <button class="cat-tab is-active" data-cat="tech" role="tab" aria-selected="true" aria-controls="panel-tech">
-          ⚙ Công nghệ
-        </button>
-        <button class="cat-tab" data-cat="finance" role="tab" aria-selected="false" aria-controls="panel-finance">
-          $ Tài chính &amp; FinTech
-          {financeNews.length > 0 && <span class="count-badge">{financeNews.length}</span>}
-        </button>
+      {/* ── Hero header ── */}
+      <div class="news-hero" data-reveal>
+        <p class="eyebrow">{t('news.eyebrow')}</p>
+        <h1 class="section-title grad" style="font-size:clamp(1.7rem,4vw,2.2rem)">{t('news.title')}</h1>
+        <p class="section-sub" style="margin-bottom:0">{t('news.sub', { count: news.length, days })}</p>
+      </div>
+
+      {/* ── Sticky category + filter bar ── */}
+      <div class="news-sticky-bar" data-reveal style="--reveal-delay:80ms">
+        <div class="category-tabs" role="tablist">
+          <button class="cat-tab is-active" data-cat="tech" role="tab" aria-selected="true" aria-controls="panel-tech">
+            ⚙ {isVi ? 'Công nghệ' : 'Tech'}
+          </button>
+          <button class="cat-tab" data-cat="finance" role="tab" aria-selected="false" aria-controls="panel-finance">
+            $ {isVi ? 'Tài chính' : 'Finance'}
+            {financeNews.length > 0 && <span class="count-badge">{financeNews.length}</span>}
+          </button>
+        </div>
+        <div class="tag-filter-wrap">
+          <div class="chips tech-filter news-filter" role="group" aria-label="Filter by tag" id="tech-filter-bar">
+            <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">{t('news.filterAll')}</button>
+            {tags.slice(0, 8).map((tg) => (
+              <button class="chip filter-btn" data-tag={tg} aria-pressed="false">{tg}</button>
+            ))}
+          </div>
+          <div class="chips fin-filter" role="group" aria-label="Filter finance" id="fin-filter-bar" hidden>
+            <button class="chip filter-btn fin-btn is-active" data-tag="*" aria-pressed="true">{isVi ? 'Tất cả' : 'All'}</button>
+            {finTags.slice(0, 8).map((tg) => (
+              <button class="chip filter-btn fin-btn" data-tag={tg} aria-pressed="false">{tg}</button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* ── TECH PANEL ── */}
@@ -96,41 +105,51 @@ const categoryLabel: Record<string, string> = {
           <div class="card muted">{t('news.empty')}</div>
         ) : (
           <>
+            {/* TL;DR — numbered glanceable strip */}
             {digest.length > 0 && (
-              <div class="card digest" style="margin-bottom:28px">
-                <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
-                  <strong style="color:var(--accent-2)">TL;DR · {relLabel(latestDay[0])}</strong>
-                  <span class="mono muted" style="font-size:.78rem">{latestDay[0]}</span>
+              <div class="digest-strip card" data-reveal style="--reveal-delay:120ms">
+                <div class="digest-hd">
+                  <span class="digest-label">TL;DR</span>
+                  <span class="digest-date mono">{relLabel(latestDay[0])} · {latestDay[0]}</span>
                 </div>
-                <ul style="margin:0;padding-left:18px;display:grid;gap:6px">
-                  {digest.map((n) => (
-                    <li>
-                      <a href={n.source} target="_blank" rel="noopener">{n.title}</a>
-                      {(n.importance ?? 1) >= 3 && <span class="chip accent" style="font-size:.66rem;margin-left:8px">★</span>}
+                <ol class="digest-list">
+                  {digest.map((n, i) => (
+                    <li class="digest-item">
+                      <span class="digest-num mono">{String(i + 1).padStart(2, '0')}</span>
+                      <a href={n.source} target="_blank" rel="noopener" class="digest-link">{n.title}</a>
+                      {(n.importance ?? 1) >= 3 && <span class="chip accent digest-hot">★</span>}
                     </li>
                   ))}
-                </ul>
+                </ol>
               </div>
             )}
 
-            {tags.length > 1 && (
-              <div class="chips news-filter tech-filter" role="group" aria-label="Filter by tag" style="margin-bottom:24px">
-                <button class="chip filter-btn is-active" data-tag="*" aria-pressed="true">{t('news.filterAll')}</button>
-                {tags.map((tg) => (
-                  <button class="chip filter-btn" data-tag={tg} aria-pressed="false">{tg}</button>
-                ))}
+            {/* AI slot — global */}
+            <div class="ai-slot news-ai-slot" data-reveal style="--reveal-delay:160ms">
+              <div class="ai-slot-header">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M6 3.5v3l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                {isVi ? 'AI Briefing' : 'AI Briefing'}
               </div>
-            )}
+              <div class="ai-slot-prompts">
+                {aiPrompts.map((p) => <button class="chip" disabled>{p}</button>)}
+              </div>
+              <div class="ai-slot-bar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <span>{aiPlaceholder}</span>
+              </div>
+            </div>
 
-            <p class="muted news-empty" hidden style="margin:0 0 18px">{t('news.noMatch')}</p>
-            <div id="news-groups" style="display:grid;gap:28px">
+            <p class="muted news-empty" hidden style="margin:0 0 12px;font-size:.88rem">{t('news.noMatch')}</p>
+
+            {/* Feed grouped by date */}
+            <div id="news-groups">
               {groups.map(([date, items], i) => (
-                <section class="news-group" data-date={date}>
-                  <div class="group-head">
-                    <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
-                    <span class="mono muted" style="font-size:.78rem">{date} · {items.length} {itemWord}</span>
+                <section class="news-group feed-group" data-date={date}>
+                  <div class="feed-day-head">
+                    <span class={`feed-day-label${i === 0 ? ' is-today' : ''}`}>{relLabel(date)}</span>
+                    <span class="mono feed-day-meta">{date} · {items.length} {itemWord}</span>
                   </div>
-                  <div class="grid grid-2">
+                  <div class="feed-list">
                     {items.map((n) => (
                       <div class={`news-item${(n.importance ?? 1) >= 3 ? ' featured' : ''}`} data-tags={(n.tags ?? []).join('|')}>
                         <NewsCard title={n.title} summary={n.summary} source={n.source} tags={n.tags} date={undefined} importance={n.importance} />
@@ -147,39 +166,31 @@ const categoryLabel: Record<string, string> = {
       {/* ── FINANCE PANEL ── */}
       <div id="panel-finance" role="tabpanel" data-panel="finance" hidden>
         {financeNews.length === 0 ? (
-          <div class="card muted">Chưa có tin tài chính — sẽ có từ lần chạy gen-today tiếp theo.</div>
+          <div class="card muted" style="margin-top:20px">{isVi ? 'Chưa có tin tài chính — sẽ có từ lần chạy gen-today tiếp theo.' : 'No finance news yet.'}</div>
         ) : (
           <>
-            {finTags.length > 1 && (
-              <div class="chips fin-filter" role="group" aria-label="Filter by tag" style="margin-bottom:24px">
-                <button class="chip filter-btn fin-btn is-active" data-tag="*" aria-pressed="true">Tất cả</button>
-                {finTags.map((tg) => (
-                  <button class="chip filter-btn fin-btn" data-tag={tg} aria-pressed="false">{tg}</button>
-                ))}
-              </div>
-            )}
-
-            <p class="muted fin-empty" hidden style="margin:0 0 18px">{t('news.noMatch')}</p>
-            <div style="display:grid;gap:28px">
+            <p class="muted fin-empty" hidden style="margin:0 0 12px;font-size:.88rem">{t('news.noMatch')}</p>
+            <div>
               {finGroups.map(([date, items], i) => (
-                <section class="fin-group" data-date={date}>
-                  <div class="group-head">
-                    <span class={`group-label${i === 0 ? ' today' : ''}`}>{relLabel(date)}</span>
-                    <span class="mono muted" style="font-size:.78rem">{date} · {items.length} {itemWord}</span>
+                <section class="fin-group feed-group" data-date={date}>
+                  <div class="feed-day-head">
+                    <span class={`feed-day-label${i === 0 ? ' is-today' : ''}`}>{relLabel(date)}</span>
+                    <span class="mono feed-day-meta">{date} · {items.length} {itemWord}</span>
                   </div>
-                  <div class="grid grid-2">
+                  <div class="feed-list">
                     {items.map((n) => (
                       <div class={`fin-item${(n.importance ?? 1) >= 3 ? ' featured' : ''}`} data-tags={(n.tags ?? []).join('|')}>
-                        <div class="card fin-card">
-                          {n.category && <span class="chip fin-cat">{categoryLabel[n.category] ?? n.category}</span>}
-                          <h3 class="fin-title">
-                            <a href={n.source} target="_blank" rel="noopener">{n.title}</a>
-                          </h3>
-                          <p class="fin-summary">{n.summary}</p>
-                          <div class="chips" style="margin-top:10px">
-                            {(n.tags ?? []).map((tg) => <span class="chip">{tg}</span>)}
+                        <article class="fin-row feed-row">
+                          <span class={`news-dot${(n.importance ?? 1) >= 3 ? ' news-dot--hot' : ''}`} aria-hidden="true" style="flex-shrink:0;width:7px;height:7px;border-radius:50%;margin-top:.4em;background:var(--accent-3);border:1.5px solid rgba(255,255,255,.1)"></span>
+                          <div style="flex:1;min-width:0">
+                            {n.category && <span class="chip fin-cat">{categoryLabel[n.category] ?? n.category}</span>}
+                            <h3 class="fin-title"><a href={n.source} target="_blank" rel="noopener">{n.title}</a></h3>
+                            <p class="fin-summary">{n.summary}</p>
+                            <div class="meta-row">
+                              {(n.tags ?? []).slice(0, 3).map((tg) => <span class="chip" style="font-size:.68rem">{tg}</span>)}
+                            </div>
                           </div>
-                        </div>
+                        </article>
                       </div>
                     ))}
                   </div>
@@ -189,30 +200,29 @@ const categoryLabel: Record<string, string> = {
           </>
         )}
       </div>
+
     </div>
   </section>
 </Base>
 
 <style>
-  .digest { border-color: var(--accent-2); background: linear-gradient(180deg, rgba(54,214,195,.06), transparent); }
-  .filter-btn { cursor: pointer; font-family: var(--mono); background: var(--bg-soft); }
-  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
-  .filter-btn.is-active { background: var(--accent); color: #07101f; border-color: var(--accent); }
+  .news-section { padding-top: 48px; }
+  .news-layout { max-width: 760px; display: flex; flex-direction: column; gap: 24px; }
 
-  .group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .group-label { font-weight: 700; font-size: 1.05rem; }
-  .group-label.today { color: var(--accent-2); }
-  .group-label.today::before { content: "● "; color: var(--accent-2); font-size: .7em; vertical-align: middle; }
+  /* Hero */
+  .news-hero { padding-bottom: 4px; }
 
-  .news-item.featured > :global(.card) { border-color: rgba(54,214,195,.4); }
-  .news-item.is-hidden { display: none; }
-  .news-group.is-hidden { display: none; }
-
-  /* Category tabs */
-  .category-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+  /* Sticky bar */
+  .news-sticky-bar {
+    position: sticky; top: 62px; z-index: 30;
+    background: rgba(4,6,14,0.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-soft);
+    padding: 10px 0 8px; margin: 0 -24px; padding-left: 24px; padding-right: 24px;
+  }
+  .category-tabs { display: flex; gap: 6px; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 2px; }
   .cat-tab {
     cursor: pointer; background: transparent; border: none; border-bottom: 2px solid transparent;
-    color: var(--muted); font-family: var(--mono); font-size: .9rem; padding: 8px 16px;
+    color: var(--text-mute); font-family: var(--mono); font-size: 0.82rem; padding: 6px 14px;
     margin-bottom: -1px; transition: color .2s, border-color .2s;
   }
   .cat-tab:hover { color: var(--text); }
@@ -220,26 +230,72 @@ const categoryLabel: Record<string, string> = {
   .count-badge {
     display: inline-flex; align-items: center; justify-content: center;
     background: rgba(54,214,195,.15); color: var(--accent-2);
-    border-radius: 10px; font-size: .68rem; padding: 1px 6px; margin-left: 6px;
+    border-radius: 10px; font-size: .65rem; padding: 1px 6px; margin-left: 5px;
   }
+  .tag-filter-wrap .chips { gap: 5px; flex-wrap: wrap; }
+  .filter-btn { cursor: pointer; font-family: var(--mono); font-size: .72rem; background: var(--bg-soft); padding: 2px 10px; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.is-active { background: var(--accent); color: #07101f; border-color: var(--accent); }
 
-  /* Finance cards */
-  .fin-card { display: flex; flex-direction: column; gap: 8px; height: 100%; }
-  .fin-cat { background: rgba(120,90,240,.15); color: #a78bfa; border-color: rgba(120,90,240,.3); font-size: .7rem; }
-  .fin-title { font-size: .95rem; font-weight: 600; margin: 0; line-height: 1.4; }
-  .fin-title a { color: var(--text); text-decoration: none; }
-  .fin-title a:hover { color: var(--accent-2); }
-  .fin-summary { color: var(--muted); font-size: .82rem; line-height: 1.55; margin: 0; }
-  .fin-item.featured .fin-card { border-color: rgba(167,139,250,.4); }
+  /* TL;DR digest */
+  .digest-strip { padding: 16px 20px; border-color: rgba(54,214,195,.35); background: rgba(54,214,195,.04); }
+  .digest-hd { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .digest-label { font-family: var(--display); font-weight: 700; font-size: .8rem; letter-spacing: 2px; color: var(--accent-2); text-transform: uppercase; }
+  .digest-date { font-size: .72rem; color: var(--text-mute); }
+  .digest-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .digest-item { display: flex; align-items: baseline; gap: 10px; }
+  .digest-num { font-size: .7rem; color: var(--accent-2); width: 20px; flex-shrink: 0; opacity: .7; }
+  .digest-link { font-size: .88rem; color: var(--text); text-decoration: none; line-height: 1.4; flex: 1; }
+  .digest-link:hover { color: var(--accent-2); }
+  .digest-hot { font-size: .63rem; padding: 1px 6px; flex-shrink: 0; }
+
+  /* AI slot */
+  .news-ai-slot { margin: 0; }
+
+  /* Feed day groups */
+  .feed-group { display: flex; flex-direction: column; }
+  .feed-day-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding: 10px 0 8px; border-bottom: 1px solid var(--border-soft); margin-bottom: 2px;
+    flex-wrap: wrap;
+  }
+  .feed-day-label { font-weight: 700; font-size: .96rem; }
+  .feed-day-label.is-today { color: var(--accent-2); }
+  .feed-day-label.is-today::before { content: "● "; font-size: .65em; vertical-align: middle; }
+  .feed-day-meta { font-size: .72rem; color: var(--text-mute); }
+  .feed-list { display: flex; flex-direction: column; }
+
+  .news-item.featured :global(.news-row) { background: rgba(54,214,195,.025); }
+  .news-item.is-hidden { display: none; }
+  .news-group.is-hidden { display: none; }
   .fin-item.is-hidden { display: none; }
   .fin-group.is-hidden { display: none; }
+
+  /* Finance inline */
+  .fin-title { margin: 4px 0 3px; font-size: .93rem; font-weight: 600; line-height: 1.38; }
+  .fin-title a { color: var(--text); text-decoration: none; }
+  .fin-title a:hover { color: var(--accent-2); }
+  .fin-summary { font-size: .8rem; color: var(--text-dim); line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .fin-cat { font-size: .66rem; background: rgba(120,90,240,.12); color: #a78bfa; border-color: rgba(120,90,240,.3); margin-bottom: 4px; }
+  .fin-row { align-items: flex-start; }
+  .fin-item.featured .fin-title a { color: var(--accent-3); }
+
+  @media (max-width: 720px) {
+    .news-sticky-bar { top: 56px; }
+  }
+  @media (max-width: 600px) {
+    .news-sticky-bar { top: 52px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+    .news-layout { gap: 18px; }
+    .digest-strip { padding: 14px 16px; }
+  }
 </style>
 
 <script>
   function setupNewsPage() {
-    // ── Category tabs ──
     const catTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.cat-tab'));
     const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-panel]'));
+    const techFilterBar = document.getElementById('tech-filter-bar');
+    const finFilterBar  = document.getElementById('fin-filter-bar');
 
     function switchTab(cat: string) {
       for (const tab of catTabs) {
@@ -247,52 +303,32 @@ const categoryLabel: Record<string, string> = {
         tab.classList.toggle('is-active', active);
         tab.setAttribute('aria-selected', String(active));
       }
-      for (const panel of panels) {
-        panel.hidden = panel.dataset.panel !== cat;
-      }
+      for (const panel of panels) panel.hidden = panel.dataset.panel !== cat;
+      if (techFilterBar) techFilterBar.hidden = cat !== 'tech';
+      if (finFilterBar)  finFilterBar.hidden  = cat !== 'finance';
     }
 
-    for (const tab of catTabs) {
-      tab.addEventListener('click', () => switchTab(tab.dataset.cat ?? 'tech'));
-    }
+    for (const tab of catTabs) tab.addEventListener('click', () => switchTab(tab.dataset.cat ?? 'tech'));
 
-    // ── Tech tag filter ──
-    function setupFilter(
-      btnSel: string,
-      itemSel: string,
-      groupSel: string,
-      emptySel: string,
-    ) {
+    function setupFilter(btnSel: string, itemSel: string, groupSel: string, emptySel: string) {
       const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>(btnSel));
-      const items = Array.from(document.querySelectorAll<HTMLElement>(itemSel));
-      const groups = Array.from(document.querySelectorAll<HTMLElement>(groupSel));
-      const empty = document.querySelector<HTMLElement>(emptySel);
-
+      const items   = Array.from(document.querySelectorAll<HTMLElement>(itemSel));
+      const grps    = Array.from(document.querySelectorAll<HTMLElement>(groupSel));
+      const empty   = document.querySelector<HTMLElement>(emptySel);
       function apply(tag: string) {
         let shown = 0;
         for (const el of items) {
-          const tags = (el.dataset.tags ?? '').split('|');
-          const match = tag === '*' || tags.includes(tag);
+          const match = tag === '*' || (el.dataset.tags ?? '').split('|').includes(tag);
           el.classList.toggle('is-hidden', !match);
           if (match) shown++;
         }
-        for (const g of groups) {
-          const visible = g.querySelectorAll(`${itemSel}:not(.is-hidden)`).length;
-          g.classList.toggle('is-hidden', visible === 0);
-        }
+        for (const g of grps) g.classList.toggle('is-hidden', g.querySelectorAll(`${itemSel}:not(.is-hidden)`).length === 0);
         if (empty) empty.hidden = shown !== 0;
       }
-
-      for (const btn of buttons) {
-        btn.addEventListener('click', () => {
-          for (const b of buttons) {
-            const active = b === btn;
-            b.classList.toggle('is-active', active);
-            b.setAttribute('aria-pressed', String(active));
-          }
-          apply(btn.dataset.tag ?? '*');
-        });
-      }
+      for (const btn of buttons) btn.addEventListener('click', () => {
+        for (const b of buttons) { b.classList.toggle('is-active', b === btn); b.setAttribute('aria-pressed', String(b === btn)); }
+        apply(btn.dataset.tag ?? '*');
+      });
     }
 
     setupFilter('.tech-filter .filter-btn', '.news-item', '.news-group', '.news-empty');

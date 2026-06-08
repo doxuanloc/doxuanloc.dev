@@ -35,6 +35,12 @@ const blogLd = {
   publisher: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
   mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
 };
+
+const isVi = lang === 'vi';
+const aiPrompts = isVi
+  ? ['Tóm tắt bài viết', 'Giải thích thêm', 'Liên quan gì đến tôi?', 'Góc nhìn khác']
+  : ['Summarise this post', 'Explain further', 'How does this apply to me?', 'Alternative views'];
+const aiPlaceholder = isVi ? 'Hỏi về bài viết này…' : 'Ask about this post…';
 ---
 <Base
   title={post.title}
@@ -45,19 +51,116 @@ const blogLd = {
   articleMeta={{ publishedTime: post.date, tags: post.tags ?? [] }}
 >
   <div class="read-progress" id="read-progress"></div>
-  <section style="padding-top:56px">
-    <div class="container">
-      <a href={localizedPath('/blog', lang)} class="mono muted" style="font-size:.85rem">← {t('nav.blog')}</a>
-      <p class="eyebrow" style="margin-top:18px">{post.date}{post.readingTimeMin ? ` · ${t('common.readmin', { n: post.readingTimeMin })}` : ''}</p>
-      <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.15;margin:.1em 0 .3em">{post.title}</h1>
-      <div class="chips" style="margin-bottom:8px">{(post.tags ?? []).map((tag) => <span class="chip">{tag}</span>)}</div>
 
-      <article class="prose" set:html={html} />
+  <section class="article-section">
+    <div class="container article-layout">
 
-      <hr style="border:none;border-top:1px solid var(--border);margin:40px 0 20px" />
-      <p class="muted" style="font-size:.85rem">
-        {t('blog.backToGrok')}
-      </p>
+      {/* Back link */}
+      <a href={localizedPath('/blog', lang)} class="back-link mono">
+        ← {t('nav.blog')}
+      </a>
+
+      {/* Article header */}
+      <header class="article-header" data-reveal>
+        <div class="meta-row article-meta">
+          <time datetime={post.date} class="article-date">{post.date}</time>
+          {post.readingTimeMin && (
+            <><span class="sep">·</span><span>{t('common.readmin', { n: post.readingTimeMin })}</span></>
+          )}
+        </div>
+        <h1 class="article-title">{post.title}</h1>
+        {post.excerpt && <p class="article-lede">{post.excerpt}</p>}
+        <div class="chips article-tags" style="margin-top:10px">
+          {(post.tags ?? []).map((tag) => <span class="chip">{tag}</span>)}
+        </div>
+        <div class="aurora-line" style="margin-top:20px"></div>
+      </header>
+
+      {/* Article body */}
+      <article class="prose article-prose" set:html={html} data-reveal style="--reveal-delay:60ms" />
+
+      {/* AI discussion slot */}
+      <div class="ai-slot article-ai-slot" data-reveal style="--reveal-delay:80ms">
+        <div class="ai-slot-header">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          {isVi ? 'Thảo luận với AI' : 'Discuss with AI'}
+        </div>
+        <div class="ai-slot-prompts">
+          {aiPrompts.map((p) => <button class="chip" disabled>{p}</button>)}
+        </div>
+        <div class="ai-slot-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span>{aiPlaceholder}</span>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer class="article-footer">
+        <div class="aurora-line"></div>
+        <div class="article-foot-row">
+          <a href={localizedPath('/blog', lang)} class="back-link mono">← {t('nav.blog')}</a>
+          <p class="muted article-grok-note" style="font-size:.82rem;margin:0">{t('blog.backToGrok')}</p>
+        </div>
+      </footer>
+
     </div>
   </section>
 </Base>
+
+<style>
+  .article-section { padding-top: 48px; padding-bottom: 60px; }
+  .article-layout { max-width: 740px; display: flex; flex-direction: column; gap: 28px; }
+
+  .back-link { font-size: 0.83rem; color: var(--text-mute); text-decoration: none; transition: color 0.15s; }
+  .back-link:hover { color: var(--accent-2); }
+
+  /* Header */
+  .article-header { display: flex; flex-direction: column; }
+  .article-meta { font-size: 0.76rem; }
+  .article-date { font-size: 0.76rem; }
+
+  .article-title {
+    font-size: clamp(1.85rem, 4.5vw, 2.6rem);
+    line-height: 1.14; letter-spacing: -0.03em;
+    margin: 6px 0 0; font-weight: 800;
+  }
+  .article-lede {
+    font-size: 1.08rem; color: var(--text-dim); line-height: 1.6;
+    margin: 10px 0 0; font-style: italic;
+  }
+
+  /* Prose overrides for reading comfort */
+  .article-prose {
+    font-size: 1.01rem; line-height: 1.82;
+    color: #d2d9ee;
+  }
+  .article-prose :global(h2) {
+    font-size: 1.38rem; font-weight: 700; margin-top: 2em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .article-prose :global(h3) { font-size: 1.12rem; font-weight: 700; margin-top: 1.7em; }
+  .article-prose :global(p) { margin: 0 0 1.2em; }
+  .article-prose :global(li) { margin-bottom: 0.35em; }
+  .article-prose :global(blockquote) {
+    border-left: 3px solid var(--accent); padding: 4px 0 4px 18px;
+    margin: 1.4em 0; color: var(--text-dim); font-style: italic;
+    background: rgba(91,140,255,0.04); border-radius: 0 6px 6px 0;
+  }
+  .article-prose :global(a) { color: var(--accent-2); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(54,214,195,0.4); }
+  .article-prose :global(a:hover) { text-decoration-color: var(--accent-2); }
+
+  /* AI slot */
+  .article-ai-slot { margin-top: 4px; }
+
+  /* Footer */
+  .article-footer { display: flex; flex-direction: column; gap: 16px; }
+  .article-foot-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  @media (max-width: 600px) {
+    .article-section { padding-top: 36px; padding-bottom: 48px; }
+    .article-prose { font-size: 0.97rem; line-height: 1.75; }
+    .article-prose :global(h2) { font-size: 1.22rem; }
+    .article-foot-row { flex-direction: column; gap: 8px; }
+  }
+</style>

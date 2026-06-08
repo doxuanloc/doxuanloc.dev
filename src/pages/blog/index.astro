@@ -8,26 +8,38 @@ const t = useTranslations(lang);
 const posts = getAllPosts();
 ---
 <Base title={t('blog.title')} description={t('blog.title')}>
-  <section style="padding-top:56px">
-    <div class="container">
-      <p class="eyebrow">{t('blog.eyebrow')}</p>
-      <h1 class="section-title" style="font-size:2rem">{t('blog.title')}</h1>
-      <p class="section-sub">{t('blog.sub', { n: posts.length })}</p>
+  <section class="blog-section">
+    <div class="container blog-layout">
+      <div data-reveal>
+        <p class="eyebrow">{t('blog.eyebrow')}</p>
+        <h1 class="section-title grad" style="font-size:clamp(1.7rem,4vw,2.2rem)">{t('blog.title')}</h1>
+        <p class="section-sub" style="margin-bottom:0">{t('blog.sub', { n: posts.length })}</p>
+      </div>
 
       {posts.length === 0 ? (
-        <div class="card muted">{t('blog.empty')}</div>
+        <div class="card muted" data-reveal style="--reveal-delay:80ms">{t('blog.empty')}</div>
       ) : (
-        <div class="grid" style="gap:14px">
-          {posts.map((p) => (
-            <a href={localizedPath(`/blog/${p.slug}`, lang)} class="card" style="text-decoration:none;color:inherit">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-                <strong style="font-size:1.15rem">{p.title}</strong>
-                <span class="mono muted" style="font-size:.78rem;white-space:nowrap">{p.date}</span>
-              </div>
-              <p class="muted" style="margin:.5em 0 .6em">{p.excerpt}</p>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div class="chips">{(p.tags ?? []).map((tag) => <span class="chip">{tag}</span>)}</div>
-                {p.readingTimeMin && <span class="mono muted" style="font-size:.78rem">{t('common.readmin', { n: p.readingTimeMin })}</span>}
+        <div class="journal" data-reveal style="--reveal-delay:100ms">
+          <div class="journal-rail" aria-hidden="true"></div>
+          {posts.map((p, i) => (
+            <a
+              href={localizedPath(`/blog/${p.slug}`, lang)}
+              class="journal-entry"
+              style={`--entry-delay:${80 + i * 40}ms`}
+            >
+              <span class="je-dot" aria-hidden="true"></span>
+              <time class="je-date mono" datetime={p.date}>{p.date}</time>
+              <div class="je-body">
+                <div class="je-title">{p.title}</div>
+                <p class="je-excerpt">{p.excerpt}</p>
+                <div class="meta-row je-meta">
+                  <div class="chips je-chips">
+                    {(p.tags ?? []).slice(0, 4).map((tag) => <span class="chip je-chip">{tag}</span>)}
+                  </div>
+                  {p.readingTimeMin && (
+                    <><span class="sep">·</span><span>{t('common.readmin', { n: p.readingTimeMin })}</span></>
+                  )}
+                </div>
               </div>
             </a>
           ))}
@@ -36,3 +48,72 @@ const posts = getAllPosts();
     </div>
   </section>
 </Base>
+
+<style>
+  .blog-section { padding-top: 48px; }
+  .blog-layout { max-width: 760px; display: flex; flex-direction: column; gap: 28px; }
+
+  /* Journal timeline */
+  .journal { position: relative; display: flex; flex-direction: column; gap: 0; padding-left: 44px; }
+
+  .journal-rail {
+    position: absolute; left: 11px; top: 10px; bottom: 10px; width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border) 12%, var(--border) 88%, transparent);
+  }
+
+  .journal-entry {
+    position: relative; display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 0 16px; align-items: flex-start;
+    padding: 14px 12px 14px 0; border-radius: 10px;
+    text-decoration: none; color: inherit;
+    transition: background 0.18s var(--ease), padding-left 0.18s var(--ease);
+  }
+  .journal-entry:hover { background: rgba(255,255,255,0.028); padding-left: 10px; }
+
+  .je-dot {
+    position: absolute; left: -38px; top: 20px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--bg-elev); border: 2px solid var(--border);
+    transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  }
+  .journal-entry:hover .je-dot {
+    border-color: var(--accent-2); background: var(--accent-2);
+    box-shadow: 0 0 10px rgba(54,214,195,0.4);
+  }
+
+  .je-date { font-size: 0.73rem; color: var(--text-mute); padding-top: 3px; white-space: nowrap; }
+
+  .je-body { min-width: 0; }
+
+  .je-title {
+    font-size: 1.06rem; font-weight: 700; line-height: 1.35; color: var(--text);
+    margin-bottom: 5px; transition: color 0.18s;
+  }
+  .journal-entry:hover .je-title { color: var(--accent-2); }
+
+  .je-excerpt {
+    font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin: 0 0 6px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  .je-meta { margin-top: 0; }
+  .je-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .je-chip { font-size: 0.68rem; padding: 1px 7px; }
+
+  @media (max-width: 600px) {
+    .journal { padding-left: 28px; }
+    .journal-rail { left: 7px; }
+    .journal-entry { grid-template-columns: 1fr; gap: 3px 0; padding: 12px 8px 12px 0; }
+    .journal-entry:hover { padding-left: 6px; }
+    .je-dot { left: -24px; top: 16px; width: 7px; height: 7px; }
+    .je-date { font-size: 0.69rem; }
+    .je-title { font-size: 1rem; }
+    .je-excerpt { font-size: 0.82rem; }
+  }
+  @media (max-width: 400px) {
+    .journal { padding-left: 22px; }
+    .journal-rail { left: 5px; }
+    .je-dot { left: -19px; }
+  }
+</style>
