@@ -14,13 +14,13 @@ const totalDomains = Object.keys(profile.skills ?? {}).filter(k => (profile.skil
 const totalProtocols = (profile.languages ?? []).length;
 
 const caps = lang === 'vi' ? [
-  { color: '#5b8cff', label: 'Kiến trúc Hệ thống' },
+  { color: '#e0704d', label: 'Kiến trúc Hệ thống' },
   { color: '#f0b232', label: 'AI Engineering' },
-  { color: '#36d6c3', label: 'Cloud & Tối ưu' },
+  { color: '#ebb36b', label: 'Cloud & Tối ưu' },
 ] : [
-  { color: '#5b8cff', label: 'System Architecture' },
+  { color: '#e0704d', label: 'System Architecture' },
   { color: '#f0b232', label: 'AI Engineering' },
-  { color: '#36d6c3', label: 'Cloud & Optimization' },
+  { color: '#ebb36b', label: 'Cloud & Optimization' },
 ];
 ---
 
@@ -165,11 +165,11 @@ const caps = lang === 'vi' ? [
     width: 40px; height: 40px;
     object-fit: contain;
     mix-blend-mode: screen;
-    filter: drop-shadow(0 0 8px rgba(91,140,255,0.55));
+    filter: drop-shadow(0 0 8px rgba(224,112,77,0.55));
   }
   .lm-tl, .lm-br { position: absolute; width: 9px; height: 9px; }
-  .lm-tl { top: 1px; left: 1px; border-top: 1.5px solid #5b8cff; border-left: 1.5px solid #5b8cff; }
-  .lm-br { bottom: 1px; right: 1px; border-bottom: 1.5px solid #36d6c3; border-right: 1.5px solid #36d6c3; }
+  .lm-tl { top: 1px; left: 1px; border-top: 1.5px solid #e0704d; border-left: 1.5px solid #e0704d; }
+  .lm-br { bottom: 1px; right: 1px; border-bottom: 1.5px solid #ebb36b; border-right: 1.5px solid #ebb36b; }
 
   /* ── NAME — flagship typography ─────────────────── */
   .hero-name {
@@ -189,7 +189,7 @@ const caps = lang === 'vi' ? [
   }
   .rule-short {
     display: block; height: 1px; width: 32px;
-    background: rgba(91,140,255,0.55);
+    background: rgba(224,112,77,0.55);
     flex-shrink: 0;
   }
   .rule-label {
@@ -198,7 +198,7 @@ const caps = lang === 'vi' ? [
   }
   .rule-long {
     display: block; flex: 1; height: 1px;
-    background: linear-gradient(90deg, rgba(91,140,255,0.32), transparent);
+    background: linear-gradient(90deg, rgba(224,112,77,0.32), transparent);
   }
 
   /* ── TAGLINE ────────────────────────────────────── */
@@ -237,9 +237,9 @@ const caps = lang === 'vi' ? [
     font-size: 0.67rem; letter-spacing: 1.5px; text-transform: uppercase;
     margin: 0 0 28px;
     padding: 7px 12px;
-    border: 1px solid rgba(91,140,255,0.12);
+    border: 1px solid rgba(224,112,77,0.12);
     border-radius: 6px;
-    background: rgba(91,140,255,0.03);
+    background: rgba(224,112,77,0.03);
     width: fit-content;
   }
   .tele-val { color: var(--accent-2); font-weight: 600; }

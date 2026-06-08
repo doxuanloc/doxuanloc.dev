@@ -15,9 +15,9 @@ const milestones = prepareMilestones(rawMilestones);
 const n = milestones.length;
 
 const chapterMeta: Record<string, { label: string; c: string }> = {
-  origins:      { label: 'Origins',      c: '#5b8cff' },
-  forge:        { label: 'Forge',        c: '#36d6c3' },
-  systems:      { label: 'Systems',      c: '#b58cff' },
+  origins:      { label: 'Origins',      c: '#e0704d' },
+  forge:        { label: 'Forge',        c: '#ebb36b' },
+  systems:      { label: 'Systems',      c: '#7d8e7c' },
   intelligence: { label: 'Intelligence', c: '#f0b232' },
   horizon:      { label: 'Horizon',      c: '#ff7eb3' },
 };
@@ -33,7 +33,7 @@ for (const m of milestones) {
     railGroups.push({
       id: ch,
       label: chapterMeta[ch]?.label ?? ch,
-      c: chapterMeta[ch]?.c ?? '#5b8cff',
+      c: chapterMeta[ch]?.c ?? '#e0704d',
       items: [],
     });
   }
@@ -210,7 +210,7 @@ for (const m of milestones) {
 
   .jp-bg {
     position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    background-image: radial-gradient(rgba(91,140,255,0.07) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(224,112,77,0.07) 1px, transparent 1px);
     background-size: 28px 28px;
     mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, #000 40%, transparent 90%);
   }

@@ -116,7 +116,7 @@ const totalBeats = allMilestones.length;
       <div class="chapter-block" data-chapter={group.chapter.id}>
         <!-- Chapter Gate (spatial threshold) -->
         <div class="chapter-gate" data-gate={group.chapter.id}>
-          <div class="gate-accent" style={`--c1:${group.beats[0]?.meta.c1 || '#5b8cff'}`}></div>
+          <div class="gate-accent" style={`--c1:${group.beats[0]?.meta.c1 || '#e0704d'}`}></div>
           <div class="gate-content">
             <span class="gate-eyebrow mono">{t('journey.chapter')} {String(gIdx + 1).padStart(2, '0')}</span>
             <h3 class="gate-title">{group.chapter.label}</h3>
@@ -379,7 +379,7 @@ const totalBeats = allMilestones.length;
     top: 22px;
     bottom: 22px;
     width: 3px;
-    background: linear-gradient(var(--c1, #5b8cff), var(--c2, #36d6c3));
+    background: linear-gradient(var(--c1, #e0704d), var(--c2, #ebb36b));
     border-radius: 3px;
   }
   .gate-eyebrow {

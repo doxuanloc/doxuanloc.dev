@@ -60,7 +60,7 @@ const id = getProfile(lang).identity;
   /* ── BASE OVERLAY ───────────────────────── */
   .w-overlay {
     position: fixed; inset: 0; z-index: 9000;
-    background: #04060e;
+    background: #0b0907;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
     /* entrance: already visible, layers animate in */
@@ -98,7 +98,7 @@ const id = getProfile(lang).identity;
   /* ── LAYER 3: DOT GRID ──────────────────── */
   .w-grid {
     position: absolute; inset: 0; pointer-events: none;
-    background-image: radial-gradient(circle, rgba(91,140,255,0.05) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(224,112,77,0.05) 1px, transparent 1px);
     background-size: 44px 44px;
     opacity: 0;
     animation: wFadeIn 0.8s ease 0.6s forwards;
@@ -114,20 +114,20 @@ const id = getProfile(lang).identity;
     border-radius: 50%;
     transform: translate(-50%, -50%);
     opacity: 0;
-    border: 1px solid rgba(91,140,255,0.10);
+    border: 1px solid rgba(224,112,77,0.10);
     animation: wRingIn 0.7s ease forwards, wRingSpin 28s linear infinite;
   }
   .r1 { width: 220px; height: 220px; animation-delay: 0.35s, 0s; }
   .r2 {
     width: 420px; height: 420px;
-    border-color: rgba(54,214,195,0.07);
+    border-color: rgba(235,179,107,0.07);
     border-style: dashed;
     animation-delay: 0.5s, 0s;
     animation-direction: normal, reverse;
   }
   .r3 {
     width: 620px; height: 620px;
-    border-color: rgba(91,140,255,0.04);
+    border-color: rgba(224,112,77,0.04);
     animation-delay: 0.65s, 0s;
     animation-duration: 0.7s, 48s;
   }
@@ -135,7 +135,7 @@ const id = getProfile(lang).identity;
   @media (max-width: 700px) {
     .r1 { display: none; }
     .r2 { display: none; }
-    .r3 { width: 360px; height: 360px; border-color: rgba(91,140,255,0.07); }
+    .r3 { width: 360px; height: 360px; border-color: rgba(224,112,77,0.07); }
   }
   @keyframes wRingIn {
     from { opacity: 0; transform: translate(-50%,-50%) scale(0.85); }
@@ -152,10 +152,10 @@ const id = getProfile(lang).identity;
     opacity: 0;
     animation: wFadeIn 0.4s ease 0.25s forwards;
   }
-  .w-corner.tl { top: 20px; left: 20px; border-top: 2px solid var(--accent, #5b8cff); border-left: 2px solid var(--accent, #5b8cff); }
-  .w-corner.tr { top: 20px; right: 20px; border-top: 2px solid var(--accent, #5b8cff); border-right: 2px solid var(--accent, #5b8cff); }
-  .w-corner.bl { bottom: 36px; left: 20px; border-bottom: 2px solid var(--accent-2, #36d6c3); border-left: 2px solid var(--accent-2, #36d6c3); }
-  .w-corner.br { bottom: 36px; right: 20px; border-bottom: 2px solid var(--accent-2, #36d6c3); border-right: 2px solid var(--accent-2, #36d6c3); }
+  .w-corner.tl { top: 20px; left: 20px; border-top: 2px solid var(--accent, #e0704d); border-left: 2px solid var(--accent, #e0704d); }
+  .w-corner.tr { top: 20px; right: 20px; border-top: 2px solid var(--accent, #e0704d); border-right: 2px solid var(--accent, #e0704d); }
+  .w-corner.bl { bottom: 36px; left: 20px; border-bottom: 2px solid var(--accent-2, #ebb36b); border-left: 2px solid var(--accent-2, #ebb36b); }
+  .w-corner.br { bottom: 36px; right: 20px; border-bottom: 2px solid var(--accent-2, #ebb36b); border-right: 2px solid var(--accent-2, #ebb36b); }
   @media (max-width: 600px) {
     .w-corner { width: 18px; height: 18px; }
     .w-corner.tl, .w-corner.tr { top: 12px; }
@@ -167,7 +167,7 @@ const id = getProfile(lang).identity;
   /* ── LAYER 6: SCANLINE ──────────────────── */
   .w-scanline {
     position: absolute; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(54,214,195,0.4) 30%, rgba(91,140,255,0.3) 70%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(235,179,107,0.4) 30%, rgba(224,112,77,0.3) 70%, transparent 100%);
     animation: wScanMove 6s linear infinite;
     top: -1px;
   }
@@ -204,7 +204,7 @@ const id = getProfile(lang).identity;
     width: 100px; height: 100px;
     object-fit: contain;
     mix-blend-mode: screen;
-    filter: drop-shadow(0 0 28px rgba(91,140,255,0.7)) drop-shadow(0 0 56px rgba(54,214,195,0.35));
+    filter: drop-shadow(0 0 28px rgba(224,112,77,0.7)) drop-shadow(0 0 56px rgba(235,179,107,0.35));
   }
   @media (max-width: 700px) {
     .w-logo { width: 88px; height: 88px; }
@@ -213,15 +213,15 @@ const id = getProfile(lang).identity;
     position: absolute;
     width: 12px; height: 12px;
   }
-  .w-mark-corner.tl { top: 0; left: 0; border-top: 1.5px solid #5b8cff; border-left: 1.5px solid #5b8cff; }
-  .w-mark-corner.tr { top: 0; right: 0; border-top: 1.5px solid #5b8cff; border-right: 1.5px solid #5b8cff; }
-  .w-mark-corner.bl { bottom: 0; left: 0; border-bottom: 1.5px solid #5b8cff; border-left: 1.5px solid #5b8cff; }
-  .w-mark-corner.br { bottom: 0; right: 0; border-bottom: 1.5px solid #5b8cff; border-right: 1.5px solid #5b8cff; }
+  .w-mark-corner.tl { top: 0; left: 0; border-top: 1.5px solid #e0704d; border-left: 1.5px solid #e0704d; }
+  .w-mark-corner.tr { top: 0; right: 0; border-top: 1.5px solid #e0704d; border-right: 1.5px solid #e0704d; }
+  .w-mark-corner.bl { bottom: 0; left: 0; border-bottom: 1.5px solid #e0704d; border-left: 1.5px solid #e0704d; }
+  .w-mark-corner.br { bottom: 0; right: 0; border-bottom: 1.5px solid #e0704d; border-right: 1.5px solid #e0704d; }
 
   .w-name {
     font-size: clamp(2.2rem, 6vw, 3.6rem);
     font-weight: 700; letter-spacing: -0.035em;
-    background: linear-gradient(90deg, #5b8cff, #36d6c3);
+    background: linear-gradient(90deg, #e0704d, #ebb36b);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
     opacity: 0;
@@ -237,7 +237,7 @@ const id = getProfile(lang).identity;
   }
   .w-hint {
     font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
-    color: rgba(91,140,255,0.55);
+    color: rgba(224,112,77,0.55);
     margin-top: 6px;
     opacity: 0;
     animation: wFadeIn 0.5s ease 1.9s forwards;
@@ -254,7 +254,7 @@ const id = getProfile(lang).identity;
   }
   .w-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #5b8cff, #36d6c3);
+    background: linear-gradient(90deg, #e0704d, #ebb36b);
     width: 0%;
     animation: wProgress var(--w-duration, 3000ms) linear 0.2s forwards;
   }
