@@ -135,6 +135,13 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
       <script type="application/ld+json" set:html={JSON.stringify(block)} />
     ))}
     <ClientRouter />
+    <script is:inline>
+      (function(){
+        function doy(){var n=new Date(),s=new Date(Date.UTC(n.getUTCFullYear(),0,0));return Math.floor((n-s)/864e5);}
+        var p=new URLSearchParams(location.search).get('palette');
+        document.documentElement.dataset.palette=p!=null?String(parseInt(p,10)%5):String(doy()%5);
+      })();
+    </script>
   </head>
   <body>
     <div class="space-bg" aria-hidden="true">

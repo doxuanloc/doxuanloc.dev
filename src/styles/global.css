@@ -34,6 +34,43 @@
   --ease-rev: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* ── DAILY PALETTE ROTATION ─────────────────────────────── */
+/* Palette 0 — Redshift Observatory (mirrors :root defaults) */
+[data-palette="0"] {
+  --accent:#e0704d; --accent-2:#ebb36b; --accent-3:#7d8e7c;
+  --bg:#0b0907; --bg-soft:#14120f; --bg-card:#1c1916; --bg-elev:#26221e;
+  --border:#3f3832; --border-soft:#2c2723;
+  --text:#f4f0eb; --text-dim:#b5ada4; --text-mute:#766e65;
+}
+/* Palette 1 — Neutron Star */
+[data-palette="1"] {
+  --accent:#5fb3ff; --accent-2:#9fd4ff; --accent-3:#7aa8c9;
+  --bg:#05070c; --bg-soft:#0a0f1c; --bg-card:#101827; --bg-elev:#1a243a;
+  --border:#2e3c55; --border-soft:#212c44;
+  --text:#eef4ff; --text-dim:#a3b3d1; --text-mute:#697b9c;
+}
+/* Palette 2 — Pulsar Resonance */
+[data-palette="2"] {
+  --accent:#22d3ee; --accent-2:#34d399; --accent-3:#67e8f9;
+  --bg:#050a0a; --bg-soft:#0a1414; --bg-card:#0f1f1f; --bg-elev:#182c2c;
+  --border:#2a4545; --border-soft:#1e3434;
+  --text:#e6fffa; --text-dim:#9db8b5; --text-mute:#6a8a86;
+}
+/* Palette 3 — Dark Matter */
+[data-palette="3"] {
+  --accent:#a78bfa; --accent-2:#c084fc; --accent-3:#818cf8;
+  --bg:#07050d; --bg-soft:#0e0a18; --bg-card:#151022; --bg-elev:#201a32;
+  --border:#362e4a; --border-soft:#271f3a;
+  --text:#f1e9ff; --text-dim:#b5a8cc; --text-mute:#766c8c;
+}
+/* Palette 4 — Solar Flare */
+[data-palette="4"] {
+  --accent:#f97316; --accent-2:#fb923c; --accent-3:#eab308;
+  --bg:#0a0603; --bg-soft:#120d08; --bg-card:#1c160f; --bg-elev:#282015;
+  --border:#463a2a; --border-soft:#33291f;
+  --text:#fff7ed; --text-dim:#c9b8a0; --text-mute:#8a7355;
+}
+
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
@@ -44,7 +81,7 @@ html {
 
 body {
   margin: 0;
-  background-color: #0b0907;
+  background-color: var(--bg);
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;
@@ -95,7 +132,7 @@ button:active, a:active, [role="button"]:active {
   position: fixed; inset: -60px; z-index: -2; pointer-events: none;
   transform: translate3d(calc(var(--par-x, 0) * 12px), calc(var(--par-y, 0) * 12px), 0);
   transition: transform 0.3s ease-out;
-  background-color: #0b0907;
+  background-color: var(--bg);
   background-image:
     /* distant stars (dim) */
     radial-gradient(1px 1px at 13% 27%, rgba(255,255,255,0.5), transparent),
@@ -221,7 +258,7 @@ button:active, a:active, [role="button"]:active {
 .header-blur {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   backdrop-filter: blur(12px) saturate(140%);
-  background: rgba(14, 10, 8, 0.82);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
 }
 
 /* HUD brackets — bottom corners of header */
@@ -506,7 +543,7 @@ section { padding: 64px 0; }
 /* Cards — glassmorphism + accent bar (signature) */
 .card {
   position: relative; overflow: hidden;
-  background: rgba(28, 24, 20, 0.65);
+  background: color-mix(in srgb, var(--bg-card) 70%, transparent);
   backdrop-filter: blur(12px) saturate(135%);
   -webkit-backdrop-filter: blur(12px) saturate(135%);
   border: 1px solid var(--border);

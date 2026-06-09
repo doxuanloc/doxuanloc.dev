@@ -42,10 +42,14 @@ const id = getProfile(lang).identity;
       <div class="w-mark-corner bl"></div>
       <div class="w-mark-corner br"></div>
     </div>
-    <div class="w-name">{id.name}</div>
+    <div class="w-name w-chroma" data-text={id.name}>{id.name}</div>
     <div class="w-title mono">{id.title}</div>
+    <div class="w-status mono" id="w-status" aria-live="polite">INITIALIZING…</div>
     <div class="w-hint mono">SCROLL · CLICK · ESC TO ENTER</div>
   </div>
+
+  <!-- Particle burst container -->
+  <div id="w-burst" class="w-burst" aria-hidden="true"></div>
 
   <!-- Layer 8: bottom progress bar -->
   <div class="w-progress-wrap">
@@ -91,8 +95,15 @@ const id = getProfile(lang).identity;
   .w-vignette {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      radial-gradient(ellipse 52% 60% at 50% 50%, rgba(4,6,14,0.60) 0%, rgba(4,6,14,0.25) 55%, transparent 100%),
-      linear-gradient(180deg, rgba(4,6,14,0.55) 0%, transparent 18%, transparent 78%, rgba(4,6,14,0.65) 100%);
+      radial-gradient(ellipse 52% 60% at 50% 50%,
+        color-mix(in srgb, var(--bg) 62%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 26%, transparent) 55%,
+        transparent 100%),
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--bg) 55%, transparent) 0%,
+        transparent 18%,
+        transparent 78%,
+        color-mix(in srgb, var(--bg) 65%, transparent) 100%);
   }
 
   /* ── LAYER 3: DOT GRID ──────────────────── */
@@ -114,28 +125,43 @@ const id = getProfile(lang).identity;
     border-radius: 50%;
     transform: translate(-50%, -50%);
     opacity: 0;
-    border: 1px solid rgba(224,112,77,0.10);
     animation: wRingIn 0.7s ease forwards, wRingSpin 28s linear infinite;
   }
-  .r1 { width: 220px; height: 220px; animation-delay: 0.35s, 0s; }
+  .r1 {
+    width: 220px; height: 220px;
+    border: 1px solid color-mix(in srgb, var(--accent-2) 40%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-2) 15%, transparent);
+    animation-delay: 0.35s, 0s;
+  }
   .r2 {
     width: 420px; height: 420px;
-    border-color: rgba(235,179,107,0.07);
-    border-style: dashed;
+    border: 1px dashed color-mix(in srgb, var(--accent) 30%, transparent);
     animation-delay: 0.5s, 0s;
     animation-direction: normal, reverse;
+    animation-duration: 0.7s, 36s;
   }
   .r3 {
     width: 620px; height: 620px;
-    border-color: rgba(224,112,77,0.04);
+    border: 1px solid color-mix(in srgb, var(--accent-3) 20%, transparent);
     animation-delay: 0.65s, 0s;
-    animation-duration: 0.7s, 48s;
+    animation-duration: 0.7s, 52s;
+    animation-direction: normal, reverse;
+  }
+  /* Locking phase: rings pulse */
+  .w-overlay.locking .r1 {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-2) 35%, transparent),
+                0 0 18px color-mix(in srgb, var(--accent-2) 25%, transparent);
+    transition: box-shadow 0.5s ease;
+  }
+  .w-overlay.locking .r2 {
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+    transition: box-shadow 0.5s ease;
   }
   /* Mobile: only outermost ring as subtle halo */
   @media (max-width: 700px) {
     .r1 { display: none; }
     .r2 { display: none; }
-    .r3 { width: 360px; height: 360px; border-color: rgba(224,112,77,0.07); }
+    .r3 { width: 360px; height: 360px; }
   }
   @keyframes wRingIn {
     from { opacity: 0; transform: translate(-50%,-50%) scale(0.85); }
@@ -237,10 +263,80 @@ const id = getProfile(lang).identity;
   }
   .w-hint {
     font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
-    color: rgba(224,112,77,0.55);
+    color: color-mix(in srgb, var(--accent) 55%, transparent);
     margin-top: 6px;
     opacity: 0;
     animation: wFadeIn 0.5s ease 1.9s forwards;
+  }
+
+  /* ── STATUS LINE ─────────────────────────────── */
+  .w-status {
+    font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase;
+    color: color-mix(in srgb, var(--accent-2) 70%, transparent);
+    margin-top: 2px;
+    opacity: 0;
+    animation: wFadeIn 0.4s ease 0.8s forwards;
+    min-height: 1em;
+  }
+  .w-status::after { content: '_'; animation: blink 0.9s step-end infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── CHROMATIC ABERRATION on name (pure CSS timing) ── */
+  .w-chroma { position: relative; }
+  .w-chroma::before,
+  .w-chroma::after {
+    content: attr(data-text);
+    position: absolute; left: 0; top: 0; width: 100%;
+    pointer-events: none; mix-blend-mode: screen;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+  }
+  .w-chroma::before {
+    -webkit-text-fill-color: #ff2a6d; color: #ff2a6d;
+    animation: chromaBefore 2.2s cubic-bezier(0.23,1,0.32,1) 0.7s both;
+  }
+  .w-chroma::after {
+    -webkit-text-fill-color: #00f0ff; color: #00f0ff;
+    animation: chromaAfter 2.2s cubic-bezier(0.23,1,0.32,1) 0.7s both;
+  }
+  @keyframes chromaBefore {
+    0%   { opacity: 0; transform: translate(-1.6px, 0); }
+    20%  { opacity: 0.55; transform: translate(-1.2px, 0); }
+    65%  { opacity: 0.45; transform: translate(-0.4px, 0); }
+    100% { opacity: 0; transform: translate(0, 0); }
+  }
+  @keyframes chromaAfter {
+    0%   { opacity: 0; transform: translate(1.8px, 0); }
+    20%  { opacity: 0.55; transform: translate(1.4px, 0); }
+    65%  { opacity: 0.45; transform: translate(0.4px, 0); }
+    100% { opacity: 0; transform: translate(0, 0); }
+  }
+
+  /* ── GLITCH FLASH ────────────────────────────── */
+  @keyframes glitch {
+    0%   { transform: translate(0); }
+    20%  { transform: translate(-2px, 0); clip-path: inset(2px 0 80% 0); }
+    40%  { transform: translate(2px, 0); clip-path: inset(60% 0 10% 0); }
+    60%  { transform: translate(-1px, 0); clip-path: inset(30% 0 50% 0); }
+    80%  { transform: translate(1px, 0); clip-path: inset(80% 0 5% 0); }
+    100% { transform: translate(0); clip-path: none; }
+  }
+  .w-glitch { animation: glitch 120ms steps(1) !important; }
+
+  /* ── PARTICLE BURST ──────────────────────────── */
+  .w-burst { position: absolute; inset: 0; pointer-events: none; z-index: 11; }
+  .w-burst .p {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: burstOut var(--dur, 700ms) var(--ease-rev) var(--delay, 0ms) both;
+  }
+  @keyframes burstOut {
+    from { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+    to   { transform: translate(calc(-50% + var(--dx,0px)), calc(-50% + var(--dy,0px))) scale(var(--s,0.3)); opacity: 0; }
   }
 
   @keyframes wFadeIn  { from { opacity:0 } to { opacity:1 } }
@@ -285,8 +381,38 @@ const id = getProfile(lang).identity;
 </style>
 
 <script>
-  const DURATION = 3000;   // auto-dismiss after 3s
-  const MIN_TIME = 2800;   // prevent early dismiss for first 2.8s
+  const DURATION = 3200;
+  const MIN_TIME = 2800;
+
+  const PHASES = [
+    { t: 800,  text: 'ACQUIRING SIGNAL…' },
+    { t: 1600, text: 'LOCKING… 94%',  lock: true },
+    { t: 2200, text: 'LINK ESTABLISHED', glitch: true },
+  ];
+
+  function spawnBurst(overlay: Element) {
+    const burst = overlay.querySelector('#w-burst');
+    if (!burst) return;
+    const colors = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)'];
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('span');
+      p.className = 'p';
+      const angle = (i / 40) * Math.PI * 2;
+      const dist = 60 + Math.random() * 140;
+      p.style.cssText = [
+        `--dx:${Math.cos(angle) * dist}px`,
+        `--dy:${Math.sin(angle) * dist}px`,
+        `--dur:${600 + Math.random() * 350}ms`,
+        `--delay:${Math.random() * 120}ms`,
+        `--s:${0.1 + Math.random() * 0.4}`,
+        `background:${colors[i % colors.length]}`,
+        `width:${3 + Math.random() * 4}px`,
+        `height:${3 + Math.random() * 4}px`,
+      ].join(';');
+      burst.appendChild(p);
+    }
+    setTimeout(() => { if (burst.parentNode) burst.innerHTML = ''; }, 1100);
+  }
 
   function initOverlay() {
     const overlay = document.getElementById('welcome-overlay');
@@ -303,9 +429,23 @@ const id = getProfile(lang).identity;
 
     document.body.style.overflow = 'hidden';
 
-    // Force-play overlay video (autoplay attribute alone is unreliable)
     const wVideo = overlay.querySelector<HTMLVideoElement>('.w-video');
     if (wVideo) wVideo.play().catch(() => {});
+
+    const status = overlay.querySelector<HTMLElement>('#w-status');
+    const chroma = overlay.querySelector<HTMLElement>('.w-chroma');
+
+    // Phase sequence
+    PHASES.forEach(({ t, text, lock, glitch }) => {
+      setTimeout(() => {
+        if (status) status.textContent = text;
+        if (lock) overlay.classList.add('locking');
+        if (glitch && chroma) {
+          chroma.classList.add('w-glitch');
+          setTimeout(() => chroma.classList.remove('w-glitch'), 130);
+        }
+      }, t);
+    });
 
     let canDismiss = false;
     setTimeout(() => { canDismiss = true; }, MIN_TIME);
@@ -315,21 +455,18 @@ const id = getProfile(lang).identity;
       if (overlay.classList.contains('w-exit') || overlay.classList.contains('w-gone')) return;
       sessionStorage.setItem('welcomed', '1');
       document.body.style.overflow = '';
+      spawnBurst(overlay);
       overlay.classList.add('w-exit');
       setTimeout(() => overlay.classList.add('w-gone'), 520);
     }
 
-    // Auto-dismiss (force = true bypasses MIN_TIME guard)
     setTimeout(() => dismiss(true), DURATION);
-
-    // Manual dismiss — gated by canDismiss
     overlay.addEventListener('click', () => dismiss());
     window.addEventListener('scroll', () => dismiss(), { once: true, passive: true });
     window.addEventListener('keydown', (e) => {
       if (['Escape', 'Enter', ' '].includes(e.key)) dismiss();
     }, { once: true });
 
-    // SKIP bypasses guard
     const skip = overlay.querySelector('.w-skip');
     if (skip) skip.addEventListener('click', (e) => { e.stopPropagation(); dismiss(true); });
   }
