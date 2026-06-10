@@ -244,6 +244,24 @@
             "ReactJS",
             "Docker"
           ]
+        },
+        {
+          "name": "VPhoto — E-comm Image Processing App",
+          "summary": "Ứng dụng web xử lý hàng loạt ảnh: xóa nền, chỉnh sửa và upload trực tiếp lên hệ thống quản lý V2 — hỗ trợ nhân viên chụp và xử lý ảnh sản phẩm TMĐT hiệu quả.",
+          "highlights": [
+            "Xây dựng tính năng xóa nền trắng tự động sử dụng Bilateral Reference ML model trên SageMaker",
+            "Triển khai quét barcode để tự động nhóm ảnh theo Product ID",
+            "Phát triển các tính năng chỉnh sửa ảnh (crop, rotate, zoom, thêm nhãn, điều chỉnh màu/độ sáng, ghép ảnh)",
+            "Tích hợp upload hàng loạt trực tiếp lên hệ thống quản lý V2 qua API Gateway"
+          ],
+          "stack": [
+            "Next.js 15",
+            "React 19",
+            "TypeScript",
+            "AWS (Lambda, S3, SageMaker, SQS, API Gateway)",
+            "Docker",
+            "ECS"
+          ]
         }
       ]
     },
@@ -316,23 +334,6 @@
     }
   ],
   "personalProjects": [
-    {
-      "name": "VPhoto — E-comm Image AI Camera App",
-      "period": "2025",
-      "teamSize": 2,
-      "summary": "Ứng dụng hỗ trợ xử lý và phân loại hình ảnh sản phẩm thương mại điện tử tự động, tập trung vào tính nhất quán của dữ liệu.",
-      "highlights": [
-        "Sử dụng Florence-2 cho tác vụ phát hiện đối tượng và gán nhãn chi tiết",
-        "Xây dựng luồng kiểm tra chất lượng ảnh (độ sáng, góc chụp, nền)",
-        "Nghiên cứu tối ưu hóa hiệu năng xử lý trên GPU để tích hợp vào thiết bị di động"
-      ],
-      "stack": [
-        "Florence-2",
-        "Computer Vision",
-        "GPU Acceleration",
-        "Python"
-      ]
-    },
     {
       "name": "NauPhaChe — Bartending Course Platform",
       "period": "2022-10 — 2023-11",

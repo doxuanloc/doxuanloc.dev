@@ -7,3 +7,4 @@ dist/
 .env.*
 .vercel
 public/images/me/
+tmp_translations/

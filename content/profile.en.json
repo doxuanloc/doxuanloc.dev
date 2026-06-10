@@ -6,7 +6,7 @@
     "nameEn": "Do Xuan Loc",
     "title": "AI & System Optimization Engineer",
     "subtitle": "Full-Stack Engineer · Solutions Architect (ML)",
-    "tagline": "Growing from Full-Stack to AI & Cloud architecture — focused on designing practical, scalable, and cost-optimized systems for the Japanese market.",
+    "tagline": "Growing from Full-Stack to AI & Cloud architecture — focused on designing practical, scalable, and cost-optimized systems",
     "location": "Ho Chi Minh City, Vietnam",
     "yearsExperience": 3,
     "email": "locvkv1234@gmail.com",
@@ -244,6 +244,24 @@
             "ReactJS",
             "Docker"
           ]
+        },
+        {
+          "name": "VPhoto — E-comm Image Processing App",
+          "summary": "Web application for batch background removal, image editing, and direct upload to V2 management system — helping staff efficiently photograph and process e-commerce product images.",
+          "highlights": [
+            "Built automatic white background processing using Bilateral Reference ML model on SageMaker",
+            "Implemented barcode scanning to auto-group images by Product ID",
+            "Developed image editing features (crop, rotate, zoom, labels, color/brightness adjustment, merge)",
+            "Integrated batch upload directly to V2 management system via API Gateway"
+          ],
+          "stack": [
+            "Next.js 15",
+            "React 19",
+            "TypeScript",
+            "AWS (Lambda, S3, SageMaker, SQS, API Gateway)",
+            "Docker",
+            "ECS"
+          ]
         }
       ]
     },
@@ -316,23 +334,6 @@
     }
   ],
   "personalProjects": [
-    {
-      "name": "VPhoto — E-comm Image AI Camera App",
-      "period": "2025",
-      "teamSize": 2,
-      "summary": "Application supporting automated e-commerce product image processing and classification, focusing on data consistency.",
-      "highlights": [
-        "Used Florence-2 for object detection and detailed labeling tasks",
-        "Built image quality checking flow (brightness, angle, background)",
-        "Researched GPU processing performance optimization for mobile integration"
-      ],
-      "stack": [
-        "Florence-2",
-        "Computer Vision",
-        "GPU Acceleration",
-        "Python"
-      ]
-    },
     {
       "name": "NauPhaChe — Bartending Course Platform",
       "period": "2022-10 — 2023-11",
