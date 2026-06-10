@@ -742,6 +742,9 @@ for (const m of milestones) {
     const root = document.querySelector<HTMLElement>('[data-jp]');
     if (!root) return;
 
+    // Mobile: panels are vertical cards in flow — no JS scroll-driven opacity needed.
+    if (!window.matchMedia('(min-width: 900px)').matches) return;
+
     const panels   = Array.from(root.querySelectorAll<HTMLElement>('.jp-panel'));
     const nodes    = Array.from(root.querySelectorAll<HTMLElement>('.jp-node'));
     const counter  = root.querySelector<HTMLElement>('[data-jp-cur]');
@@ -855,19 +858,23 @@ for (const m of milestones) {
     measureLayout();
     onScroll();
 
-    // Mobile first-load fix: offsetHeight may be 0 when astro:page-load fires
-    // (CSS height:calc(--n * 100vh) not yet computed). ResizeObserver fires once
-    // layout settles, at which point we re-measure and render the correct state.
+    let ro: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined') {
-      const ro = new ResizeObserver(() => {
+      ro = new ResizeObserver(() => {
         if (root.offsetHeight > window.innerHeight) {
           measureLayout();
           onScroll();
         }
       });
       ro.observe(root);
-      document.addEventListener('astro:before-swap', () => ro.disconnect(), { once: true });
     }
+
+    // Cleanup on navigate: remove listeners so they don't accumulate across visits.
+    document.addEventListener('astro:before-swap', () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+      ro?.disconnect();
+    }, { once: true });
   }
 
   document.addEventListener('astro:page-load', setupJourneyPinned);
