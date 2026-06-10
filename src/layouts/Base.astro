@@ -284,20 +284,28 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
         }, { passive: true });
       }
 
-      // Tilt 3D nhẹ cho [data-tilt] (magnetic).
+      // Tilt 3D nhẹ cho [data-tilt] (magnetic) — RAF-throttled per element.
       function setupTilt() {
         if (!fine) return;
         document.querySelectorAll<HTMLElement>('[data-tilt]:not([data-tilt-on])').forEach((el) => {
           el.setAttribute('data-tilt-on', '');
           let rect: DOMRect | null = null;
+          let ptick = false;
+          let lastE: MouseEvent | null = null;
           el.addEventListener('mouseenter', () => { rect = el.getBoundingClientRect(); });
           el.addEventListener('mousemove', (e) => {
-            const r = rect ?? el.getBoundingClientRect();
-            const rx = (((e.clientY - r.top) / r.height) - 0.5) * -7;
-            const ry = (((e.clientX - r.left) / r.width) - 0.5) * 7;
-            el.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px)`;
+            lastE = e;
+            if (ptick) return; ptick = true;
+            requestAnimationFrame(() => {
+              if (!lastE) { ptick = false; return; }
+              const r = rect ?? el.getBoundingClientRect();
+              const rx = (((lastE.clientY - r.top) / r.height) - 0.5) * -7;
+              const ry = (((lastE.clientX - r.left) / r.width) - 0.5) * 7;
+              el.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px)`;
+              ptick = false;
+            });
           });
-          el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+          el.addEventListener('mouseleave', () => { el.style.transform = ''; rect = null; });
         });
       }
 
