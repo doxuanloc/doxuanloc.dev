@@ -826,6 +826,7 @@ for (const m of milestones) {
       if (scrollTick) return;
       scrollTick = true;
       requestAnimationFrame(() => {
+        measureLayout(); // re-read position each frame: handles font-load, mobile-bar, transition stale
         if (scrollTotal <= 0) { scrollTick = false; return; }
         render(Math.max(0, Math.min(window.scrollY - rootTop, scrollTotal)));
         scrollTick = false;
