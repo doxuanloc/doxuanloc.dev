@@ -1,208 +1,155 @@
 {
   "date": "2026-06-10",
   "generatedBy": "grok",
-  "version": 2,
+  "version": 1,
   "news": [
     {
-      "title": "Google hạ Google AI Plus xuống $4.99/tháng, tăng storage 400GB — mở price war subscription AI tại Mỹ",
-      "summary": "Google hạ Google AI Plus từ 7.99 xuống 4.99 USD/tháng, tăng storage 200→400GB. Gói gồm Gemini, video Omni Flash, Flow, NotebookLM — chiến lược undercut ChatGPT Go tại Mỹ sau Ấn Độ. Góc nhìn: AI subscription đang commoditize nhanh hơn model capability — builder không nên lock pricing vào một vendor; chuẩn bị abstraction layer và đo cost-per-task thay vì cost-per-seat.",
-      "source": "https://techcrunch.com/2026/06/09/google-just-fired-a-warning-shot-in-the-ai-subscription-price-wars/",
+      "title": "Anthropic phát hành Claude Fable 5 — Mythos-class công khai, mạnh agentic coding và long-horizon",
+      "summary": "Anthropic ra mắt Claude Fable 5 (phiên bản public của Mythos-class mới, tier trên Opus) và Mythos 5 (gated cho cyber/infra critical với ít guard hơn). 1M context, mạnh multi-run/long-horizon/coding; system card nhấn recursive self-improvement risk và silent safeguard can thiệp. Góc nhìn: Frontier model ngày càng có silent intervention — agent builder phải giả định model có thể tự hạn chế ở edge nhạy cảm, cần eval độc lập + fallback thay vì tin 'full power'.",
+      "source": "https://www.anthropic.com/news",
       "tags": [
-        "google ai",
-        "ai",
-        "developer-productivity"
-      ],
-      "importance": 4
-    },
-    {
-      "title": "Harvey + Fireworks giảm inference cost 3x bằng model routing — enterprise bắt đầu chuyển sang model rẻ",
-      "summary": "TechCrunch phân tích xu hướng enterprise chuyển sang model rẻ: Harvey + Fireworks giảm inference cost 3x bằng routing Opus cho task nặng, GLM 5.1 cho phần còn lại, không giảm chất lượng legal. Armstrong dự đoán 80% workload chạy model rẻ trong 12-18 tháng. Góc nhìn: Cuộc chiến thật là large vs small model, không proprietary vs open — team chưa có router + eval sẽ trả premium token vô ích.",
-      "source": "https://techcrunch.com/2026/06/09/can-tech-companies-learn-to-love-cheaper-models/",
-      "tags": [
-        "llm optimization",
+        "claude",
         "ai agent",
-        "open-source"
+        "llm",
+        "coding agent"
       ],
       "importance": 5
     },
     {
-      "title": "KPMG triển khai Microsoft Agent 365 + Copilot cho 276.000 nhân viên — enterprise agent scale với governance",
-      "summary": "KPMG và Microsoft mở rộng hợp tác 9/6: triển khai Agent 365 quản lý agent toàn cầu, Copilot cho 276.000 nhân viên. Workbench trên Azure AI Foundry điều phối multi-agent với governance, audit, lifecycle. Góc nhìn: Enterprise agent đã qua giai đoạn pilot — competitive advantage nằm ở governance + observability, không phải prompt đẹp.",
-      "source": "https://news.microsoft.com/source/2026/06/09/kpmg-and-microsoft-scale-trusted-enterprise-ai-agents-globally-through-deployment-of-agent-365-and-copilot/",
+      "title": "AWS Step Functions tích hợp AgentCore harness — nhúng agent reasoning vào workflow production",
+      "summary": "Step Functions hỗ trợ AgentCore harness (preview/GA rollout): declare agent (model + tools + behavior) rồi nhúng reasoning step vào state machine có built-in error handling, parallel, human approval. Góc nhìn: Orchestrator + managed agent loop là cách thực tế production hóa agent; nhưng phải map 'agent step' với approval policy và shared observability từ đầu, không add-on sau.",
+      "source": "https://aws.amazon.com/about-aws/whats-new/2026/06/aws-step-functions-agentcore/",
       "tags": [
-        "ai agent",
-        "enterprise",
-        "cloud"
-      ],
-      "importance": 4
-    },
-    {
-      "title": "Microsoft vô hiệu ~70 repo GitHub sau malware nhắm AI developer — credential stealer trong Azure/AI tools",
-      "summary": "Microsoft vô hiệu hóa ~70 repo GitHub open-source (Azure, AI coding tools) sau khi malware Miasma chèn credential stealer vào code dùng bởi Claude Code, Gemini CLI, VS Code. Đây là re-compromise lần hai sau Durable Task tháng 5. Góc nhìn: Supply chain attack nhắm thẳng AI developer workflow — team phải pin dependency, scan artifact và rotate secret, không chỉ tin maintainer lớn.",
-      "source": "https://techcrunch.com/2026/06/08/microsofts-open-source-tools-were-hacked-to-steal-passwords-of-ai-developers/",
-      "tags": [
-        "security",
-        "open-source",
-        "devops"
+        "aws bedrock",
+        "agentic workflow",
+        "aws",
+        "step functions"
       ],
       "importance": 5
     },
     {
-      "title": "Safari cho phép vibe-code extension bằng Apple Intelligence — AI tự sinh extension từ mô tả ngôn ngữ tự nhiên",
-      "summary": "WWDC26: Safari cho user mô tả extension bằng ngôn ngữ tự nhiên, Apple Intelligence sinh code (demo Recipe Keeper). Thêm auto-group tab bằng AI, Notify Me theo dõi thay đổi web, auto đổi password compromised. Góc nhìn: Personal software era đang mở rộng sang browser extension — nhưng security review và permission model phải đi trước vibe-code, không thì extension tự sinh là surface tấn công mới.",
-      "source": "https://www.theverge.com/tech/946345/apple-safari-ai-update-extensions",
+      "title": "AgentCore Runtime thêm interactive shell session persistent — stateful terminal trong sandbox",
+      "summary": "June update: AgentCore Runtime hỗ trợ interactive shell (terminal) stateful — giữ env var, cwd, process qua lệnh; max 10 concurrent/session. Phù hợp agent devops/debug/long cmd. Góc nhìn: Stateful execution tăng capability nhưng mở surface persistent exploit + runaway spend; cmd allowlist, timeout, session budget phải là primitive design, không để sau.",
+      "source": "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html",
       "tags": [
-        "ai",
-        "web",
-        "developer-productivity"
+        "aws bedrock",
+        "ai agent",
+        "devops",
+        "runtime"
       ],
-      "importance": 3
+      "importance": 4
     },
     {
-      "title": "Boris Cherny (Claude Code): so sánh ROI AI với chi phí engineer-time, không với gói $20/tháng",
-      "summary": "Boris Cherny (Claude Code) tại Brainstorm Tech: so sánh ROI AI với chi phí engineer-time, không với gói 20 USD/tháng. Claude Code ARR >2.5B USD; bottleneck dịch chuyển từ codegen sang review, security. Góc nhìn: CFO sẽ hỏi cost-per-outcome, không cost-per-token — builder cần metric song song: task completion và engineering hours saved.",
-      "source": "https://fortune.com/2026/06/09/boris-cherny-claude-code-says-comparing-ai-costs-to-wrong-thing-anthropic/",
+      "title": "Agentic loop đẩy inference lên 55% chi tiêu AI cloud — 10-20 calls mỗi task là thực tế",
+      "summary": "Phân tích 2026: inference chiếm 55% (~37.5B USD) AI cloud spend chủ yếu do agent workflow sinh 10-20 LLM calls/task. Framework thiếu cost control bị loại enterprise shortlist. Góc nhìn: Framework không cứu FinOps — cần architecture layer (router, cache, per-step/workflow cap, outcome metric) bên trên; thiếu thì burn rate giết project trước khi value chứng minh.",
+      "source": "https://pub.towardsai.net/top-ai-agent-frameworks-in-2026-a-production-ready-comparison-7ba5e39ad56d",
       "tags": [
-        "claude api",
         "ai agent",
-        "developer-productivity"
+        "llm cost optimization",
+        "agentic workflow"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "Model routing (cheap route + frontier execute) thành pattern mặc định AI agent stack thực tế",
+      "summary": "Production stack thực tế dùng Haiku/Sonnet nhỏ cho classify/route/intent, frontier chỉ execution/planning — giảm cost 50-60% mà chất lượng ổn. Góc nhìn: Routing không phải vibe mà là hệ thống gồm classifier + policy + eval set + escalation; thiếu lớp này là đang trả phí frontier cho mọi token, kể cả bước rẻ có thể cache/offload.",
+      "source": "https://www.reddit.com/r/AI_Agents/comments/1rqnv3a/what_is_your_full_ai_agent_stack_in_2026/",
+      "tags": [
+        "ai agent",
+        "model routing",
+        "llm cost optimization"
       ],
       "importance": 4
     }
   ],
   "blog": {
-    "slug": "2026-06-10-llm-cost-optimization-model-routing-ai-agent",
-    "title": "LLM Cost Optimization cho AI Agent: Model Routing Trade-off Thực Tế",
-    "excerpt": "Bạn đang burn token vô ích? Hướng dẫn llm cost optimization và model routing cho AI agent — trade-off thực tế khi scale trên Bedrock.",
-    "contentMarkdown": "## Vấn đề cụ thể\n\nTuần này có hai signal trái chiều nhưng cùng hướng về một vấn đề: **chi phí LLM đang trở thành bottleneck thực sự**, không còn là hạng mục phụ.\n\nGoogle hạ Google AI Plus xuống $4.99/tháng — commoditization subscription đã sang thị trường Mỹ. Đồng thời, Harvey + Fireworks công bố giảm inference cost 3x bằng model routing: Claude Opus cho task nặng, GLM 5.1 cho phần còn lại, không giảm chất lượng legal. Brian Armstrong dự đoán 80% workload sẽ chạy model rẻ trong 12–18 tháng.\n\nVới stack NestJS, AWS Bedrock và kinh nghiệm build agent workflow, đây là lúc team phải trả lời câu hỏi kỹ thuật cụ thể: **làm sao route model mà không làm agent fail im lặng?**\n\n## Tại sao Agent Đa Bước Burn Token Nhanh Hơn Chatbot?\n\nAgent khác chatbot ở chỗ mỗi bước = một inference call (hoặc nhiều hơn nếu có reflection, re-planning, tool retry). Một workflow 8 bước với Claude Opus có thể tốn gấp 10–20 lần một Q&A đơn giản — chưa kể context window phình ra khi agent nhồi tool output vào history.\n\nHarvey test cho thấy điểm mấu chốt: **không phải mọi bước đều cần frontier model**. Legal research cần reasoning sâu; format output, classify intent, summarize log — có thể dùng model nhỏ hơn 10–50x rẻ hơn.\n\nTrade-off thực tế:\n\n- **Quality ceiling**: Model rẻ fail ở edge case — routing sai một bước critical = toàn pipeline sai.\n- **Latency**: Multi-model routing thêm hop (classifier → router → model) — có thể chậm hơn single-model nếu không cache.\n- **Complexity**: Router logic, fallback, eval dataset — overhead engineering không nhỏ.\n\n## Model Routing Hoạt Động Như Thế Nào Trên AWS Bedrock?\n\nPattern phổ biến trên Bedrock/NestJS:\n\n1. **Task classifier** (model nhỏ hoặc rule-based): phân loại bước hiện tại — retrieval, reasoning, formatting, tool selection.\n2. **Router**: map task type → model tier (ví dụ: Haiku/Sonnet/Opus hoặc open-weight trên Fireworks).\n3. **Escalation**: nếu confidence thấp hoặc eval score dưới ngưỡng → escalate lên tier cao hơn.\n4. **Observability**: log model used, token in/out, cost per step trên CloudWatch — không đo thì không optimize được.\n\nVới EventBridge + Lambda, bạn có thể tách routing thành service độc lập: agent gọi `POST /infer` với `taskType` và `riskLevel`, router quyết định model. High-risk action (ghi DB, gửi email) luôn dùng tier cao + human approval.\n\nĐiểm hay bị bỏ qua: **cache semantic** cho retrieval và classification — cùng một query lặp lại trong session không cần re-infer.\n\n## So Sánh ROI: Token Cost Hay Engineer-Time?\n\nBoris Cherny (Claude Code) nói thẳng tại Brainstorm Tech: đừng so sánh AI cost với gói $20/tháng — so với **chi phí engineer làm cùng việc**. Developer rewrite codebase trong 6 ngày thay vì 1 năm — ROI rõ ràng dù token bill cao.\n\nNhưng đó là coding agent với output measurable. Production agent (customer support, data pipeline, ops) cần metric khác:\n\n- Cost per successful task (không phải cost per call)\n- Escalation rate (bao nhiêu % phải lên human)\n- Error rate theo model tier\n\nNếu model routing giảm cost 3x mà error rate tăng 2x → bạn **không tiết kiệm**, chỉ dời chi phí sang support và rework.\n\n## Khi Nào Nên (Và Không Nên) Dùng Model Rẻ?\n\n**Nên route sang model rẻ khi:**\n\n- Task có output format cố định (JSON schema, classification label)\n- Có eval dataset đủ lớn để A/B test quality\n- Workflow có bước \"draft → review\" — draft rẻ, review đắt\n- Volume cao, margin mỏng (fintech, legal, ops automation)\n\n**Không nên (hoặc chưa) khi:**\n\n- Chưa có observability — không biết bước nào tốn token nhất\n- Domain high-stakes (compliance, medical, financial advice) mà chưa có human-in-the-loop\n- Team mới ship agent — optimize sau khi có baseline metric, không optimize trước khi có product\n\n## Kết Luận Thực Dụng\n\nLLM cost optimization không phải \"chọn model rẻ nhất\" — đó là **kiến trúc routing có eval và escalation**. Google cắt giá subscription, Harvey giảm 3x inference — cùng một narrative: AI capability đang commoditize, margin thuộc về người biết **dùng đúng model cho đúng bước**.\n\n**Nên làm ngay:**\n\n- Instrument mọi agent step: model, tokens, cost, outcome\n- Xây task classifier + router tách khỏi business logic\n- A/B test ít nhất 2 tier trên 100+ sample thực tế trước khi cut Opus khỏi pipeline\n- Đặt budget cap per session/workflow — kill-switch khi vượt ngưỡng\n\n**Không nên:**\n\n- Swap toàn bộ sang model rẻ vì đọc headline \"80% workload\" — 20% còn lại thường là 80% value\n- So sánh AI bill với SaaS subscription — so với engineer-time hoặc cost-per-outcome\n- Bỏ qua supply chain security (Microsoft GitHub hack tuần này) khi tích hợp open-source inference stack\n\nModel routing là system optimization, không phải prompt trick. Ai có router + eval + observability sớm sẽ survive commoditization — ai không có sẽ trả premium token cho đến khi finance chặn budget.",
+    "slug": "2026-06-10-agentic-workflow-step-functions-agentcore-governance",
+    "title": "Agentic Workflow Production với Step Functions + AgentCore: Governance Thực Tế Developer Phải Thiết Kế",
+    "excerpt": "Step Functions tích hợp AgentCore harness cho phép nhúng AI agent reasoning vào workflow production có approval và error handling. Phân tích governance, stateful shell, cost-per-outcome và khi nào agent step đáng giá thực tế.",
+    "contentMarkdown": "## Vấn đề cụ thể\n\nAgent prototype trên laptop chạy đẹp: loop, tool call, reflection. Nhưng đưa vào production workflow — long-running, side-effect (DB, email, payment, infra change), parallel branch, human approval — thì fail im lặng, burn tiền hoặc tạo incident.\n\nTuần này AWS công bố Step Functions native integration với AgentCore harness và Runtime hỗ trợ interactive shell session. Đây là tín hiệu rõ: agentic capability đang được nhúng vào orchestrator truyền thống thay vì để agent tự do chạy không giới hạn.\n\nCâu hỏi thực sự: **làm sao thiết kế governance cho agent step mà không làm workflow chậm, đắt hoặc mất kiểm soát?**\n\n## Step Functions + AgentCore Harness Giải Quyết Gì?\n\nHarness cho phép declare agent qua config (model, tool set, instruction, behavior). Step Functions gọi harness như một state: truyền input, nhận output/reasoning trace, có retry/backoff, parallel execution, human approval gate sẵn.\n\nLợi ích:\n- Visual workflow + agent reasoning trong cùng pipeline.\n- Error handling và compensation logic thống nhất.\n- Human gate cho high-risk action mà không cần custom UI riêng.\n\nNhưng harness không thay thế lớp governance. Nó chỉ cung cấp execution environment và observability hook.\n\n## Stateful Interactive Shell: Năng Lực Mới, Surface Mới\n\nInteractive shell (terminal) trong AgentCore Runtime cho agent giữ state (env, cwd, process) qua nhiều lệnh — giống REPL sandbox. Tối đa 10 session/concurrent.\n\nUse case tốt: agent devops chạy chuỗi lệnh chẩn đoán, sửa config tạm, test script trước khi commit.\n\nRủi ro thực:\n- Persistent state = persistent exploit nếu command allowlist lỏng.\n- Một session dài có thể tiêu budget hoặc gây side-effect tích lũy mà human không thấy ngay.\n- Log và trace phải capture đầy đủ lệnh + output, không chỉ LLM call.\n\nGóc nhìn: Stateful tool execution là bước tiến cần thiết cho agent thực sự 'làm việc', nhưng permission model và session budget phải là first-class citizen trong design, ngang bằng với tool allowlist.\n\n## Cost, Approval và Observability — Ba Trụ Cột\n\nAgent step trong workflow thường sinh 5-15 inference + tool calls. Không có cap per execution = budget bất ngờ.\n\nPattern thực tế:\n- Per-workflow budget cap + kill switch.\n- Tiered model inside agent (router phân loại bước → cheap model cho classify/summarize, frontier cho planning/critical).\n- Semantic cache cho retrieval/classify lặp trong cùng execution.\n- Approval gate cho mọi side-effect có write hoặc external call (dùng Step Functions Task Token hoặc callback).\n- Trace kết hợp: Step Functions execution ID + AgentCore reasoning trace + token spend per step → CloudWatch / X-Ray.\n\nKhông đo cost-per-outcome (thành công task / chi phí) thì không biết agent có đáng giá hay chỉ đốt tiền nhanh hơn Lambda thông thường.\n\n## Nên và Không Nên Khi Nào?\n\nNên dùng agent step khi:\n- Task cần reasoning + tool orchestration phức tạp (triage ticket, phân tích incident K8s, research multi-source).\n- Có human approval rõ cho high impact action.\n- Có eval dataset + regression test cho agent behavior.\n- Đã có budget cap và observability per outcome.\n\nKhông nên thay thế:\n- Workflow đơn giản, deterministic (transform data, fan-out/fan-in thuần).\n- Action có side-effect cao mà không có approval cứng hoặc dry-run mode.\n- Agent tự do access shell/production resource mà không có tight allowlist + timeout + budget.\n\n## Kết luận thực dụng\n\n- Bắt đầu với harness + Step Functions cho orchestration, không build custom agent loop từ đầu.\n- Thiết kế approval + budget + trace là phần của architecture, không phải sau khi prototype chạy.\n- Dùng model routing + cache bên trong agent step để giữ cost trong ngưỡng.\n- Đo lường: không chỉ latency hay token, mà cost-per-successful-outcome và MTTR giảm bao nhiêu so với baseline thủ công.\n\nAgentic workflow production không phải 'thêm AI vào pipeline'. Đó là bài toán hệ thống: orchestrator, governance boundary, cost control và observability phải được thiết kế đồng thời.",
     "tags": [
-      "llm cost optimization",
-      "model routing",
       "ai agent",
       "aws bedrock",
-      "claude api"
+      "agentic workflow",
+      "step functions",
+      "governance",
+      "aws"
     ],
-    "readingTimeMin": 5,
+    "readingTimeMin": 7,
     "coverImage": null,
     "coverKeywords": [
-      "model routing topology",
-      "cost gradient",
-      "deep space inference"
-    ],
-    "interactiveBlock": "<div class=\"ib-router\">\n<style>\n.ib-router{font-family:system-ui,sans-serif;color:#e2e8f0;background:var(--bg-card,#05070f);border:1px solid var(--border,#1f2937);border-radius:12px;padding:18px;max-width:100%;font-size:14px}\n.ib-head{font-family:ui-monospace,monospace;font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;opacity:.45;margin-bottom:12px}\n.ib-ts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}\n.ib-ts button{flex:1 1 auto;min-width:100px;border:1px solid var(--border,#334155);background:var(--bg-elev,#0b0e18);padding:7px 10px;border-radius:8px;font-size:0.78rem;font-family:inherit;cursor:pointer;color:#94a3b8;transition:all .18s}\n.ib-ts button:hover{border-color:var(--accent,#e0704d);color:var(--accent,#e0704d)}\n.ib-ts button.a{border-color:var(--accent,#e0704d);background:rgba(224,112,77,.06);color:var(--accent,#e0704d)}\n.ib-sim{background:rgba(0,0,0,.3);border:1px solid var(--border,#1f2937);border-radius:8px;padding:14px}\n.ib-fl{display:flex;gap:8px;margin-bottom:10px;align-items:center}\n.ib-n{flex:1;border:1px solid var(--border,#334155);background:var(--bg,#04060e);border-radius:6px;padding:8px 10px;font-size:0.74rem;text-align:center;transition:all .2s;min-height:36px;display:flex;align-items:center;justify-content:center}\n.ib-n.a{border-color:var(--accent,#e0704d);color:var(--accent,#e0704d);box-shadow:0 0 8px rgba(224,112,77,.15)}\n.ib-arr{font-size:0.8rem;opacity:.35;flex-shrink:0}\n.ib-ms{display:flex;gap:8px;margin:10px 0}\n.ib-m{flex:1;border:1px solid var(--border,#334155);background:var(--bg,#04060e);border-radius:6px;padding:8px 6px;text-align:center;font-size:0.72rem;transition:all .2s}\n.ib-m.s{box-shadow:0 0 0 1px var(--mc),0 0 12px var(--mc);border-color:var(--mc)}\n.ib-m[data-t=p]{--mc:#c084fc}.ib-m[data-t=b]{--mc:#60a5fa}.ib-m[data-t=f]{--mc:#4ade80}\n.ib-mn{font-size:0.82rem;font-weight:600;margin:0 0 2px}\n.ib-mc{font-size:0.64rem;opacity:.55;font-family:ui-monospace,monospace}\n.ib-cs{display:flex;gap:14px;margin:10px 0 0;font-size:0.74rem}\n.ib-cl{font-family:ui-monospace,monospace;font-size:0.6rem;opacity:.4;display:block;margin-bottom:1px;letter-spacing:1px;text-transform:uppercase}\n.ib-cv{font-family:ui-monospace,monospace;font-size:0.8rem}\n.ib-v{margin:10px 0 0;padding:8px 12px;background:rgba(0,0,0,.25);border-left:2px solid var(--accent,#e0704d);font-size:0.8rem;min-height:30px;border-radius:0 6px 6px 0;color:#c8ccd6;transition:opacity .2s}\n.ib-v:empty{opacity:0}\n.ib-rs{font-size:0.7rem;font-family:ui-monospace,monospace;letter-spacing:1px;padding:4px 10px;border:1px solid var(--border,#334155);background:transparent;color:#64748b;border-radius:6px;cursor:pointer;margin-top:10px;transition:color .15s}\n.ib-rs:hover{color:#94a3b8}\n@media(prefers-reduced-motion:reduce){.ib-n,.ib-m,.ib-v{transition:none}}\n</style>\n<div class=\"ib-head\">⬡ Model Routing Simulator</div>\n<div class=\"ib-ts\">\n  <button data-k=\"legal\">⚖ Legal Research</button>\n  <button data-k=\"json\">{ } Format JSON</button>\n  <button data-k=\"report\">◈ Generate Report</button>\n  <button data-k=\"log\">≡ Summarize Log</button>\n</div>\n<div class=\"ib-sim\">\n  <div class=\"ib-fl\">\n    <div class=\"ib-n\" data-s=\"task\"><span class=\"ib-tn\">select a task →</span></div>\n    <span class=\"ib-arr\">→</span>\n    <div class=\"ib-n\" data-s=\"rtr\">CLASSIFIER</div>\n    <span class=\"ib-arr\">→</span>\n    <div class=\"ib-n\" data-s=\"out\">ROUTER</div>\n  </div>\n  <div class=\"ib-ms\">\n    <div class=\"ib-m\" data-t=\"p\"><div class=\"ib-mn\" style=\"color:#c084fc\">Opus</div><div class=\"ib-mc\">frontier</div></div>\n    <div class=\"ib-m\" data-t=\"b\"><div class=\"ib-mn\" style=\"color:#60a5fa\">Sonnet</div><div class=\"ib-mc\">balanced</div></div>\n    <div class=\"ib-m\" data-t=\"f\"><div class=\"ib-mn\" style=\"color:#4ade80\">Haiku</div><div class=\"ib-mc\">fast/cheap</div></div>\n  </div>\n  <div class=\"ib-cs\">\n    <div><span class=\"ib-cl\">this call</span><span class=\"ib-cv ib-th\">—</span></div>\n    <div><span class=\"ib-cl\">saved vs Opus</span><span class=\"ib-cv ib-sv\">—</span></div>\n    <div><span class=\"ib-cl\">session total</span><span class=\"ib-cv ib-rt\">$0.0000</span></div>\n  </div>\n  <div class=\"ib-v\" role=\"status\" aria-live=\"polite\"></div>\n</div>\n<button class=\"ib-rs\">↺ reset</button>\n<script>\n(function(){\nvar r=document.currentScript.closest('.ib-router'),q=function(s){return r.querySelector(s)},a=function(s){return r.querySelectorAll(s)},red=matchMedia('(prefers-reduced-motion:reduce)').matches;\nvar D={legal:{l:'Legal Research',t:'p',c:.048,p:.048,sv:0,v:'Opus selected — deep reasoning required for legal analysis.'},json:{l:'Format JSON',t:'f',c:.0007,p:.048,sv:.0473,v:'Haiku selected — structured output, ~69× cheaper than Opus.'},report:{l:'Generate Report',t:'b',c:.014,p:.045,sv:.031,v:'Sonnet selected — synthesis task, balanced cost/quality.'},log:{l:'Summarize Log',t:'f',c:.0012,p:.042,sv:.0408,v:'Haiku selected — log summarization, ~35× cheaper than Opus.'}};\nvar rt=0,f=function(n){return n===null?'—':'$'+n.toFixed(4)},s=function(e,v){if(e)e.textContent=v};\nvar cls=function(){a('.ib-n').forEach(function(n){n.classList.remove('a')});a('.ib-m').forEach(function(m){m.classList.remove('s')})};\na('.ib-ts button').forEach(function(b){b.onclick=function(){var d=D[b.dataset.k];if(!d)return;a('.ib-ts button').forEach(function(x){x.classList.remove('a')});b.classList.add('a');cls();s(q('.ib-tn'),d.l);q('.ib-v').textContent='';\n  var delay=red?0:120;\n  setTimeout(function(){q('.ib-n[data-s=\"task\"]').classList.add('a');},red?0:30);\n  setTimeout(function(){q('.ib-n[data-s=\"rtr\"]').classList.add('a');},red?0:180);\n  setTimeout(function(){q('.ib-n[data-s=\"out\"]').classList.add('a');q('.ib-m[data-t=\"'+d.t+'\"]').classList.add('s');rt+=d.c;s(q('.ib-th'),f(d.c));s(q('.ib-sv'),d.sv>0?'-'+f(d.sv):'—');s(q('.ib-rt'),f(rt));q('.ib-v').textContent=d.v;},red?0:340);\n  }});\nq('.ib-rs').onclick=function(){rt=0;cls();s(q('.ib-tn'),'select a task →');q('.ib-v').textContent='';s(q('.ib-th'),'—');s(q('.ib-sv'),'—');s(q('.ib-rt'),'$0.0000');a('.ib-ts button').forEach(function(b){b.classList.remove('a')});};\n})();\n</script>\n</div>"
+      "agentic workflow",
+      "step functions harness",
+      "production governance"
+    ]
   },
   "financeNews": [
     {
-      "title": "Fed có thể bỏ 'easing bias' tại họp 16-17/6 — thị trường pricing khả năng tăng lãi suất 2026",
-      "summary": "Fed Gov. Waller ủng hộ bỏ ngôn ngữ easing bias tại FOMC 16-17/6; CME FedWatch pricing khả năng tăng lãi suất cuối 2026. CPI tháng 5 công bố 10/6; headline inflation 3.8%, core 2.8% tháng 4. Góc nhìn: Macro đang shift từ cut sang hold/hike — tech capex và hiring AI có thể thắt khi cost of capital tăng; builder nên chuẩn bị budget freeze scenario.",
-      "source": "https://www.forbes.com/sites/simonmoore/2026/06/08/fed-may-remove-easing-language-at-june-meeting-setting-up-a-potential-2026-hike/",
-      "tags": [
-        "fed rate",
-        "macro",
-        "inflation"
-      ],
-      "importance": 5,
-      "category": "macro"
-    },
-    {
-      "title": "Fintech Q1 2026: funding tăng 5% nhưng deal giảm 31% — tiền tập trung vào unicorn late-stage",
-      "summary": "Crunchbase: fintech global huy động 12B USD qua 751 deal đến đầu Q2, tăng 5% YoY nhưng deal giảm 31.5%. Late-stage chiếm 6.9B USD; Kalshi 1B ở 22B valuation, Vestwell 385M, Rain 250M stablecoin infra. Góc nhìn: VC chọn conviction bet lớn thay vì spray seed — founder fintech cần path to profitability rõ hơn growth story; AI application layer vẫn hot nhưng due diligence gắt hơn.",
-      "source": "https://news.crunchbase.com/fintech/global-startup-venture-funding-up-deals-down-q1-2026/",
+      "title": "JPM, BofA, Citi qua Clearing House sẽ ra mắt tokenized deposit network H1/2027",
+      "summary": "Các ngân hàng lớn Mỹ lập kế hoạch launch mạng tokenized deposit do The Clearing House vận hành (H1 2027): on-chain clearing/settlement 24/7 giữa banks, giữ deposit trong hệ thống ngân hàng truyền thống thay vì issuer stablecoin. Góc nhìn: TradFi đang on-chain hóa core settlement để giữ deposit; builder fintech/DeFi cần chuẩn bị interop và compliance giữa bank deposit token và stablecoin, đây là cạnh tranh trực tiếp chứ không chỉ bổ sung.",
+      "source": "https://www.coindesk.com/business/2026/06/06/america-s-largest-banks-are-building-a-new-digital-currency-network-to-stop-a-massive-deposit-drain",
       "tags": [
         "fintech",
-        "vc funding",
-        "startup"
+        "stablecoin",
+        "tokenization"
       ],
-      "importance": 4,
+      "importance": 5,
       "category": "fintech"
     },
     {
-      "title": "Morpho huy động 175M USD từ a16z crypto, Paradigm, Ribbit — DeFi lending tiến sát TradFi",
-      "summary": "Morpho (DeFi lending modular) huy động 175M USD, valuation ~2B USD. Protocol có 6.6B TVL, đang bắt kịp Aave; Coinbase, Kraken, Galaxy Digital đã dùng. Founder nhắm thêm institution TradFi vào DeFi yield. Góc nhìn: DeFi đang được VC và exchange validate như infra — nhưng security incident (Aave hack exposure) nhắc builder on-chain phải có risk buffer, không chỉ chase APY.",
-      "source": "https://fortune.com/2026/06/09/morpho-fundraise-a16z-crypto-paradigm-ribbit-capital-175-million/",
+      "title": "Bitcoin dao động ~61-62k USD, tương quan chặt với equity và nhạy macro",
+      "summary": "BTC trôi về vùng 61-62.5k sau attempt bounce, flow ETF hỗn hợp, di chuyển sát Nasdaq khi risk sentiment thay đổi. Góc nhìn: Crypto vẫn chủ yếu là high-beta risk asset; DeFi protocol và crypto product phải stress test với equity selloff + liquidity crunch, không chỉ dựa vào adoption narrative.",
+      "source": "https://www.coindesk.com/tech/2026/06/09/live-updates-bitcoin-drifts-back-to-usd62-500-putting-damper-on-hope-for-two-straight-up-days",
       "tags": [
-        "defi",
+        "bitcoin",
         "crypto",
-        "vc funding"
+        "macro"
       ],
       "importance": 4,
       "category": "crypto"
     },
     {
-      "title": "Visa, Mastercard đàm phán stablecoin platform với Stripe, Coinbase — thách thức Tether/Circle",
-      "summary": "Visa và Mastercard đang đàm phán với Stripe, Coinbase về stablecoin platform mới, theo CoinDesk. Thị trường stablecoin >300B USD; mục tiêu đưa token vào retail payment. Chưa có MOU chính thức, antitrust là rủi ro. Góc nhìn: Nếu consortium thành, payment rail crypto sẽ mainstream hơn — builder fintech nên theo dõi API/integration sớm, nhưng đừng bet product trên deal chưa chốt.",
-      "source": "https://fortune.com/crypto/2026/06/08/visa-mastercard-stripe-coinbase-stablecoin-platform/",
+      "title": "BPI: State stablecoin regime phải 'substantially similar' federal oversight",
+      "summary": "Bank Policy Institute yêu cầu state-level stablecoin regulatory regime cần tương đương federal (GENIUS Act) trước khi cho phép hoạt động rộng rãi. Góc nhìn: Clarity đang hình thành đa chiều; issuer và builder payment/stablecoin phải thiết kế compliance đa layer từ đầu, không bet vào một regime duy nhất.",
+      "source": "https://bpi.com/bpinsights-june-6-2026/",
       "tags": [
         "stablecoin",
         "fintech",
-        "payments"
+        "regulation"
       ],
-      "importance": 4,
+      "importance": 3,
       "category": "fintech"
     },
     {
-      "title": "Bitcoin ~62.6k USD ngày 9/6 — giảm 43% YoY, Ethereum ~1.678 USD trong bối cảnh macro căng",
-      "summary": "Bitcoin giao dịch ~62.640 USD sáng 9/6, giảm 1.45% trong ngày và 43% so với cùng kỳ năm trước. Ethereum ~1.678 USD. Thị trường chờ CPI tháng 5 (10/6) và Fed meeting 16-17/6. Góc nhìn: Crypto vẫn trade như risk asset trước macro — builder DeFi/on-chain product không nên giả định risk-on kéo dài; thiết kế cho volatility và liquidity crunch.",
-      "source": "https://fortune.com/article/price-of-bitcoin-06-09-2026/",
+      "title": "US Treasury sanction Nobitex và sàn crypto Iran vì hỗ trợ regime né tránh trừng phạt",
+      "summary": "OFAC sanction Nobitex (sàn lớn Iran) cùng vài nền tảng khác vì hỗ trợ chính phủ dùng stablecoin boost nội tệ và tài trợ IRGC. Góc nhìn: On-chain analytics + compliance screening là bắt buộc cho mọi player crypto/fintech; builder 'decentralized' vẫn cần travel rule và sanctions readiness để tránh secondary exposure.",
+      "source": "https://home.treasury.gov/news/press-releases/sb0519",
       "tags": [
-        "bitcoin",
-        "ethereum",
-        "macro"
+        "crypto",
+        "sanction",
+        "compliance"
       ],
       "importance": 3,
       "category": "crypto"
     }
   ],
   "expUpdate": {
-    "summary": "Snapshot kỹ năng: thiết kế model routing và cost control cho agent workflow trên cloud LLM platform.",
+    "summary": "Củng cố năng lực thiết kế và vận hành agentic workflow production-ready trên AWS với trọng tâm governance, cost control và stateful execution.",
     "skills": [
-      "LLM model routing",
-      "AI cost observability",
-      "Agent workflow orchestration",
-      "AWS Bedrock integration"
+      "Agentic orchestration with Step Functions",
+      "AWS serverless agent deployment",
+      "Production governance & budget for agents",
+      "Cost-aware multi-step agent design"
     ],
     "highlights": [
-      "Thiết kế lớp model routing tách task classifier, escalation tier và budget cap — áp dụng cho agent đa bước trên managed LLM runtime.",
-      "Tối ưu inference cost bằng semantic cache, context pruning và tier selection có eval dataset — giữ quality ceiling cho bước high-risk.",
-      "Triển khai observability pipeline ghi token spend, model tier và outcome per step — hỗ trợ cost-per-task metric thay vì chỉ cost-per-call."
+      "Thiết kế workflow agentic có human approval gate, tool scoping và per-execution budget cap để giảm rủi ro side-effect không mong muốn.",
+      "Triển khai observability và trace kết hợp Step Functions execution + AgentCore reasoning steps nhằm đo cost-per-outcome thay vì chỉ token usage.",
+      "Tối ưu loop agent bằng routing tier, semantic cache và session shell scoping — giữ latency và spend trong ngưỡng cho phép ở production."
     ]
   },
-  "blog.en": {
-    "slug": "2026-06-10-llm-cost-optimization-model-routing-ai-agent",
-    "title": "LLM Cost Optimization for AI Agents: Real-World Model Routing Trade-offs",
-    "excerpt": "Are you burning tokens unnecessarily? A hands-on guide to LLM cost optimization and model routing for AI agents — real trade-offs on AWS Bedrock.",
-    "contentMarkdown": "## The Concrete Problem\n\nThis week brought two conflicting signals pointing to the same issue: **LLM costs are becoming a real bottleneck**, no longer just a secondary line item.\n\nGoogle cut Google AI Plus to $4.99/month — commoditized subscriptions have reached the US market. At the same time, Harvey + Fireworks announced a 3x reduction in inference costs using model routing: Claude Opus for heavy tasks, GLM 5.1 for the rest, without sacrificing legal quality. Brian Armstrong predicts that 80% of workloads will run on cheaper models within 12–18 months.\n\nWith a NestJS + AWS Bedrock stack and experience building agent workflows, it's time for teams to answer a specific technical question: **how do you route models without causing silent agent failures?**\n\n## Why Multi-Step Agents Burn Tokens Faster Than Chatbots?\n\nAgents differ from chatbots in that each step equals one inference call (or more if reflection, re-planning, or tool retries are involved). An 8-step workflow using Claude Opus can cost 10–20x more than a simple Q&A — not to mention the context window ballooning as the agent stuffs tool outputs into history.\n\nHarvey's tests revealed the key insight: **not every step requires a frontier model**. Legal research demands deep reasoning; formatting output, classifying intent, or summarizing logs can use models 10–50x cheaper.\n\nReal-world trade-offs:\n\n- **Quality ceiling**: Cheaper models fail on edge cases — misrouting a single critical step breaks the entire pipeline.\n- **Latency**: Multi-model routing adds hops (classifier → router → model) — it can be slower than single-model routing without caching.\n- **Complexity**: Router logic, fallback mechanisms, and eval datasets — non-trivial engineering overhead.\n\n## How Model Routing Works on AWS Bedrock\n\nCommon pattern on Bedrock/NestJS:\n\n1. **Task classifier** (small model or rule-based): classifies the current step — retrieval, reasoning, formatting, tool selection.\n2. **Router**: maps task type → model tier (e.g., Haiku/Sonnet/Opus or open-weight models on Fireworks).\n3. **Escalation**: if confidence is low or eval score falls below threshold → escalate to a higher tier.\n4. **Observability**: log the model used, tokens in/out, and cost per step in CloudWatch — you can't optimize what you don't measure.\n\nWith EventBridge + Lambda, you can extract routing into an independent service: the agent calls `POST /infer` with `taskType` and `riskLevel`, and the router decides the model. High-risk actions (writing to DB, sending emails) always use the high tier plus human approval.\n\nAn often-overlooked point: **semantic caching** for retrieval and classification — the same query repeated in a session doesn't need re-inference.\n\n## ROI Comparison: Token Cost or Engineer Time?\n\nBoris Cherny (Claude Code) stated plainly at Brainstorm Tech: don't compare AI cost against a $20/month plan — compare it to **the cost of an engineer doing the same work**. A developer rewriting a codebase in 6 days instead of a year delivers clear ROI even with a high token bill.\n\nBut that's for a coding agent with measurable output. Production agents (customer support, data pipelines, ops) require different metrics:\n\n- Cost per successful task (not cost per call)\n- Escalation rate (what % requires human intervention)\n- Error rate by model tier\n\nIf model routing cuts cost 3x but doubles the error rate, you are **not saving money** — you're just shifting costs to support and rework.\n\n## When to (and When Not to) Use Cheaper Models\n\n**Route to cheaper models when:**\n\n- The task has a fixed output format (JSON schema, classification labels)\n- You have a sufficiently large eval dataset to A/B test quality\n- The workflow has a \"draft → review\" pattern — draft cheap, review expensive\n- High volume with thin margins (fintech, legal, ops automation)\n\n**Don't (or not yet) when:**\n\n- You lack observability — you don't know which steps consume the most tokens\n- The domain is high-stakes (compliance, medical, financial advice) without human-in-the-loop safeguards\n- Your team is just shipping its first agent — optimize after establishing baseline metrics, not before you have a product\n\n## A Pragmatic Conclusion\n\nLLM cost optimization isn't about \"picking the cheapest model\" — it's **routing architecture with evaluation and escalation built in**. Google slashed subscription prices, Harvey cut inference costs 3x — the same narrative: AI capabilities are commoditizing, and the margin goes to those who know **how to use the right model for the right step**.\n\n**Do this now:**\n\n- Instrument every agent step: model, tokens, cost, outcome\n- Build a task classifier + router decoupled from business logic\n- A/B test at least two tiers on 100+ real samples before removing Opus from the pipeline\n- Set per-session/workflow budget caps — kill-switches that trigger when thresholds are exceeded\n\n**Don't:**\n\n- Swap everything to cheaper models just because you read a headline claiming \"80% of workloads\" — the remaining 20% often delivers 80% of the value\n- Compare your AI bill to a SaaS subscription — compare it to engineer time or cost-per-outcome\n- Ignore supply chain security (see this week's Microsoft GitHub hack) when integrating open-source inference stacks\n\nModel routing is a system optimization, not a prompt trick. Teams with router + eval + observability in place early will survive commoditization — those without will keep paying premium token prices until finance cuts the budget.",
-    "tags": [
-      "llm cost optimization",
-      "model routing",
-      "ai agent",
-      "aws bedrock",
-      "claude api"
-    ],
-    "readingTimeMin": 5,
-    "coverKeywords": [
-      "model routing topology",
-      "cost gradient",
-      "deep space inference"
-    ]
-  },
-  "blog.ja": {
-    "slug": "2026-06-10-llm-cost-optimization-model-routing-ai-agent",
-    "title": "AIエージェント向けLLMコスト最適化：モデルルーティングの実践的なトレードオフ",
-    "excerpt": "トークンを無駄に消費していませんか？AIエージェントのLLMコスト最適化とモデルルーティング — AWS Bedrockでのスケール時の実践的なトレードオフを解説。",
-    "contentMarkdown": "## 具体的な問題\n\n今週、相反する2つのシグナルが同じ問題を示した。**LLMコストが本当のボトルネックになりつつある**ということだ。もはや二次的な項目ではない。\n\nGoogleはGoogle AI Plusを月額$4.99に値下げした——サブスクリプションのコモディティ化が米国市場に到達した。同時に、HarveyとFireworksはモデルルーティングによりインファレンスコストを3分の1に削減したと発表した。重いタスクにはClaude Opus、それ以外にはGLM 5.1を使い、legal領域の品質を落とさずに実現している。Brian Armstrongは、12〜18ヶ月以内にワークロードの80%が安価なモデルで実行されると予測している。\n\nNestJSとAWS Bedrockのスタックでエージェントワークフローを構築してきた経験から、チームが今答えるべき具体的な技術的課題はこれだ。**エージェントをサイレントに失敗させずに、どのようにモデルをルーティングするか？**\n\n## なぜ多段階エージェントはチャットボットよりトークンを速く消費するのか？\n\nエージェントとチャットボットの違いは、各ステップが1回のインファレンスコール（またはreflection、re-planning、tool retryがある場合はそれ以上）に相当することだ。Claude Opusを使った8ステップのワークフローは、単純なQ&Aの10〜20倍のコストになり得る——エージェントがツール出力を履歴に詰め込むことでコンテキストウィンドウが膨張することを考えると尚更だ。\n\nHarveyのテストで明らかになった核心は、**すべてのステップがフロンティアモデルを必要とするわけではない**ということだ。Legal researchには深い推論が必要だが、出力のフォーマット、インテントの分類、ログの要約などは、10〜50倍安いモデルで十分な場合が多い。\n\n現実的なトレードオフ：\n\n- **Quality ceiling**: 安価なモデルはエッジケースで失敗する——重要なステップ1つを誤ってルーティングすれば、パイプライン全体が破綻する。\n- **Latency**: マルチモデルルーティングはホップを追加する（classifier → router → model）。キャッシュがなければ、シングルモデルより遅くなる可能性がある。\n- **Complexity**: ルーターのロジック、フォールバック、評価データセット——エンジニアリングのオーバーヘッドは小さくない。\n\n## AWS Bedrock上でモデルルーティングはどのように動作するのか？\n\nBedrock/NestJSでよく見られるパターン：\n\n1. **Task classifier**（小型モデルまたはルールベース）：現在のステップを分類する——retrieval、reasoning、formatting、tool selection。\n2. **Router**: タスクタイプをモデルティアにマッピングする（例: Haiku/Sonnet/Opus、またはFireworks上のオープンウェイトモデル）。\n3. **Escalation**: confidenceが低い場合、またはevalスコアが閾値を下回った場合 → 上位ティアへエスカレーション。\n4. **Observability**: 使用したモデル、トークン入出力、ステップごとのコストをCloudWatchに記録する——測定しなければ最適化できない。\n\nEventBridge + Lambdaを使えば、ルーティングを独立したサービスとして切り出せる。エージェントは `taskType` と `riskLevel` を付けて `POST /infer` を呼び、ルーターがモデルを決定する。高リスクアクション（DB書き込み、メール送信）は常に高ティア＋人間承認を使う。\n\n見落とされがちなポイント：retrievalやclassificationに対する**セマンティックキャッシュ**だ。セッション内で同じクエリが繰り返される場合、再推論は不要である。\n\n## ROI比較：トークンコストかエンジニアタイムか？\n\nBoris Cherny（Claude Code）はBrainstorm Techで率直に述べた。AIコストを月額20ドルのプランと比較してはならない——**同じ作業をエンジニアが行う場合のコスト**と比較せよ。開発者が1年かけて行うコードベースの書き換えを6日で完了させる——トークン代が高くてもROIは明確だ。\n\nただし、これは出力が測定可能なコーディングエージェントの場合だ。プロダクションエージェント（カスタマーサポート、データパイプライン、運用）には別のメトリクスが必要になる：\n\n- 成功したタスクあたりのコスト（コールあたりのコストではない）\n- エスカレーション率（人間介入が必要になる割合）\n- モデルティア別のエラーレート\n\nモデルルーティングでコストが3分の1になっても、エラーレートが2倍になったら、**節約にはならない**。サポートと手戻りにコストを移しただけだ。\n\n## いつ安価なモデルを使うべきか（そして使わないべきか）？\n\n**安価なモデルへルーティングすべき場合：**\n\n- 出力フォーマットが固定されているタスク（JSON schema、classification label）\n- 品質をA/Bテストするための十分に大きなevalデータセットがある\n- ワークフローに「下書き → レビュー」のパターンがある——下書きは安く、レビューは高く\n- ボリュームが高くマージンが薄い領域（fintech、legal、運用自動化）\n\n**（まだ）使うべきでない場合：**\n\n- オブザーバビリティが整っていない——どのステップがトークンを最も消費しているかわからない\n- コンプライアンス、医療、金融アドバイスなどハイステークスなドメインで、human-in-the-loopが確立されていない\n- チームが初めてエージェントをリリースする段階——ベースラインメトリクスを確立した後で最適化せよ。プロダクトができる前に最適化してはならない\n\n## 実践的な結論\n\nLLMコスト最適化は「最も安いモデルを選ぶ」ことではない。それは**評価とエスカレーションを備えたルーティングアーキテクチャ**を構築することだ。Googleがサブスクリプション価格を切り下げ、Harveyがインファレンスコストを3分の1にした——同じ物語である。AIの能力はコモディティ化しつつあり、マージンは**正しいステップに正しいモデルを使う**ことを知る者に帰属する。\n\n**今すぐやるべきこと：**\n\n- すべてのエージェントステップを計装する：モデル、トークン、コスト、アウトカム\n- ビジネスロジックから切り離されたタスク分類器＋ルーターを構築する\n- パイプラインからOpusを外す前に、少なくとも2つのティアを100件以上の実サンプルでA/Bテストする\n- セッション/ワークフローごとの予算上限を設定する——閾値を超えたときに発動するキルスイッチ\n\n**やってはいけないこと：**\n\n- 「ワークロードの80%」という見出しを読んだだけで全部を安価なモデルに置き換える——残りの20%がしばしば価値の80%を生む\n- AIの請求額をSaaSサブスクリプションと比較する——エンジニアタイムやアウトカムあたりのコストと比較せよ\n- オープンソースのインファレンススタックを統合する際に、サプライチェーンセキュリティを無視する（今週のMicrosoft GitHubハック参照）\n\nモデルルーティングはシステム最適化であって、プロンプトのトリックではない。ルーター＋評価＋オブザーバビリティを早期に整えたチームはコモディティ化を生き残る——そうでないチームは、ファイナンスが予算を止めるまでプレミアムなトークン代を払い続けることになる。",
-    "tags": [
-      "LLMコスト最適化",
-      "モデルルーティング",
-      "AIエージェント",
-      "AWS Bedrock",
-      "Claude API"
-    ],
-    "readingTimeMin": 5,
-    "coverKeywords": [
-      "model routing topology",
-      "cost gradient",
-      "deep space inference"
-    ]
+  "linkedin": {
+    "posted": true,
+    "postedAt": "2026-06-10T15:49:10.893Z",
+    "urn": "urn:li:share:7470502329209864192"
   }
 }
