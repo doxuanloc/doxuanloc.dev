@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /**
  * Posts today's blog to LinkedIn via ugcPosts API.
+ * Generates animated GIF card (orbital pulse) for LinkedIn attachment.
+ * Saves static PNG as blog cover image (public/images/blog/{slug}.png).
  * Reads LINKEDIN_* from .env, guards against missing blog or duplicate post,
  * refreshes access token, builds post text, calls API, marks JSON on success.
  *
@@ -9,6 +11,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { generateCoverPng, generateCoverGif, saveBlogCover } from "./linkedin-card.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const today = new Date().toISOString().slice(0, 10);
@@ -169,19 +172,66 @@ async function fetchPersonUrn(accessToken) {
   return `urn:li:person:${data.sub}`;
 }
 
-async function postUgc(text, authorUrn, accessToken) {
+async function uploadImageToLinkedIn(buffer, mimeType, accessToken, ownerUrn) {
+  // Step 1: register upload
+  const regBody = {
+    registerUploadRequest: {
+      recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+      owner: ownerUrn,
+      serviceRelationships: [{
+        relationshipType: "OWNER",
+        identifier: "urn:li:userGeneratedContent",
+      }],
+    },
+  };
+
+  const regRes = await fetch("https://api.linkedin.com/v2/assets?action=registerUpload", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      "X-Restli-Protocol-Version": "2.0.0",
+      "LinkedIn-Version": LINKEDIN_VERSION,
+    },
+    body: JSON.stringify(regBody),
+  });
+
+  if (!regRes.ok) throw new Error(`registerUpload failed (${regRes.status})`);
+  const reg = await regRes.json();
+  const uploadUrl = reg.value.uploadMechanism["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"].uploadUrl;
+  const assetUrn  = reg.value.asset;
+
+  // Step 2: upload binary (no Authorization header — URL is pre-signed)
+  const upRes = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: { "Content-Type": "application/octet-stream" },
+    body: buffer,
+  });
+
+  if (!upRes.ok) throw new Error(`Image upload failed (${upRes.status})`);
+  return assetUrn;
+}
+
+async function postUgc(text, authorUrn, accessToken, imageAssetUrn = null) {
+  const shareContent = {
+    shareCommentary: { text },
+    shareMediaCategory: imageAssetUrn ? "IMAGE" : "NONE",
+  };
+
+  if (imageAssetUrn) {
+    shareContent.media = [{
+      status: "READY",
+      description: { text: "" },
+      media: imageAssetUrn,
+      title: { text: "" },
+    }];
+  }
+
   const body = {
     author: authorUrn,
     lifecycleState: "PUBLISHED",
-    specificContent: {
-      "com.linkedin.ugc.ShareContent": {
-        shareCommentary: { text },
-        shareMediaCategory: "NONE",
-      },
-    },
-    visibility: {
-      "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
-    },
+    specificContent: { "com.linkedin.ugc.ShareContent": shareContent },
+    visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
   };
 
   const res = await fetch("https://api.linkedin.com/v2/ugcPosts", {
@@ -251,12 +301,48 @@ async function main() {
     }
   }
 
+  // ── generate visuals ──────────────────────────────────────────────────────
+
+  // PNG → save as blog cover (for the site)
+  let coverPath = null;
+  try {
+    console.log("LinkedIn: generating cover PNG...");
+    const png = await generateCoverPng(data.blog);
+    coverPath = saveBlogCover(data.blog, png);
+    data.blog.coverImage = coverPath;
+    console.log(`LinkedIn: cover saved → ${coverPath}`);
+  } catch (err) {
+    console.warn(`LinkedIn: cover PNG failed — ${err.message}`);
+  }
+
+  // GIF → animated card for LinkedIn (fallback to PNG)
+  let imageAssetUrn = null;
+  try {
+    console.log("LinkedIn: generating animated GIF card (3 frames)...");
+    const gif = await generateCoverGif(data.blog);
+    console.log(`LinkedIn: uploading GIF (${Math.round(gif.length / 1024)}KB)...`);
+    imageAssetUrn = await uploadImageToLinkedIn(gif, "image/gif", accessToken, personUrn);
+    console.log(`LinkedIn: GIF uploaded — ${imageAssetUrn}`);
+  } catch (err) {
+    // Fallback: try PNG if GIF fails
+    console.warn(`LinkedIn: GIF failed (${err.message}) — trying PNG fallback...`);
+    try {
+      const png = await generateCoverPng(data.blog);
+      imageAssetUrn = await uploadImageToLinkedIn(png, "image/png", accessToken, personUrn);
+      console.log(`LinkedIn: PNG fallback uploaded — ${imageAssetUrn}`);
+    } catch (err2) {
+      console.warn(`LinkedIn: image upload failed — posting text-only. (${err2.message})`);
+    }
+  }
+
+  // ── post ──────────────────────────────────────────────────────────────────
+
   const postText = buildPostText(data.blog);
   console.log(`LinkedIn: posting "${data.blog.title}" (${postText.length} chars)...`);
 
   let result;
   try {
-    result = await postUgc(postText, personUrn, accessToken);
+    result = await postUgc(postText, personUrn, accessToken, imageAssetUrn);
   } catch (err) {
     console.error(`LinkedIn: network error — ${err.message}`);
     return;
@@ -275,6 +361,8 @@ async function main() {
     posted: true,
     postedAt: new Date().toISOString(),
     urn: result.shareUrn ?? null,
+    hasImage: !!imageAssetUrn,
+    imageAssetUrn: imageAssetUrn ?? null,
   };
   writeDailyJson(today, data);
 

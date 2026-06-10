@@ -8,3 +8,4 @@ dist/
 .vercel
 public/images/me/
 tmp_translations/
+tmp/
