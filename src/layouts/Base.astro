@@ -25,7 +25,7 @@ const t = useTranslations(lang);
 const profile = getProfile(lang);
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const basePath = path.replace(/^\/vi(?=\/|$)/, '') || '/'; // path không gồm locale
+const basePath = path.replace(/^\/(vi|ja)(?=\/|$)/, '') || '/'; // strip lang prefix → logical path
 const fullTitle = title ? `${title} · ${profile.identity.nameEn}` : `${profile.identity.nameEn} · ${profile.identity.title}`;
 const desc = description ?? profile.summary;
 const site = Astro.site ?? new URL('https://doxuanloc.space');
