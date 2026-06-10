@@ -98,37 +98,55 @@ function extractBullets(contentMarkdown, maxBullets = 3) {
 }
 
 function buildHashtags(tags = []) {
-  const fromTags = tags.slice(0, 4).map(
-    t => "#" + t.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("")
-  );
-  const evergreen = ["#SystemDesign", "#Engineering", "#AI"];
-  return [...new Set([...fromTags, ...evergreen])].slice(0, 7).join(" ");
+  return tags.slice(0, 4)
+    .map(t => "#" + t.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(""))
+    .join(" ");
 }
 
 function buildPostText(blog) {
-  const { title, excerpt, contentMarkdown, tags, slug } = blog;
+  const { title, excerpt, contentMarkdown, tags, slug, linkedinPost } = blog;
   const url = `${BLOG_BASE_URL}${slug}/`;
 
-  const hook = title.length <= 120 ? title : title.slice(0, 117) + "...";
-  const excerptLine = excerpt
-    ? excerpt.slice(0, 180) + (excerpt.length > 180 ? "..." : "")
-    : "";
+  // Use Grok-generated post if available — inject canonical URL
+  if (linkedinPost && linkedinPost.trim().length > 100) {
+    const post = linkedinPost
+      .replace(/https?:\/\/doxuanloc\.space\/blog\/[^\s)]*/g, url) // normalize URL
+      .trim();
+    return post.length > 2800 ? post.slice(0, 2797) + "..." : post;
+  }
 
-  const bullets = contentMarkdown ? extractBullets(contentMarkdown) : [];
+  // Fallback: extract key findings from "Kết Luận" or "Nên làm" section
+  const findings = extractFindings(contentMarkdown ?? "");
+  const hashtags = buildHashtags(tags);
+  const hook = (excerpt ?? title).split(/[.!?]/)[0].trim();
 
-  let post = `🚀 ${hook}\n\n`;
-  if (excerptLine) post += `${excerptLine}\n\n`;
-  if (bullets.length > 0) {
-    post += "Thực tế khi scale:\n";
-    for (const b of bullets) post += `• ${b}\n`;
+  let post = `${hook}\n\n`;
+  if (findings.length > 0) {
+    for (const f of findings) post += `→ ${f}\n`;
     post += "\n";
   }
-  post += `Phân tích chi tiết: ${url}\n\n`;
-  post += "Bạn đang xử lý vấn đề này như thế nào? Comment bên dưới 👇\n\n";
-  post += buildHashtags(tags);
+  post += `Chi tiết: ${url}\n\n`;
+  post += hashtags;
 
-  // Safety truncate (LinkedIn limit ~3000)
   return post.length > 2800 ? post.slice(0, 2797) + "..." : post;
+}
+
+function extractFindings(md) {
+  const findings = [];
+  // Priority 1: lines starting with → in the markdown
+  const arrowLines = (md.match(/^→.+$/gm) ?? []).slice(0, 3);
+  if (arrowLines.length >= 2) {
+    return arrowLines.map(l => l.replace(/^→\s*/, "").replace(/\*\*/g, "").trim().slice(0, 100));
+  }
+  // Priority 2: bullet items after "Nên làm" / "Kết Luận" / "Thực tế"
+  const conclusionMatch = md.match(/(?:nên làm|kết luận|thực dụng|takeaway)[^\n]*\n([\s\S]{0,800})/i);
+  const section = conclusionMatch ? conclusionMatch[1] : md.slice(-800);
+  const bullets = section.match(/^[-*•]\s+.+$/gm) ?? [];
+  for (const b of bullets.slice(0, 3)) {
+    const clean = b.replace(/^[-*•]\s+/, "").replace(/\*\*/g, "").trim();
+    if (clean.length > 20) findings.push(clean.slice(0, 100));
+  }
+  return findings;
 }
 
 // ── LinkedIn API ──────────────────────────────────────────────────────────────

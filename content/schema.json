@@ -131,6 +131,11 @@
             "type": "string",
             "maxLength": 40
           }
+        },
+        "linkedinPost": {
+          "type": ["string", "null"],
+          "maxLength": 1200,
+          "description": "Pre-crafted LinkedIn post text. Hook + 3 insight bullets + link + hashtags. Vietnamese. ~600-900 chars."
         }
       }
     },

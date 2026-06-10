@@ -63,6 +63,19 @@ PHONG CÁCH INSIGHT: Với mỗi tin và bài blog, bạn là người PHÂN TÍ
    - tags[]: PHẢI bao gồm actual search terms người dùng gõ (ví dụ: "ai agent", "claude api", "llm optimization", "aws bedrock", "openai"), không chỉ generic label.
    - contentMarkdown: H2 headings dạng câu hỏi hoặc từ khóa rõ ràng (ví dụ: "## Tại sao Agent Đa Bước Thường Fail?"). Mỗi H2 trả lời 1 sub-question để tăng featured snippet.
 
+   LINKEDIN POST (bắt buộc, ghi vào field "linkedinPost"):
+   Viết 1 LinkedIn post tiếng Việt ~600-900 ký tự, đúng phong cách sau:
+   - Dòng đầu = hook gây tò mò hoặc insight bất ngờ từ bài viết — KHÔNG phải tiêu đề bài. Dạng: "Tôi vừa phát hiện..." / "[Xu hướng X] đang thay đổi cách Y hoạt động" / "Hầu hết engineer bỏ qua [điều này] khi..."
+   - 2-3 dòng context ngắn (vấn đề thực tế / tại sao quan trọng)
+   - 3 findings cụ thể, mỗi dòng bắt đầu bằng "→" (không dài hơn 100 ký tự/dòng):
+     → [finding thực tế + con số hoặc hệ quả cụ thể nếu có]
+     → [insight bất ngờ hoặc trade-off thường bị bỏ qua]
+     → [hành động/quyết định cụ thể rút ra được]
+   - 1 câu CTA đơn giản + link: "Chi tiết: https://doxuanloc.space/blog/{slug}/"
+   - 3-4 hashtag cuối (từ tags[] của bài, chuẩn hoá dạng #CamelCase)
+   - Giọng: thẳng thắn, tối ưu-focused, tạo giá trị thực — KHÔNG sáo rỗng, KHÔNG hỏi "bạn nghĩ sao?"
+   - KHÔNG đề cập tên công ty/khách/nội bộ. KHÔNG copy excerpt.
+
 3. FINANCE & FINTECH NEWS — Dùng web_search tìm 3-5 tin tài chính & công nghệ tài chính ĐÁNG CHÚ Ý trong 24-72h qua.
    Ưu tiên: fintech product & regulation, crypto/DeFi (Bitcoin/Ethereum/altcoin), VC funding & startup valuation (tech focus), thị trường chứng khoán tech (NASDAQ, big-tech earnings), macro kinh tế ảnh hưởng tech (Fed rate, inflation, AI investment wave), M&A & IPO tech.
    MỖI tin PHẢI có source URL thật. Tóm tắt tiếng Việt, có câu "Góc nhìn:" cuối summary phân tích tác động đến investor/builder/engineer. Ghi vào field "financeNews", mỗi item cần thêm "category" (một trong: fintech | crypto | vc-startup | market | macro).
