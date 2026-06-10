@@ -157,6 +157,12 @@ const id = getProfile(lang).identity;
     box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
     transition: box-shadow 0.5s ease;
   }
+  .w-overlay.locking .r3 {
+    border-color: color-mix(in srgb, var(--accent-3) 38%, transparent);
+    box-shadow: 0 0 32px color-mix(in srgb, var(--accent) 14%, transparent),
+                0 0 90px color-mix(in srgb, var(--accent-2) 7%, transparent);
+    transition: box-shadow 0.9s ease, border-color 0.9s ease;
+  }
   /* Mobile: only outermost ring as subtle halo */
   @media (max-width: 700px) {
     .r1 { display: none; }
@@ -381,8 +387,8 @@ const id = getProfile(lang).identity;
 </style>
 
 <script>
-  const DURATION = 3200;
-  const MIN_TIME = 2800;
+  const DURATION = 3000;
+  const MIN_TIME = 2600;
 
   const PHASES = [
     { t: 800,  text: 'ACQUIRING SIGNAL…' },
@@ -439,10 +445,25 @@ const id = getProfile(lang).identity;
     PHASES.forEach(({ t, text, lock, glitch }) => {
       setTimeout(() => {
         if (status) status.textContent = text;
-        if (lock) overlay.classList.add('locking');
-        if (glitch && chroma) {
-          chroma.classList.add('w-glitch');
-          setTimeout(() => chroma.classList.remove('w-glitch'), 130);
+        if (lock) {
+          overlay.classList.add('locking');
+          const mark = overlay.querySelector<HTMLElement>('.w-mark');
+          if (mark) {
+            mark.style.transition = 'transform 0.25s cubic-bezier(0.16,1,0.3,1)';
+            mark.style.transform = 'scale(1.07)';
+            setTimeout(() => { mark.style.transform = ''; setTimeout(() => { mark.style.transition = ''; }, 260); }, 250);
+          }
+        }
+        if (glitch) {
+          if (chroma) {
+            chroma.classList.add('w-glitch');
+            setTimeout(() => chroma.classList.remove('w-glitch'), 130);
+          }
+          if (status) {
+            status.style.cssText = 'color:var(--accent-2);text-shadow:0 0 14px var(--accent-2);transition:color 0.8s ease,text-shadow 0.8s ease';
+            setTimeout(() => { if (status) status.style.cssText = ''; }, 900);
+          }
+          if (navigator.vibrate) navigator.vibrate(18);
         }
       }, t);
     });
@@ -456,8 +477,9 @@ const id = getProfile(lang).identity;
       sessionStorage.setItem('welcomed', '1');
       document.body.style.overflow = '';
       spawnBurst(overlay);
+      window.dispatchEvent(new CustomEvent('welcome-exit'));
       overlay.classList.add('w-exit');
-      setTimeout(() => overlay.classList.add('w-gone'), 520);
+      setTimeout(() => overlay.classList.add('w-gone'), 450);
     }
 
     setTimeout(() => dismiss(true), DURATION);

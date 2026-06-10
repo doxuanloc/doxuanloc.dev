@@ -271,6 +271,40 @@ const caps = lang === 'vi' ? [
     display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
   }
 
+  /* ── P1: INGRESS LOCK — hero waits for welcome handoff ── */
+  .hero-body[data-ingress] [data-reveal] {
+    opacity: 0 !important;
+    transform: translateY(24px) !important;
+    transition: none !important;
+  }
+
+  /* ── P2: RULE DRAW-IN ───────────────────────────────── */
+  .hero-rule .rule-long {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.65s cubic-bezier(0.16,1,0.3,1) calc(var(--reveal-delay, 148ms) + 80ms);
+  }
+  .hero-rule.in .rule-long { transform: scaleX(1); }
+
+  /* ── P2: NAME SCALE SETTLE ──────────────────────────── */
+  .hero-name .grad {
+    display: inline-block;
+    transform: scale(0.975);
+    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1) calc(var(--reveal-delay, 80ms) + 110ms);
+  }
+  .hero-name.in .grad { transform: scale(1); }
+
+  /* ── P3: TELEMETRY LOCK FLASH ───────────────────────── */
+  .tele-val.tele-locked {
+    color: var(--accent) !important;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-rule .rule-long { transform: scaleX(1); transition: none; }
+    .hero-name .grad { transform: scale(1); transition: none; }
+  }
+
   /* ── RESPONSIVE ─────────────────────────────────── */
   @media (max-width: 599px) {
     .hero-section { padding: 72px 0 56px; }
@@ -284,5 +318,55 @@ const caps = lang === 'vi' ? [
   document.addEventListener('astro:page-load', () => {
     const v = document.querySelector<HTMLVideoElement>('.hero-bg-video');
     if (v) v.play().catch(() => {});
+
+    // P1: orchestrated ingress — lock hero until welcome overlay exits (first visit only)
+    const heroBody = document.querySelector<HTMLElement>('.hero-body');
+    if (heroBody && !sessionStorage.getItem('welcomed')) {
+      heroBody.dataset.ingress = 'pending';
+      window.addEventListener('welcome-exit', () => {
+        heroBody.removeAttribute('data-ingress');
+      }, { once: true });
+    }
+
+    // P3: telemetry count-up on reveal
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const tele = document.querySelector<HTMLElement>('.hero-telemetry');
+      if (tele) {
+        const vals = Array.from(tele.querySelectorAll<HTMLElement>('.tele-val'));
+        const targets = vals.map(v => {
+          const n = parseInt(v.textContent ?? '0', 10);
+          v.textContent = '0';
+          return n;
+        });
+        let fired = false;
+        const mo = new MutationObserver(() => {
+          if (!tele.classList.contains('in') || fired) return;
+          fired = true;
+          mo.disconnect();
+          setTimeout(() => {
+            const DUR = 400;
+            vals.forEach((el, i) => {
+              const target = targets[i];
+              let t0: number | null = null;
+              setTimeout(() => {
+                function step(ts: number) {
+                  if (t0 === null) t0 = ts;
+                  const p = Math.min((ts - t0) / DUR, 1);
+                  el.textContent = String(Math.round(p * target));
+                  if (p < 1) { requestAnimationFrame(step); }
+                  else {
+                    el.textContent = String(target);
+                    el.classList.add('tele-locked');
+                    setTimeout(() => el.classList.remove('tele-locked'), 150);
+                  }
+                }
+                requestAnimationFrame(step);
+              }, i * 50);
+            });
+          }, 314);
+        });
+        mo.observe(tele, { attributes: true, attributeFilter: ['class'] });
+      }
+    }
   });
 </script>
