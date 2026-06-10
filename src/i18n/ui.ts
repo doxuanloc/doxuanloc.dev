@@ -1,5 +1,5 @@
-// i18n — EN mặc định, VI tuỳ chọn. Chuỗi chrome (UI) song ngữ.
-export const languages = { en: 'EN', vi: 'VI' } as const;
+// i18n — EN mặc định, VI + JA tuỳ chọn. Chuỗi chrome (UI) đa ngữ.
+export const languages = { en: 'EN', vi: 'VI', ja: 'JA' } as const;
 export type Lang = keyof typeof languages;
 export const defaultLang: Lang = 'en';
 
@@ -89,6 +89,93 @@ export const ui = {
     'notfound.body': 'This page does not exist or has moved. Head home or explore the latest below.',
     'notfound.home': 'Back home',
     'notfound.latestBlog': 'Latest blog',
+    'notfound.radar': 'Tech radar',
+  },
+  ja: {
+    'nav.home': 'ホーム',
+    'nav.journey': 'キャリア',
+    'nav.experience': '経験',
+    'nav.blog': 'ブログ',
+    'nav.news': 'ニュース',
+    'nav.about': '自己紹介',
+    'footer.tagline': '毎日自動更新 · Grok × Claude · Astro',
+    'footer.built': 'Astroで構築。',
+    'skip': 'コンテンツへ',
+    'hero.years': '{n}年以上の経験',
+    'hero.cta1': 'キャリアを見る →',
+    'hero.cta2': '経験',
+    'hero.skills': '+{n}スキル',
+    'home.manifesto.l1': 'アーキテクトを超えて生き残るシステムを。',
+    'home.manifesto.l2': 'AIは後付けでなく、設計に織り込む。',
+    'home.manifesto.l3': 'コストを回収するインフラを。',
+    'home.solve.eyebrow': '解決する課題',
+    'home.solve.title': '得意な領域',
+    'home.solve.sub': '実課題、実アプローチ。',
+    'home.skills.eyebrow': 'Tech DNA',
+    'home.skills.title': 'フルスタックからAIまで',
+    'home.skills.sub': 'UIから推論パイプラインまで、本番で鍛えた技術スタック。',
+    'home.skills.total': '{g}領域 · {n}スキル',
+    'home.focus.eyebrow': '現在のミッション',
+    'home.focus.cta': 'ロードマップを見る →',
+    'home.journey.eyebrow': 'キャリア軌跡',
+    'home.journey.title': '{n}マイルストーン · 1つの軌跡',
+    'home.journey.cta': 'キャリアを探索する →',
+    'home.blog.eyebrow': 'ブログ',
+    'home.blog.title': '最新記事',
+    'home.news.eyebrow': 'Tech radar',
+    'home.news.title': 'テックニュース（Grok自動更新）',
+    'common.all': 'すべて ↗',
+    'common.readmin': '{n}分で読める',
+    'roadmap.eyebrow': 'Trajectory // Roadmap',
+    'roadmap.title': '今後のロードマップ',
+    'roadmap.sub': 'AIコアから遠い地平線へ。',
+    'status.done': '完了',
+    'status.in-progress': '進行中',
+    'status.planned': '予定',
+    'journey.eyebrow': 'Flight Log',
+    'journey.title': 'キャリア',
+    'journey.sub': 'ストーリーで旅する、またはタイムライン表示に切り替え。',
+    'journey.hint': 'スクロールで前進 · 表示を切り替え',
+    'journey.cta': '詳細な経験を見る →',
+    'journey.view.chapters': 'チャプター',
+    'journey.view.timeline': 'タイムライン',
+    'journey.chapter': 'チャプター',
+    'journey.hud.sector': 'セクター',
+    'journey.hud.progress': '進行状況',
+    'exp.eyebrow': 'Career',
+    'exp.title': '経験',
+    'exp.sub': 'フロントエンドからAI・システム最適化まで。',
+    'exp.update': '{date}更新',
+    'exp.byGrok': 'Grok自動生成',
+    'exp.side.eyebrow': 'Side projects',
+    'exp.side.title': '個人プロジェクト',
+    'exp.edu.eyebrow': 'Education',
+    'exp.edu.title': '学歴',
+    'about.eyebrow': 'About',
+    'about.title': '自己紹介',
+    'about.contact': '連絡先',
+    'about.languages': '言語',
+    'about.meta.title': 'このポートフォリオについて',
+    'about.meta.body':
+      'マルチAIモデルによる毎日自動更新ポートフォリオ：<b>Grok</b>がリアルタイムのテックニュースをスキャンしブログを執筆、<b>Claude</b>がアーキテクチャ設計と<span class="mono">Astro</span>でサイトを構築。毎日GitHub Actionが実行されGrokがコンテンツを生成し、バリデーション後に自動デプロイ。',
+    'about.oldPortfolio': '旧ポートフォリオ ↗',
+    'blog.eyebrow': 'Writing · 毎日自動更新',
+    'blog.title': 'ブログ',
+    'blog.sub': '{n}件 — Grokが毎日執筆、スタックと専門分野を中心に。',
+    'blog.empty': 'まだ記事がありません。Grokパイプラインが最初の記事を生成します。',
+    'blog.backToGrok': 'Grok（リアルタイム）が自動生成し、Claude × Grokパイプライン経由で公開。',
+    'news.eyebrow': 'Tech radar · 毎日自動更新',
+    'news.title': 'テックニュース',
+    'news.sub': '{days}日間で{count}件 — Grokが毎日リアルタイムでスキャン、スタックに合わせてフィルタリング。',
+    'news.empty': 'まだニュースがありません。Grokパイプラインが最初のコンテンツを生成します。',
+    'news.filterAll': 'すべて',
+    'news.noMatch': 'このタグに一致するニュースはありません。',
+    'news.featured': '★ 注目',
+    'notfound.eyebrow': 'Error 404',
+    'notfound.title': '宇宙で迷子',
+    'notfound.body': 'このページは存在しないか、移動しました。ホームに戻るか、最新コンテンツをご覧ください。',
+    'notfound.home': 'ホームへ戻る',
+    'notfound.latestBlog': '最新ブログ',
     'notfound.radar': 'Tech radar',
   },
   vi: {
@@ -182,7 +269,9 @@ export const ui = {
 
 export function getLangFromUrl(url: URL): Lang {
   const seg = url.pathname.split('/').filter(Boolean)[0];
-  return seg === 'vi' ? 'vi' : 'en';
+  if (seg === 'vi') return 'vi';
+  if (seg === 'ja') return 'ja';
+  return 'en';
 }
 
 export function useTranslations(lang: Lang) {
@@ -193,8 +282,10 @@ export function useTranslations(lang: Lang) {
   };
 }
 
-/** Tạo đường dẫn theo locale: en -> /path, vi -> /vi/path. */
+/** Tạo đường dẫn theo locale: en -> /path, vi -> /vi/path, ja -> /ja/path. */
 export function localizedPath(path: string, lang: Lang): string {
   const clean = '/' + path.replace(/^\//, '');
-  return lang === 'vi' ? '/vi' + (clean === '/' ? '' : clean) : clean;
+  if (lang === 'vi') return '/vi' + (clean === '/' ? '' : clean);
+  if (lang === 'ja') return '/ja' + (clean === '/' ? '' : clean);
+  return clean;
 }

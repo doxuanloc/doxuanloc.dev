@@ -3,9 +3,10 @@ import profileJson from '../../content/profile.json';
 import profileEnJson from '../../content/profile.en.json';
 import type { Lang } from '../i18n/ui';
 
-/** Profile theo ngôn ngữ. EN mặc định, VI là nguồn gốc nội dung. */
+/** Profile theo ngôn ngữ. VI = nguồn gốc, JA fallback về EN. */
 export function getProfile(lang: Lang) {
-  return (lang === 'vi' ? profileJson : profileEnJson) as any;
+  if (lang === 'vi') return profileJson as any;
+  return profileEnJson as any; // en + ja đều dùng EN profile
 }
 
 export interface NewsItem {
@@ -24,6 +25,8 @@ export interface BlogPost {
   tags: string[];
   readingTimeMin?: number;
   coverImage?: string | null;
+  coverKeywords?: string[];
+  interactiveBlock?: string | null;
 }
 
 export interface FinanceNewsItem {
@@ -69,16 +72,39 @@ export function getAllNews(): (NewsItem & { date: string })[] {
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-/** Tất cả blog post, mới nhất trước, kèm ngày. */
-export function getAllPosts(): (BlogPost & { date: string })[] {
+/** Resolve blog post cho 1 daily entry theo lang, với fallback về VI source. */
+function resolvePost(d: DailyContent, lang: Lang): BlogPost | null {
+  if (lang === 'ja') {
+    const ja = (d as any)['blog.ja'];
+    if (ja && ja.slug) return ja as BlogPost;
+  }
+  if (lang === 'en') {
+    const en = (d as any)['blog.en'];
+    if (en && en.slug) return en as BlogPost;
+  }
+  return d.blog && d.blog.slug ? d.blog : null;
+}
+
+/** Tất cả blog post, mới nhất trước, kèm ngày. Lang-aware với fallback VI. */
+export function getAllPosts(lang: Lang = 'vi'): (BlogPost & { date: string })[] {
   return getDailyContent()
-    .filter((d) => d.blog && d.blog.slug)
-    .map((d) => ({ ...(d.blog as BlogPost), date: d.date }))
+    .map((d) => {
+      const post = resolvePost(d, lang);
+      return post ? { ...post, date: d.date } : null;
+    })
+    .filter((p): p is BlogPost & { date: string } => p !== null)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-export function getPostBySlug(slug: string) {
-  return getAllPosts().find((p) => p.slug === slug);
+export function getPostBySlug(slug: string, lang: Lang = 'vi') {
+  return getAllPosts(lang).find((p) => p.slug === slug);
+}
+
+/** Static paths helper: tất cả slugs (dùng cho getStaticPaths). */
+export function getAllSlugs(): string[] {
+  return getDailyContent()
+    .filter((d) => d.blog && d.blog.slug)
+    .map((d) => d.blog!.slug);
 }
 
 /** Gộp toàn bộ finance news từ mọi ngày, mới nhất trước, kèm ngày. */

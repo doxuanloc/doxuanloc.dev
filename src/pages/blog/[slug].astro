@@ -1,17 +1,19 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getAllPosts, getProfile } from '../../lib/content';
+import { getAllPosts, getAllSlugs, getPostBySlug, getProfile } from '../../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../../i18n/ui';
+import BlogCoverVisual from '../../components/BlogCoverVisual.astro';
 import { marked } from 'marked';
 
 export function getStaticPaths() {
-  return getAllPosts().map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+  return getAllSlugs().map((slug) => ({ params: { slug } }));
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const { slug } = Astro.params;
+const post = getPostBySlug(slug, lang)!;
 const profile = getProfile(lang);
-const { post } = Astro.props;
 const html = marked.parse(post.contentMarkdown ?? '', { async: false }) as string;
 
 const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
@@ -28,7 +30,7 @@ const blogLd = {
   datePublished: post.date,
   dateModified: post.date,
   keywords: (post.tags ?? []).join(', '),
-  inLanguage: lang === 'vi' ? 'vi' : 'en',
+  inLanguage: lang === 'vi' ? 'vi' : lang === 'ja' ? 'ja' : 'en',
   image: postImage,
   url: postUrl,
   author: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
@@ -36,11 +38,12 @@ const blogLd = {
   mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
 };
 
-const isVi = lang === 'vi';
-const aiPrompts = isVi
+const aiPrompts = lang === 'vi'
   ? ['Tóm tắt bài viết', 'Giải thích thêm', 'Liên quan gì đến tôi?', 'Góc nhìn khác']
+  : lang === 'ja'
+  ? ['この記事を要約', 'さらに詳しく', '自分に関係ある？', '別の視点']
   : ['Summarise this post', 'Explain further', 'How does this apply to me?', 'Alternative views'];
-const aiPlaceholder = isVi ? 'Hỏi về bài viết này…' : 'Ask about this post…';
+const aiPlaceholder = lang === 'vi' ? 'Hỏi về bài viết này…' : lang === 'ja' ? 'この記事について質問…' : 'Ask about this post…';
 ---
 <Base
   title={post.title}
@@ -60,6 +63,9 @@ const aiPlaceholder = isVi ? 'Hỏi về bài viết này…' : 'Ask about this 
         ← {t('nav.blog')}
       </a>
 
+      {/* Cover visual */}
+      <BlogCoverVisual slug={post.slug} coverKeywords={post.coverKeywords} coverImage={post.coverImage} size="header" />
+
       {/* Article header */}
       <header class="article-header" data-reveal>
         <div class="meta-row article-meta">
@@ -70,6 +76,7 @@ const aiPlaceholder = isVi ? 'Hỏi về bài viết này…' : 'Ask about this 
         </div>
         <h1 class="article-title">{post.title}</h1>
         {post.excerpt && <p class="article-lede">{post.excerpt}</p>}
+        {post.interactiveBlock && <div class="article-interactive" set:html={post.interactiveBlock} />}
         <div class="chips article-tags" style="margin-top:10px">
           {(post.tags ?? []).map((tag) => <span class="chip">{tag}</span>)}
         </div>
@@ -83,7 +90,7 @@ const aiPlaceholder = isVi ? 'Hỏi về bài viết này…' : 'Ask about this 
       <div class="ai-slot article-ai-slot" data-reveal style="--reveal-delay:80ms">
         <div class="ai-slot-header">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          {isVi ? 'Thảo luận với AI' : 'Discuss with AI'}
+          {lang === 'vi' ? 'Thảo luận với AI' : lang === 'ja' ? 'AIと議論する' : 'Discuss with AI'}
         </div>
         <div class="ai-slot-prompts">
           {aiPrompts.map((p) => <button class="chip" disabled>{p}</button>)}
@@ -127,6 +134,12 @@ const aiPlaceholder = isVi ? 'Hỏi về bài viết này…' : 'Ask about this 
   .article-lede {
     font-size: 1.08rem; color: var(--text-dim); line-height: 1.6;
     margin: 10px 0 0; font-style: italic;
+  }
+  .article-interactive {
+    margin: 20px 0 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
   }
 
   /* Prose overrides for reading comfort */

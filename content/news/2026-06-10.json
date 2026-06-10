@@ -83,7 +83,12 @@
       "claude api"
     ],
     "readingTimeMin": 5,
-    "coverImage": null
+    "coverImage": null,
+    "coverKeywords": [
+      "model routing topology",
+      "cost gradient",
+      "deep space inference"
+    ]
   },
   "financeNews": [
     {
@@ -159,6 +164,44 @@
       "Thiết kế lớp model routing tách task classifier, escalation tier và budget cap — áp dụng cho agent đa bước trên managed LLM runtime.",
       "Tối ưu inference cost bằng semantic cache, context pruning và tier selection có eval dataset — giữ quality ceiling cho bước high-risk.",
       "Triển khai observability pipeline ghi token spend, model tier và outcome per step — hỗ trợ cost-per-task metric thay vì chỉ cost-per-call."
+    ]
+  },
+  "blog.en": {
+    "slug": "2026-06-10-llm-cost-optimization-model-routing-ai-agent",
+    "title": "LLM Cost Optimization for AI Agents: Real-World Model Routing Trade-offs",
+    "excerpt": "Are you burning tokens unnecessarily? A hands-on guide to LLM cost optimization and model routing for AI agents — real trade-offs on AWS Bedrock.",
+    "contentMarkdown": "## The Concrete Problem\n\nThis week brought two conflicting signals pointing to the same issue: **LLM costs are becoming a real bottleneck**, no longer just a secondary line item.\n\nGoogle cut Google AI Plus to $4.99/month — commoditized subscriptions have reached the US market. At the same time, Harvey + Fireworks announced a 3x reduction in inference costs using model routing: Claude Opus for heavy tasks, GLM 5.1 for the rest, without sacrificing legal quality. Brian Armstrong predicts that 80% of workloads will run on cheaper models within 12–18 months.\n\nWith a NestJS + AWS Bedrock stack and experience building agent workflows, it's time for teams to answer a specific technical question: **how do you route models without causing silent agent failures?**\n\n## Why Multi-Step Agents Burn Tokens Faster Than Chatbots?\n\nAgents differ from chatbots in that each step equals one inference call (or more if reflection, re-planning, or tool retries are involved). An 8-step workflow using Claude Opus can cost 10–20x more than a simple Q&A — not to mention the context window ballooning as the agent stuffs tool outputs into history.\n\nHarvey's tests revealed the key insight: **not every step requires a frontier model**. Legal research demands deep reasoning; formatting output, classifying intent, or summarizing logs can use models 10–50x cheaper.\n\nReal-world trade-offs:\n\n- **Quality ceiling**: Cheaper models fail on edge cases — misrouting a single critical step breaks the entire pipeline.\n- **Latency**: Multi-model routing adds hops (classifier → router → model) — it can be slower than single-model routing without caching.\n- **Complexity**: Router logic, fallback mechanisms, and eval datasets — non-trivial engineering overhead.\n\n## How Model Routing Works on AWS Bedrock\n\nCommon pattern on Bedrock/NestJS:\n\n1. **Task classifier** (small model or rule-based): classifies the current step — retrieval, reasoning, formatting, tool selection.\n2. **Router**: maps task type → model tier (e.g., Haiku/Sonnet/Opus or open-weight models on Fireworks).\n3. **Escalation**: if confidence is low or eval score falls below threshold → escalate to a higher tier.\n4. **Observability**: log the model used, tokens in/out, and cost per step in CloudWatch — you can't optimize what you don't measure.\n\nWith EventBridge + Lambda, you can extract routing into an independent service: the agent calls `POST /infer` with `taskType` and `riskLevel`, and the router decides the model. High-risk actions (writing to DB, sending emails) always use the high tier plus human approval.\n\nAn often-overlooked point: **semantic caching** for retrieval and classification — the same query repeated in a session doesn't need re-inference.\n\n## ROI Comparison: Token Cost or Engineer Time?\n\nBoris Cherny (Claude Code) stated plainly at Brainstorm Tech: don't compare AI cost against a $20/month plan — compare it to **the cost of an engineer doing the same work**. A developer rewriting a codebase in 6 days instead of a year delivers clear ROI even with a high token bill.\n\nBut that's for a coding agent with measurable output. Production agents (customer support, data pipelines, ops) require different metrics:\n\n- Cost per successful task (not cost per call)\n- Escalation rate (what % requires human intervention)\n- Error rate by model tier\n\nIf model routing cuts cost 3x but doubles the error rate, you are **not saving money** — you're just shifting costs to support and rework.\n\n## When to (and When Not to) Use Cheaper Models\n\n**Route to cheaper models when:**\n\n- The task has a fixed output format (JSON schema, classification labels)\n- You have a sufficiently large eval dataset to A/B test quality\n- The workflow has a \"draft → review\" pattern — draft cheap, review expensive\n- High volume with thin margins (fintech, legal, ops automation)\n\n**Don't (or not yet) when:**\n\n- You lack observability — you don't know which steps consume the most tokens\n- The domain is high-stakes (compliance, medical, financial advice) without human-in-the-loop safeguards\n- Your team is just shipping its first agent — optimize after establishing baseline metrics, not before you have a product\n\n## A Pragmatic Conclusion\n\nLLM cost optimization isn't about \"picking the cheapest model\" — it's **routing architecture with evaluation and escalation built in**. Google slashed subscription prices, Harvey cut inference costs 3x — the same narrative: AI capabilities are commoditizing, and the margin goes to those who know **how to use the right model for the right step**.\n\n**Do this now:**\n\n- Instrument every agent step: model, tokens, cost, outcome\n- Build a task classifier + router decoupled from business logic\n- A/B test at least two tiers on 100+ real samples before removing Opus from the pipeline\n- Set per-session/workflow budget caps — kill-switches that trigger when thresholds are exceeded\n\n**Don't:**\n\n- Swap everything to cheaper models just because you read a headline claiming \"80% of workloads\" — the remaining 20% often delivers 80% of the value\n- Compare your AI bill to a SaaS subscription — compare it to engineer time or cost-per-outcome\n- Ignore supply chain security (see this week's Microsoft GitHub hack) when integrating open-source inference stacks\n\nModel routing is a system optimization, not a prompt trick. Teams with router + eval + observability in place early will survive commoditization — those without will keep paying premium token prices until finance cuts the budget.",
+    "tags": [
+      "llm cost optimization",
+      "model routing",
+      "ai agent",
+      "aws bedrock",
+      "claude api"
+    ],
+    "readingTimeMin": 5,
+    "coverKeywords": [
+      "model routing topology",
+      "cost gradient",
+      "deep space inference"
+    ]
+  },
+  "blog.ja": {
+    "slug": "2026-06-10-llm-cost-optimization-model-routing-ai-agent",
+    "title": "AIエージェント向けLLMコスト最適化：モデルルーティングの実践的なトレードオフ",
+    "excerpt": "トークンを無駄に消費していませんか？AIエージェントのLLMコスト最適化とモデルルーティング — AWS Bedrockでのスケール時の実践的なトレードオフを解説。",
+    "contentMarkdown": "## 具体的な問題\n\n今週、相反する2つのシグナルが同じ問題を示した。**LLMコストが本当のボトルネックになりつつある**ということだ。もはや二次的な項目ではない。\n\nGoogleはGoogle AI Plusを月額$4.99に値下げした——サブスクリプションのコモディティ化が米国市場に到達した。同時に、HarveyとFireworksはモデルルーティングによりインファレンスコストを3分の1に削減したと発表した。重いタスクにはClaude Opus、それ以外にはGLM 5.1を使い、legal領域の品質を落とさずに実現している。Brian Armstrongは、12〜18ヶ月以内にワークロードの80%が安価なモデルで実行されると予測している。\n\nNestJSとAWS Bedrockのスタックでエージェントワークフローを構築してきた経験から、チームが今答えるべき具体的な技術的課題はこれだ。**エージェントをサイレントに失敗させずに、どのようにモデルをルーティングするか？**\n\n## なぜ多段階エージェントはチャットボットよりトークンを速く消費するのか？\n\nエージェントとチャットボットの違いは、各ステップが1回のインファレンスコール（またはreflection、re-planning、tool retryがある場合はそれ以上）に相当することだ。Claude Opusを使った8ステップのワークフローは、単純なQ&Aの10〜20倍のコストになり得る——エージェントがツール出力を履歴に詰め込むことでコンテキストウィンドウが膨張することを考えると尚更だ。\n\nHarveyのテストで明らかになった核心は、**すべてのステップがフロンティアモデルを必要とするわけではない**ということだ。Legal researchには深い推論が必要だが、出力のフォーマット、インテントの分類、ログの要約などは、10〜50倍安いモデルで十分な場合が多い。\n\n現実的なトレードオフ：\n\n- **Quality ceiling**: 安価なモデルはエッジケースで失敗する——重要なステップ1つを誤ってルーティングすれば、パイプライン全体が破綻する。\n- **Latency**: マルチモデルルーティングはホップを追加する（classifier → router → model）。キャッシュがなければ、シングルモデルより遅くなる可能性がある。\n- **Complexity**: ルーターのロジック、フォールバック、評価データセット——エンジニアリングのオーバーヘッドは小さくない。\n\n## AWS Bedrock上でモデルルーティングはどのように動作するのか？\n\nBedrock/NestJSでよく見られるパターン：\n\n1. **Task classifier**（小型モデルまたはルールベース）：現在のステップを分類する——retrieval、reasoning、formatting、tool selection。\n2. **Router**: タスクタイプをモデルティアにマッピングする（例: Haiku/Sonnet/Opus、またはFireworks上のオープンウェイトモデル）。\n3. **Escalation**: confidenceが低い場合、またはevalスコアが閾値を下回った場合 → 上位ティアへエスカレーション。\n4. **Observability**: 使用したモデル、トークン入出力、ステップごとのコストをCloudWatchに記録する——測定しなければ最適化できない。\n\nEventBridge + Lambdaを使えば、ルーティングを独立したサービスとして切り出せる。エージェントは `taskType` と `riskLevel` を付けて `POST /infer` を呼び、ルーターがモデルを決定する。高リスクアクション（DB書き込み、メール送信）は常に高ティア＋人間承認を使う。\n\n見落とされがちなポイント：retrievalやclassificationに対する**セマンティックキャッシュ**だ。セッション内で同じクエリが繰り返される場合、再推論は不要である。\n\n## ROI比較：トークンコストかエンジニアタイムか？\n\nBoris Cherny（Claude Code）はBrainstorm Techで率直に述べた。AIコストを月額20ドルのプランと比較してはならない——**同じ作業をエンジニアが行う場合のコスト**と比較せよ。開発者が1年かけて行うコードベースの書き換えを6日で完了させる——トークン代が高くてもROIは明確だ。\n\nただし、これは出力が測定可能なコーディングエージェントの場合だ。プロダクションエージェント（カスタマーサポート、データパイプライン、運用）には別のメトリクスが必要になる：\n\n- 成功したタスクあたりのコスト（コールあたりのコストではない）\n- エスカレーション率（人間介入が必要になる割合）\n- モデルティア別のエラーレート\n\nモデルルーティングでコストが3分の1になっても、エラーレートが2倍になったら、**節約にはならない**。サポートと手戻りにコストを移しただけだ。\n\n## いつ安価なモデルを使うべきか（そして使わないべきか）？\n\n**安価なモデルへルーティングすべき場合：**\n\n- 出力フォーマットが固定されているタスク（JSON schema、classification label）\n- 品質をA/Bテストするための十分に大きなevalデータセットがある\n- ワークフローに「下書き → レビュー」のパターンがある——下書きは安く、レビューは高く\n- ボリュームが高くマージンが薄い領域（fintech、legal、運用自動化）\n\n**（まだ）使うべきでない場合：**\n\n- オブザーバビリティが整っていない——どのステップがトークンを最も消費しているかわからない\n- コンプライアンス、医療、金融アドバイスなどハイステークスなドメインで、human-in-the-loopが確立されていない\n- チームが初めてエージェントをリリースする段階——ベースラインメトリクスを確立した後で最適化せよ。プロダクトができる前に最適化してはならない\n\n## 実践的な結論\n\nLLMコスト最適化は「最も安いモデルを選ぶ」ことではない。それは**評価とエスカレーションを備えたルーティングアーキテクチャ**を構築することだ。Googleがサブスクリプション価格を切り下げ、Harveyがインファレンスコストを3分の1にした——同じ物語である。AIの能力はコモディティ化しつつあり、マージンは**正しいステップに正しいモデルを使う**ことを知る者に帰属する。\n\n**今すぐやるべきこと：**\n\n- すべてのエージェントステップを計装する：モデル、トークン、コスト、アウトカム\n- ビジネスロジックから切り離されたタスク分類器＋ルーターを構築する\n- パイプラインからOpusを外す前に、少なくとも2つのティアを100件以上の実サンプルでA/Bテストする\n- セッション/ワークフローごとの予算上限を設定する——閾値を超えたときに発動するキルスイッチ\n\n**やってはいけないこと：**\n\n- 「ワークロードの80%」という見出しを読んだだけで全部を安価なモデルに置き換える——残りの20%がしばしば価値の80%を生む\n- AIの請求額をSaaSサブスクリプションと比較する——エンジニアタイムやアウトカムあたりのコストと比較せよ\n- オープンソースのインファレンススタックを統合する際に、サプライチェーンセキュリティを無視する（今週のMicrosoft GitHubハック参照）\n\nモデルルーティングはシステム最適化であって、プロンプトのトリックではない。ルーター＋評価＋オブザーバビリティを早期に整えたチームはコモディティ化を生き残る——そうでないチームは、ファイナンスが予算を止めるまでプレミアムなトークン代を払い続けることになる。",
+    "tags": [
+      "LLMコスト最適化",
+      "モデルルーティング",
+      "AIエージェント",
+      "AWS Bedrock",
+      "Claude API"
+    ],
+    "readingTimeMin": 5,
+    "coverKeywords": [
+      "model routing topology",
+      "cost gradient",
+      "deep space inference"
     ]
   }
 }

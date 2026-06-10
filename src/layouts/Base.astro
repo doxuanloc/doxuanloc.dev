@@ -35,12 +35,16 @@ const ogImage = image
   : new URL('/images/hero-astronaut.webp', site).href;
 const altEn = new URL(basePath, site).href;
 const altVi = new URL('/vi' + (basePath === '/' ? '' : basePath), site).href;
-const otherLang = lang === 'vi' ? 'en' : 'vi';
-const switchHref = otherLang === 'vi' ? '/vi' + (basePath === '/' ? '' : basePath) : basePath;
+const altJa = new URL('/ja' + (basePath === '/' ? '' : basePath), site).href;
+const langLinks = [
+  { code: 'en', label: 'EN', href: basePath },
+  { code: 'vi', label: 'VI', href: '/vi' + (basePath === '/' ? '' : basePath) },
+  { code: 'ja', label: 'JA', href: '/ja' + (basePath === '/' ? '' : basePath) },
+] as const;
 
 const id = profile.identity;
 const sameAs = [id.links?.linkedin, id.links?.github, id.links?.currentPortfolio].filter(Boolean);
-const ogLocale = lang === 'vi' ? 'vi_VN' : 'en_US';
+const ogLocale = lang === 'vi' ? 'vi_VN' : lang === 'ja' ? 'ja_JP' : 'en_US';
 const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
 const avatarUrl = `${siteOrigin}/favicon-512.png`;
 const personLd = {
@@ -107,6 +111,7 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="en" href={altEn} />
     <link rel="alternate" hreflang="vi" href={altVi} />
+    <link rel="alternate" hreflang="ja" href={altJa} />
     <link rel="alternate" hreflang="x-default" href={altEn} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
@@ -176,9 +181,11 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
               ))}
             </ul>
             <div class="drawer-footer" aria-hidden="true">
-              <a class="lang-switch" href={switchHref} data-astro-reload>
-                <span class={lang === 'en' ? 'on' : ''}>EN</span><span class="sep">/</span><span class={lang === 'vi' ? 'on' : ''}>VI</span>
-              </a>
+              <div class="lang-switch-3">
+                {langLinks.map((l) => (
+                  <a href={l.href} class:list={['ls3-item', l.code === lang ? 'on' : '']} data-astro-reload>{l.label}</a>
+                ))}
+              </div>
               <span class="drawer-site mono">doxuanloc.space</span>
             </div>
             <span class="drawer-lines" aria-hidden="true"><span></span><span></span></span>
@@ -187,9 +194,11 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
             <span class="drawer-bracket bl" aria-hidden="true"></span>
             <span class="drawer-bracket br" aria-hidden="true"></span>
           </nav>
-          <a class="lang-switch" href={switchHref} aria-label={`Switch to ${otherLang === 'vi' ? 'Tiếng Việt' : 'English'}`} data-astro-reload>
-            <span class={lang === 'en' ? 'on' : ''}>EN</span><span class="sep">/</span><span class={lang === 'vi' ? 'on' : ''}>VI</span>
-          </a>
+          <div class="lang-switch-3" aria-label="Language">
+            {langLinks.map((l) => (
+              <a href={l.href} class:list={['ls3-item', l.code === lang ? 'on' : '']} data-astro-reload>{l.label}</a>
+            ))}
+          </div>
           <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav" type="button">
             <span></span><span></span><span></span>
           </button>
