@@ -56,6 +56,13 @@ PHONG CÁCH INSIGHT: Với mỗi tin và bài blog, bạn là người PHÂN TÍ
    Góc độ ưu tiên: AI agent workflow, system optimization & trade-off thực tế, emerging tech, fintech + công nghệ, Web3 & DeFi use-case thực tế, developer productivity, macro kinh tế ảnh hưởng đến công nghệ.
    Bài phải có: (a) vấn đề cụ thể, (b) phân tích sâu có góc nhìn riêng, (c) kết luận thực dụng — "nên/không nên làm gì". slug dạng "${today}-tieu-de-khong-dau". Blog KHÔNG nhắc tên công ty/khách/dự án nội bộ.
 
+   SEO OPTIMIZATION (bắt buộc):
+   - Bước 1: Dùng web_search tìm 3-5 keyword/phrase mà engineer/developer thực sự search liên quan chủ đề (ví dụ: "claude api tool use 2026", "build agentic ai python", "openai o3 vs claude cost"). Chọn keyword có search intent cao nhất.
+   - Title: chứa primary keyword tự nhiên, dạng câu hỏi hoặc how-to nếu phù hợp (ví dụ: "Xây Agent Đa Bước với Claude: Trade-off Thực Tế Bạn Phải Biết").
+   - excerpt (= meta description): ĐÚNG 120-155 ký tự, chứa primary keyword, trả lời rõ "bài này giải quyết vấn đề gì cho người đọc". Đếm ký tự kỹ.
+   - tags[]: PHẢI bao gồm actual search terms người dùng gõ (ví dụ: "ai agent", "claude api", "llm optimization", "aws bedrock", "openai"), không chỉ generic label.
+   - contentMarkdown: H2 headings dạng câu hỏi hoặc từ khóa rõ ràng (ví dụ: "## Tại sao Agent Đa Bước Thường Fail?"). Mỗi H2 trả lời 1 sub-question để tăng featured snippet.
+
 3. FINANCE & FINTECH NEWS — Dùng web_search tìm 3-5 tin tài chính & công nghệ tài chính ĐÁNG CHÚ Ý trong 24-72h qua.
    Ưu tiên: fintech product & regulation, crypto/DeFi (Bitcoin/Ethereum/altcoin), VC funding & startup valuation (tech focus), thị trường chứng khoán tech (NASDAQ, big-tech earnings), macro kinh tế ảnh hưởng tech (Fed rate, inflation, AI investment wave), M&A & IPO tech.
    MỖI tin PHẢI có source URL thật. Tóm tắt tiếng Việt, có câu "Góc nhìn:" cuối summary phân tích tác động đến investor/builder/engineer. Ghi vào field "financeNews", mỗi item cần thêm "category" (một trong: fintech | crypto | vc-startup | market | macro).
