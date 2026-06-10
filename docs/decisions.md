@@ -147,3 +147,36 @@
 - Content 100% từ profile + i18n (không hardcode copy mới trừ HUD codenames — giữ English cho flavor).
 
 **References**: home-redesign-spec.md (vision), home-implementation-spec.md (detailed logic + phases), codebase-overview.md (Journey scroll pattern), ADR-004 (why pinned only for Journey).
+
+---
+
+## ADR-009 — Social Syndication: LinkedIn Auto-Post via Local Pipeline (Personal Profile)
+
+**Date**: 2026-06  
+**Status**: Accepted (spec complete; implementation pending priority)
+
+**Quyết định**:
+- Thêm cơ chế auto-post blog hàng ngày lên LinkedIn Personal Profile, chạy như bước optional trong `publish:today` (local).
+- Script mới `scripts/post-to-linkedin.mjs` + setup helper `scripts/setup-linkedin-auth.mjs`.
+- State idempotency ghi trực tiếp vào daily JSON (`linkedin.posted`).
+- Chỉ post khi có `blog` (không post news-only days). Text format: hook + excerpt + 2-4 bullets + link + hashtags (VI).
+- GH Actions chỉ là fallback manual (không schedule/cron).
+
+**Lý do**:
+- Phù hợp pipeline hiện tại (local Grok CLI → gen → validate → commit → push). Giữ secret trên máy user, tránh double-post.
+- LinkedIn algorithm ưu thích value post có hook mạnh + bullets + CTA + native link (OG preview từ blog page đã đủ rich).
+- w_member_social + refresh token 1 năm là cách đơn giản nhất, zero 3rd-party paid tool.
+- Content publication quan trọng hơn social → lỗi LinkedIn không được fail publish pipeline.
+
+**Trade-off**:
+- Local: đơn giản, user control timing (tốt nhất 10-14h VN Tue-Thu) nhưng phụ thuộc máy.
+- GH scheduled: robust hơn nhưng phức tạp secret + risk double-post + lệch triết lý "chạy tay" hiện tại → defer.
+- Text-only v1 (không image upload) → nhanh ship, dễ test; sau này thêm asset upload nếu cần.
+- Không LLM call trong poster (deterministic extraction) → rẻ, ổn định, tone nhất quán với blog.
+
+**Integration**:
+- `npm run publish:today` append `&& node scripts/post-to-linkedin.mjs`
+- Standalone `npm run post:linkedin`
+- Setup 1 lần: LinkedIn Developer App → Share on LinkedIn + OIDC products → run setup script (local http callback) → lưu refresh token vào .env.
+
+**References**: `docs/linkedin-auto-post-spec.md` (full architecture, template, OAuth flow, error matrix, script outline).
