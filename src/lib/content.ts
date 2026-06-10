@@ -72,17 +72,31 @@ export function getAllNews(): (NewsItem & { date: string })[] {
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-/** Resolve blog post cho 1 daily entry theo lang, với fallback về VI source. */
+/** Resolve blog post cho 1 daily entry theo lang, với fallback về VI source.
+ *  Language-agnostic fields (interactiveBlock, coverKeywords, coverImage)
+ *  được inherit từ VI source nếu bản dịch chưa có. */
 function resolvePost(d: DailyContent, lang: Lang): BlogPost | null {
+  const vi = d.blog && d.blog.slug ? d.blog : null;
+
   if (lang === 'ja') {
     const ja = (d as any)['blog.ja'];
-    if (ja && ja.slug) return ja as BlogPost;
+    if (ja && ja.slug) return {
+      ...ja,
+      interactiveBlock: ja.interactiveBlock ?? vi?.interactiveBlock ?? null,
+      coverKeywords:    ja.coverKeywords    ?? vi?.coverKeywords,
+      coverImage:       ja.coverImage       ?? vi?.coverImage ?? null,
+    } as BlogPost;
   }
   if (lang === 'en') {
     const en = (d as any)['blog.en'];
-    if (en && en.slug) return en as BlogPost;
+    if (en && en.slug) return {
+      ...en,
+      interactiveBlock: en.interactiveBlock ?? vi?.interactiveBlock ?? null,
+      coverKeywords:    en.coverKeywords    ?? vi?.coverKeywords,
+      coverImage:       en.coverImage       ?? vi?.coverImage ?? null,
+    } as BlogPost;
   }
-  return d.blog && d.blog.slug ? d.blog : null;
+  return vi;
 }
 
 /** Tất cả blog post, mới nhất trước, kèm ngày. Lang-aware với fallback VI. */
