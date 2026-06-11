@@ -129,7 +129,6 @@ function buildArchitectureFrame(block, frameT, blog) {
   const { components, connections } = block.architecture;
   const nodes = layoutComponents(components);
 
-  // For each connection, compute signal progress at this frame time
   const totalConns = connections.length;
   const signals = connections.map((c, i) => {
     const startPhase = i / totalConns;
@@ -140,23 +139,13 @@ function buildArchitectureFrame(block, frameT, blog) {
 
   const getNode = (id) => nodes.find((n) => n.id === id) ?? { cx: 0, cy: 0, x: 0, y: 0, w: 0, h: 0 };
 
-  // Inline SVG as a positioned div with border
-  // We'll draw using absolute-positioned divs (satori flexbox + position)
-  const diagChildren = [];
-
-  // Background lines (all connections, faint)
-  // In satori we can't draw arbitrary SVG lines via divs easily, but we CAN embed inline SVG via foreign objects.
-  // Instead, use a different approach: satori supports SVG as a child element if the parent is svg.
-  // Actually the simplest approach: use position:absolute divs to approximate connections.
-  // For proper lines we need to render using SVG host element.
-
-  // We'll use a single SVG element for the diagram area (satori supports SVG)
-  const svgChildren = [];
+  const geoChildren = [];  // SVG geometric elements only (no text)
+  const textLabels = [];   // HTML div overlays for text
 
   // Faint base connections
   for (const s of signals) {
     const a = getNode(s.from), b = getNode(s.to);
-    svgChildren.push({
+    geoChildren.push({
       type: "line",
       props: {
         x1: a.cx - DIAG_X, y1: a.cy, x2: b.cx - DIAG_X, y2: b.cy,
@@ -174,45 +163,39 @@ function buildArchitectureFrame(block, frameT, blog) {
     const sy = lerp(a.cy, b.cy, s.progress);
     const accent = ACCENT_BY_KIND[s.type ?? "sync"] ?? P.blue;
 
-    // Trail line (from source to current position)
-    svgChildren.push({
+    geoChildren.push({
       type: "line",
-      props: {
-        x1: a.cx - DIAG_X, y1: a.cy, x2: sx, y2: sy,
-        stroke: accent, strokeWidth: 2.5,
-      },
+      props: { x1: a.cx - DIAG_X, y1: a.cy, x2: sx, y2: sy, stroke: accent, strokeWidth: 2.5 },
     });
 
     if (!s.done) {
-      // Moving dot
-      svgChildren.push({
+      geoChildren.push({
         type: "circle",
         props: { cx: sx, cy: sy, r: 7, fill: accent, stroke: P.bg, strokeWidth: 1.5 },
       });
-      // Label near dot
       if (s.label) {
-        svgChildren.push({
-          type: "text",
-          props: { x: sx + 10, y: sy - 8, fontSize: 10, fill: P.textDim, fontFamily: "JetBrains Mono" },
-          children: truncate(s.label, 20),
-        });
+        textLabels.push(el("div", {
+          position: "absolute",
+          left: Math.round(sx + 10), top: Math.max(4, Math.round(sy - 22)),
+          fontSize: 9, fontFamily: "JetBrains Mono", color: P.textDim,
+          background: hex(P.bg, 0.85), padding: "2px 5px", borderRadius: 3, display: "flex",
+        }, truncate(s.label, 18)));
       }
     } else {
-      // Arrived: arrowhead at destination
       const dx = b.cx - a.cx, dy = b.cy - a.cy;
       const len = Math.sqrt(dx * dx + dy * dy) || 1;
       const ux = dx / len, uy = dy / len;
       const tip = { x: b.cx - DIAG_X - ux * b.w / 2, y: b.cy - uy * b.h / 2 };
       const arrow = `${tip.x},${tip.y} ${tip.x - ux * 10 + uy * 5},${tip.y - uy * 10 - ux * 5} ${tip.x - ux * 10 - uy * 5},${tip.y - uy * 10 + ux * 5}`;
-      svgChildren.push({ type: "polygon", props: { points: arrow, fill: accent } });
+      geoChildren.push({ type: "polygon", props: { points: arrow, fill: accent } });
     }
   }
 
-  // Node boxes
+  // Node boxes (geometric rect) + text label overlay
   for (const n of nodes) {
     const accent = ACCENT_BY_KIND[n.kind ?? ""] ?? P.border;
     const isActive = signals.some((s) => (s.from === n.id || s.to === n.id) && s.started);
-    svgChildren.push({
+    geoChildren.push({
       type: "rect",
       props: {
         x: n.x - DIAG_X, y: n.y, width: n.w, height: n.h, rx: 8,
@@ -221,14 +204,18 @@ function buildArchitectureFrame(block, frameT, blog) {
         strokeWidth: isActive ? 2 : 1.2,
       },
     });
-    svgChildren.push({
-      type: "text",
-      props: { x: n.cx - DIAG_X, y: n.cy + 5, textAnchor: "middle", fontSize: 12, fontWeight: 700, fill: isActive ? P.text : P.textDim, fontFamily: "Be Vietnam Pro" },
-      children: truncate(n.label, 14),
-    });
+    textLabels.push(el("div", {
+      position: "absolute",
+      left: Math.round(n.x - DIAG_X), top: Math.round(n.y),
+      width: n.w, height: n.h,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 11, fontWeight: 700, fontFamily: "Be Vietnam Pro",
+      color: isActive ? P.text : P.textDim,
+      textAlign: "center", padding: "0 4px",
+    }, truncate(n.label, 14)));
   }
 
-  return buildFrame(blog, block.title ?? "Architecture", svgChildren, frameT);
+  return buildFrame(blog, block.title ?? "Architecture", geoChildren, textLabels, frameT);
 }
 
 // ── Sequence frame builder ─────────────────────────────────────────────────────
@@ -241,31 +228,34 @@ function buildSequenceFrame(block, frameT, blog) {
 
   const getActor = (id) => laidActors.find((a) => a.id === id) ?? { cx: DIAG_X + 100, topCy: 80 };
 
-  const svgChildren = [];
+  const geoChildren = [];  // SVG geometric elements only
+  const textLabels = [];   // HTML div overlays
 
-  // Lifelines
+  // Actor lifelines + boxes
   for (const a of laidActors) {
-    svgChildren.push({
+    geoChildren.push({
       type: "line",
       props: { x1: a.cx - DIAG_X, y1: a.topCy, x2: a.cx - DIAG_X, y2: H - 20, stroke: hex(P.border, 0.7), strokeWidth: 1, strokeDasharray: "4 3" },
     });
-    // Actor box
-    svgChildren.push({
+    geoChildren.push({
       type: "rect",
       props: { x: a.x - DIAG_X, y: a.y, width: a.w, height: a.h, rx: 6, fill: hex(P.panel, 0.95), stroke: P.blue, strokeWidth: 1.5 },
     });
-    svgChildren.push({
-      type: "text",
-      props: { x: a.cx - DIAG_X, y: a.y + 25, textAnchor: "middle", fontSize: 11, fontWeight: 600, fill: P.text, fontFamily: "JetBrains Mono" },
-      children: truncate(a.label, 12),
-    });
+    textLabels.push(el("div", {
+      position: "absolute",
+      left: Math.round(a.x - DIAG_X), top: Math.round(a.y),
+      width: a.w, height: a.h,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono", color: P.text,
+      textAlign: "center", padding: "0 3px",
+    }, truncate(a.label, 12)));
   }
 
   // Events
   const sortedEvents = events.slice().sort((a, b) => a.phase - b.phase);
   for (let i = 0; i < sortedEvents.length; i++) {
     const ev = sortedEvents[i];
-    if (frameT < ev.phase) break; // not yet
+    if (frameT < ev.phase) break;
     const progress = clamp01((frameT - ev.phase) / (1 / totalEvents));
     const y = 70 + i * rowH;
     const a = getActor(ev.from);
@@ -276,33 +266,43 @@ function buildSequenceFrame(block, frameT, blog) {
     const accent = ACCENT_BY_KIND[ev.kind ?? "request"] ?? P.blue;
     const curX = isSelf ? x1 + 36 : lerp(x1, x2, progress);
 
-    svgChildren.push({
+    geoChildren.push({
       type: "line",
       props: { x1, y1: y, x2: curX, y2: y, stroke: accent, strokeWidth: 2 },
     });
     if (progress < 1) {
-      svgChildren.push({ type: "circle", props: { cx: curX, cy: y, r: 5, fill: accent } });
+      geoChildren.push({ type: "circle", props: { cx: curX, cy: y, r: 5, fill: accent } });
     } else {
       const tipX = x2 + (x1 < x2 ? -6 : 6);
       const arrow = `${tipX},${y} ${tipX + (x1 < x2 ? -8 : 8)},${y - 5} ${tipX + (x1 < x2 ? -8 : 8)},${y + 5}`;
-      svgChildren.push({ type: "polygon", props: { points: arrow, fill: accent } });
+      geoChildren.push({ type: "polygon", props: { points: arrow, fill: accent } });
     }
-    svgChildren.push({
-      type: "text",
-      props: { x: (x1 + x2) / 2, y: y - 6, textAnchor: "middle", fontSize: 10, fill: P.textDim, fontFamily: "JetBrains Mono" },
-      children: truncate(ev.label, 22),
-    });
+    // Event label as HTML overlay
+    const midX = Math.round((x1 + x2) / 2);
+    textLabels.push(el("div", {
+      position: "absolute",
+      left: Math.max(2, midX - 50), top: Math.max(4, Math.round(y - 18)),
+      width: 100, display: "flex", justifyContent: "center",
+      fontSize: 9, fontFamily: "JetBrains Mono", color: P.textDim,
+    }, truncate(ev.label, 20)));
   }
 
-  return buildFrame(blog, block.title ?? "Sequence", svgChildren, frameT);
+  return buildFrame(blog, block.title ?? "Sequence", geoChildren, textLabels, frameT);
 }
 
 // ── Frame shell ───────────────────────────────────────────────────────────────
 
-function buildFrame(blog, mechTitle, svgChildren, frameT) {
+function buildFrame(blog, mechTitle, geoChildren, textLabels, frameT) {
   const title = truncate(blog.title ?? "", 55);
   const mechLabel = truncate(mechTitle, 30);
   const progress = Math.round(frameT * 100);
+
+  const gridDots = Array.from({ length: 8 }, (_, row) =>
+    Array.from({ length: 14 }, (_, col) => ({
+      type: "circle",
+      props: { cx: 20 + col * 54, cy: 20 + row * 80, r: 1, fill: hex(P.border, 0.4) },
+    }))
+  ).flat();
 
   return el("div", {
     width: W, height: H, display: "flex", flexDirection: "row",
@@ -320,44 +320,36 @@ function buildFrame(blog, mechTitle, svgChildren, frameT) {
       el("div", {
         fontSize: 13, fontFamily: "JetBrains Mono", color: P.blue,
         background: hex(P.blue, 0.08), border: `1px solid ${hex(P.blue, 0.2)}`,
-        borderRadius: 8, padding: "8px 14px", marginTop: 8, display: "inline-flex",
+        borderRadius: 8, padding: "8px 14px", marginTop: 8, display: "flex", alignSelf: "flex-start",
       }, mechLabel),
-      // Progress bar
       el("div", { marginTop: "auto", display: "flex", flexDirection: "column", gap: 8 }, [
         el("div", { fontSize: 10, fontFamily: "JetBrains Mono", color: P.textMu, letterSpacing: "2px" }, `SIGNAL TRACE · ${progress}%`),
-        el("div", { height: 3, background: hex(P.border, 0.6), borderRadius: 2 }, [
+        el("div", { height: 3, background: hex(P.border, 0.6), borderRadius: 2, display: "flex" }, [
           el("div", { height: 3, width: `${progress}%`, background: `linear-gradient(90deg, ${P.blue}, ${P.teal})`, borderRadius: 2 }),
         ]),
         el("div", { fontSize: 10, fontFamily: "JetBrains Mono", color: P.textMu }, "doxuanloc.space"),
       ]),
     ]),
 
-    // Right: diagram panel (SVG)
-    {
-      type: "svg",
-      props: {
-        width: DIAG_W, height: H,
-        viewBox: `0 0 ${DIAG_W} ${H}`,
-        style: { background: P.panel, display: "block" },
-        children: [
-          // Panel bg rect
-          { type: "rect", props: { x: 0, y: 0, width: DIAG_W, height: H, fill: P.panel } },
-          // Grid dots (subtle)
-          ...Array.from({ length: 12 }, (_, row) =>
-            Array.from({ length: 20 }, (_, col) => ({
-              type: "circle",
-              props: { cx: 20 + col * 38, cy: 20 + row * 56, r: 1, fill: hex(P.border, 0.5) },
-            }))
-          ).flat(),
-          // Diagram content
-          ...svgChildren.map((child) => {
-            // Satori SVG children need to be objects with type+props
-            if (typeof child === "string") return null;
-            return child;
-          }).filter(Boolean),
-        ],
+    // Right: diagram panel — SVG (geometric) + HTML div overlays (text labels)
+    el("div", {
+      position: "relative", width: DIAG_W, height: H, display: "flex", overflow: "hidden",
+    }, [
+      {
+        type: "svg",
+        props: {
+          width: DIAG_W, height: H,
+          viewBox: `0 0 ${DIAG_W} ${H}`,
+          style: { position: "absolute", top: 0, left: 0 },
+          children: [
+            { type: "rect", props: { x: 0, y: 0, width: DIAG_W, height: H, fill: P.panel } },
+            ...gridDots,
+            ...geoChildren.filter(Boolean),
+          ],
+        },
       },
-    },
+      ...textLabels,
+    ]),
   ]);
 }
 

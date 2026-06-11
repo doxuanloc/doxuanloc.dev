@@ -25,29 +25,6 @@
         "AI workflow"
       ],
       "isEssay": true
-    },
-    {
-      "date": "2026-06-11",
-      "slug": "2026-06-11-agentic-governance-step-functions-agentcore",
-      "title": "Agentic Governance Production: Step Functions + AgentCore Thực Tế",
-      "excerpt": "Governance trong agentic workflow không phải layer thêm sau — đó là state machine bạn phải thiết kế từ ngày 1. Step Functions + AgentCore: retry semantics, Wait for Task Token cho human-in-the-loop không tốn Lambda idle, idempotency contract per step, và Saga compensation cho production-grade agentic pipeline.",
-      "tags": [
-        "AWS",
-        "Step Functions",
-        "AgentCore",
-        "AI Engineering",
-        "Governance",
-        "Production"
-      ],
-      "readingTimeMin": 10,
-      "coverImage": null,
-      "coverKeywords": [
-        "Step Functions",
-        "AgentCore",
-        "agentic governance",
-        "AWS production"
-      ],
-      "isEssay": true
     }
   ],
   "newsIndex": [
