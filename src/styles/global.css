@@ -891,9 +891,14 @@ a.feed-row, a.feed-row:hover { color: inherit; }
 }
 
 /* ── HOME: SOLVE CARD CHARGE BAR ────────────────────────────── */
-/* Reduced-motion: restore static border (background override lives in index.astro scoped style) */
+/* Charge drives left strip (scoped in index) + live holo intensification from controller */
+.solve-card {
+  border-color: color-mix(in srgb, var(--sc) calc(var(--charge, 0) * 35% + 8%), var(--border));
+  box-shadow: 0 0 calc(var(--charge, 0) * 18px) color-mix(in srgb, var(--sc) calc(var(--charge, 0) * 22%), transparent);
+  transition: border-color 0.2s linear, box-shadow 0.2s linear;
+}
 @media (prefers-reduced-motion: reduce) {
-  .solve-card { border-left: 3px solid var(--sc) !important; }
+  .solve-card { border-left: 3px solid var(--sc) !important; box-shadow: none; }
 }
 
 /* ── HOME: HERO ORBITAL RINGS ───────────────────────────────── */
@@ -926,6 +931,7 @@ a.feed-row, a.feed-row:hover { color: inherit; }
 }
 
 /* ── HOME: HERO VISUAL DEPTH RECESSION ──────────────────────── */
+/* Note: current hero uses full-bleed video; depth var is computed by controller for future layers or if a distinct visual is added. */
 .hero-visual-wrapper {
   transform:
     translateY(calc(var(--hero-depth, 0) * 18px))
@@ -934,4 +940,16 @@ a.feed-row, a.feed-row:hover { color: inherit; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-visual-wrapper { transform: none; will-change: auto; }
+}
+
+/* ── HOME: STARGATE PROXIMITY (journey teaser) ────────────────── */
+.section-journey-teaser .journey-card {
+  border-color: color-mix(in srgb, var(--accent) calc(var(--stargate-proximity, 0) * 45%), var(--border));
+  box-shadow:
+    0 0 calc(var(--stargate-proximity, 0) * 48px) color-mix(in srgb, var(--accent-2) calc(var(--stargate-proximity, 0) * 18%), transparent),
+    var(--shadow-lg);
+  transition: border-color 0.2s linear, box-shadow 0.2s linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-journey-teaser .journey-card { border-color: var(--border); box-shadow: var(--shadow-lg); }
 }

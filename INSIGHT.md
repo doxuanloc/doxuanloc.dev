@@ -12,7 +12,7 @@ Portfolio cá nhân của Đỗ Xuân Lộc (AI & System Optimization Engineer).
 
 | Page | Trạng thái | Ghi chú |
 |------|-----------|---------|
-| `/` | 🔄 Renewal in progress | Home UI/UX renewal (web3/futuristic space style + rich scroll-driven animations & visit interactions). Master plan `docs/home-ui-renewal-plan.md` (research + catalog + phases). Detailed logic `docs/home-implementation-spec.md`. Claude implements per plan. |
+| `/` | ✅ Core renewal + live scroll sync | Home UI/UX renewal (web3/futuristic space + visit interactions). Master `docs/home-ui-renewal-plan.md` + `home-implementation-spec.md`. P1 foundation (controller + HUD + trajectory + charges + reduced-motion) + P2 visuals (rich constellation DNA with SVG filaments/hubs, stargate energy, manifesto filaments) shipped. Live RAF controller drives --home-scroll-p/vel, active sector HUD, hero-depth, solve charges, stargate-proximity. WelcomeOverlay cinematic ingress + hero handoff added. Grok continued polish + wiring after Claude token limit. |
 | `/journey` | ✅ Done | Sticky scrollytelling, scroll-driven crossfade, mobile sticky |
 | `/experience` | ✅ Done | Work history, education, tech stack |
 | `/blog` | ✅ Done | Auto-gen daily (Grok), markdown render |
