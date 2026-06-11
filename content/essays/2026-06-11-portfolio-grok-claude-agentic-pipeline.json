@@ -206,7 +206,33 @@
       }
     ],
     "linkedinPost": "Portfolio tốt nhất là portfolio tự chứng minh được năng lực xây hệ thống — không phải tuyên bố.\n\nTôi không update portfolio tay. Tôi xây pipeline:\n→ Grok CLI research real-time (web_search + web_fetch 3-5 nguồn thật)\n→ validate-content.mjs chặn hallucination TRƯỚC build: sensitive terms, fake metrics, thiếu skill verbs = exit 1\n→ LLM emit JSON block data; Astro render SVG an toàn theo design system — không bao giờ trust raw HTML từ model\n→ gen-news-index.mjs: 6.7KB slim index thay vì 95KB eager glob\n→ LinkedIn auto-post từ linkedinPost field sau mỗi build thành công\n\n3 quyết định kiến trúc không obvious:\n\n1. Capability routing: Grok làm research (real-time), Claude làm validation + code execution. Không phải 1 model cho tất cả — phân vai theo superpower.\n\n2. Validate-before-build = security boundary cứng. Prompt engineering không đảm bảo được điều mà build gate đảm bảo.\n\n3. Mechanism GIF bằng satori+gifenc server-side: 8 frames, 1200×630px, traveling signal dots — không WebGL, không Lighthouse penalty.\n\nFull breakdown + architecture diagram: doxuanloc.space\n\n#AIEngineering #AgenticPipeline #Astro",
-    "mechanismGif": null
+    "mechanismGif": null,
+    "blocks": [
+      {
+        "type": "sequence",
+        "id": "portfolio-pipeline-sequence",
+        "title": "Grok × Claude Daily Pipeline Flow",
+        "caption": "Research (Grok) → Validate & Guardrails (Claude) → Render & Deploy → Feedback Loop",
+        "sequence": {
+          "actors": [
+            {"id": "grok", "label": "Grok (Research)"},
+            {"id": "validate", "label": "validate-content.mjs"},
+            {"id": "claude", "label": "Claude (Execution)"},
+            {"id": "astro", "label": "Astro Build"},
+            {"id": "deploy", "label": "Deploy + LinkedIn"},
+            {"id": "feedback", "label": "User Feedback / Insights"}
+          ],
+          "events": [
+            {"phase": 0.0, "from": "grok", "to": "validate", "label": "raw JSON (research + thesis)", "kind": "request"},
+            {"phase": 0.2, "from": "validate", "to": "claude", "label": "pass guardrails (schema, sensitive terms, skill verbs)", "kind": "response"},
+            {"phase": 0.4, "from": "claude", "to": "astro", "label": "contentMarkdown + blocks", "kind": "request"},
+            {"phase": 0.6, "from": "astro", "to": "deploy", "label": "static site + mechanism GIF", "kind": "response"},
+            {"phase": 0.8, "from": "deploy", "to": "feedback", "label": "user reads / edits / flags", "kind": "event"},
+            {"phase": 1.0, "from": "feedback", "to": "grok", "label": "insights for next research cycle", "kind": "event"}
+          ]
+        }
+      }
+    ]
   },
   "blog.en": {
     "slug": "2026-06-11-portfolio-grok-claude-agentic-pipeline",
