@@ -890,15 +890,15 @@ a.feed-row, a.feed-row:hover { color: inherit; }
   color: var(--text-mute); opacity: 0.6;
 }
 
-/* ── HOME: SOLVE CARD CHARGE BAR ────────────────────────────── */
-/* Charge drives left strip (scoped in index) + live holo intensification from controller */
-.solve-card {
+/* ── HOME: SOLVE STRIP CHARGE GLOW ──────────────────────────── */
+/* Charge drives rail bar (scoped in index) + live border intensification from controller */
+.solve-strip {
   border-color: color-mix(in srgb, var(--sc) calc(var(--charge, 0) * 35% + 8%), var(--border));
   box-shadow: 0 0 calc(var(--charge, 0) * 18px) color-mix(in srgb, var(--sc) calc(var(--charge, 0) * 22%), transparent);
   transition: border-color 0.2s linear, box-shadow 0.2s linear;
 }
 @media (prefers-reduced-motion: reduce) {
-  .solve-card { border-left: 3px solid var(--sc) !important; box-shadow: none; }
+  .solve-strip { box-shadow: none; }
 }
 
 /* ── HOME: HERO ORBITAL RINGS ───────────────────────────────── */

@@ -21,7 +21,9 @@
   "solves": [
     {
       "problem": "Tách monolithic thành microservices mà không tích lũy coupling và chặn lẫn nhau giữa các team",
-      "approach": "Dùng NX Monorepo để áp đặt ranh giới project rõ ràng giữa internal services và public APIs; mỗi service NestJS tuân thủ SOLID với contract ổn định, CI/CD độc lập theo môi trường trên AWS (EC2 + CodePipeline) cho phép deploy riêng lẻ mà không cần release train chung hay chia sẻ mutable state.",
+      "decision": "Dùng NX Monorepo áp đặt ranh giới project rõ ràng giữa internal services và public APIs — boundary là cấu trúc, không phải quy ước.",
+      "detail": "Mỗi service NestJS tuân thủ SOLID với contract ổn định; CI/CD độc lập theo môi trường trên AWS (EC2 + CodePipeline) cho phép deploy riêng lẻ mà không cần release train chung hay chia sẻ mutable state.",
+      "outcome": "các team ship độc lập, không release train",
       "stack": [
         "NX Monorepo",
         "NestJS",
@@ -31,7 +33,9 @@
     },
     {
       "problem": "Voicebot trên thoại điện thoại tiếng Nhật thực gặp failure modes không có trong text chat: dead air làm khách ngắt, brand recognition và PostCode format lỗi làm hỏng dữ liệu downstream",
-      "approach": "Xây dựng state machine trên Amazon Connect + Lex V2 (ja_JP) để kiểm soát turn-taking và chèn guard (timeout, rate limit) cho dead air; chuyển intent classification và structured extraction qua Bedrock Claude Haiku, bổ sung rule-based normalization PostCode và fuzzy handling cho brand errors để chỉ dữ liệu sạch đi tiếp vào hệ thống sau.",
+      "decision": "Xây state machine trên Amazon Connect + Lex V2 (ja_JP) để kiểm soát turn-taking — pure NLU không govern được telephony artifacts.",
+      "detail": "Chèn guard (timeout, rate limit) cho dead air; intent classification và structured extraction qua Bedrock Claude Haiku, bổ sung rule-based normalization PostCode và fuzzy handling cho brand errors.",
+      "outcome": "chỉ dữ liệu đã validate đi tiếp vào backend",
       "stack": [
         "Amazon Connect",
         "Lex V2 (ja_JP)",
@@ -43,7 +47,9 @@
     },
     {
       "problem": "Pipeline xử lý audio cuộc gọi nghiệp vụ thực (nhiễu, cross-talk, độ dài biến thiên) cần STT + diarization + summarization + extract cấu trúc nhưng inference nặng sync làm chi phí GPU cao và không chịu burst",
-      "approach": "Kết hợp Whisper Large-v3/Turbo cho STT với Pyannote diarization, sau đó summarization/extraction qua Bedrock và Gemini; Lambda workers điều phối gọi SageMaker async endpoints để tách compute khỏi critical path, chỉ tính phí khi chạy inference thực sự và scale theo burst; hậu xử lý robustness cho cross-talk, kết quả structured xuất S3 Tables (Iceberg) để vận hành query trực tiếp.",
+      "decision": "Lambda workers điều phối SageMaker async endpoints — tách inference khỏi request path, chỉ trả phí khi chạy thật, scale theo burst.",
+      "detail": "Flow: Whisper Large-v3/Turbo STT → Pyannote diarization → Bedrock/Gemini summarization + extraction; hậu xử lý robustness cho cross-talk; kết quả structured xuất S3 Tables (Iceberg) để ops query trực tiếp.",
+      "outcome": "không idle GPU, hấp thụ burst không cần provisioned capacity",
       "stack": [
         "Whisper Large-v3/Turbo",
         "Pyannote",
@@ -56,7 +62,9 @@
     },
     {
       "problem": "Xử lý batch ảnh sản phẩm e-comm thủ công chậm và sai: generic background removal không đạt chuẩn nền trắng sạch, gán Product ID bằng tay, upload lẻ tẻ dễ lỗi",
-      "approach": "Triển khai Bilateral Reference ML model trên SageMaker cho xóa nền trắng — chọn thay vì general removers vì đáp ứng chuẩn catalog e-comm — Florence-2 routing requests để phân loại ảnh vào pipeline xử lý phù hợp; barcode scan tự động nhóm theo Product ID trước khi edit; Next.js 15 + SQS + API Gateway batch upload thẳng V2 management system.",
+      "decision": "Bilateral Reference ML trên SageMaker cho xóa nền trắng — chọn thay vì general removers vì chuẩn catalog e-comm; Florence-2 routing requests vào pipeline phù hợp.",
+      "detail": "Barcode scan tự động nhóm theo Product ID trước khi edit; Next.js 15 + SQS + API Gateway batch upload thẳng vào V2 management system.",
+      "outcome": "batch processing tin cậy, hết upload rời rạc thủ công",
       "stack": [
         "Next.js 15",
         "React 19",
@@ -70,7 +78,9 @@
     },
     {
       "problem": "Tự động hóa một phần workflow IS/FS từ dữ liệu Voicebot đòi hỏi multi-step stateful reasoning nhưng single LLM thiếu memory liên tục và tạo tight coupling giữa collector và decision layer",
-      "approach": "Mô hình hóa workflow thành directed graph của specialized agents dùng LangGraph trên Gemini để duy trì explicit state và branching logic; áp dụng Agent-to-Agent (A2A) communication chuẩn để Voicebot push structured data sang decision agents, kết hợp selective memory + caching để tránh re-compute; tích hợp trực tiếp với S3 và DynamoDB hiện hữu thay vì duplicate storage.",
+      "decision": "Mô hình hóa workflow thành directed graph của specialized agents trên LangGraph — single-shot LLM không giữ được cross-step state.",
+      "detail": "A2A communication chuẩn hóa để Voicebot push structured data sang decision agents; selective memory + caching tránh re-inference; tích hợp thẳng S3/DynamoDB hiện hữu thay vì duplicate storage.",
+      "outcome": "stateful reasoning đa bước, không coupling collector–decision",
       "stack": [
         "LangGraph",
         "Gemini",

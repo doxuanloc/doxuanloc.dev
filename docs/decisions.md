@@ -214,3 +214,19 @@
 - 2 generator (PNG dark / GIF light) → chi phí maintain 2 visual path.
 
 **References**: `scripts/linkedin-card.mjs`, raw takes trong session 2026-06-11 (Grok in-repo `--tools read_file,grep,list_dir`).
+
+---
+
+## 2026-06-11 — Solve section redesign: grid cards → Telemetry Dossier ledger
+
+**Quyết định**: Bỏ grid 2 cột solve-card → single-column ledger strips, grid `[56px rail | 38% problem | 1fr reasoning]`. Schema migration: `approach` → `decision` (1 câu quyết định then chốt, accent 600w, luôn visible) + `detail` (supporting moves, dim, KHÔNG clamp) + `outcome` (HUD readout mono `>>`). Giữ charge bar (`data-chargeable`) + reveal stagger; bỏ `data-tilt` (full-width strip tilt xấu). Fallback `s.decision ?? s.approach` cho backward compat.
+
+**Lý do**: Approach sau rewrite senior-level là đoạn văn dày → wall-of-text trong card hẹp; 5 cards grid 2 cột lẻ 1. Parallel mode: Grok "Telemetry Ledger" (clamp 3 dòng + hover expand) vs Claude "Case Dossier" (full text + structured fields). User giao Claude tie-break → synthesis: tách field `decision` làm `detail` còn lại ngắn → không cần clamp nữa, fix điểm yếu cả 2 take (Grok: hover-only readers mất nội dung trên mobile; Claude: 2× vertical space).
+
+**Trade-off**:
+- Vertical ~1.5× grid cũ → đổi lấy line-length 64-72ch + full visibility không cần interaction.
+- Mất "five cards" colorful glance → triage scan dọc nhanh hơn (problem headline là filter).
+- Content migration 2 file × 5 entries (one-time; Claude tự tách vì chính Claude viết approach).
+- CSS first-sentence styling (Grok) bị loại vì fragile với cấu trúc câu VI/EN khác nhau → structure ở data level.
+
+**References**: `docs/solve-section-redesign-spec.md`, raw takes trong session 2026-06-11 (Grok background task), `src/pages/index.astro` (.solve-ledger), `content/profile.json` + `content/profile.en.json` (solves schema v2).

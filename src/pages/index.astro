@@ -61,20 +61,27 @@ const activeHubs = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map
       <p class="eyebrow" data-reveal>{t('home.solve.eyebrow')}</p>
       <h2 class="section-title" data-reveal style="--reveal-delay:60ms">{t('home.solve.title')}</h2>
       <p class="section-sub" data-reveal style="--reveal-delay:100ms">{t('home.solve.sub')}</p>
-      <div class="solve-grid">
+      <div class="solve-ledger">
         {solves.map((s, i) => (
           <div
-            class="solve-card"
+            class="solve-strip"
             data-reveal
             data-tilt
             data-chargeable
             style={`--reveal-delay:${i * 80 + 120}ms; --sc:${solveAccents[i % solveAccents.length]}; --charge: var(--solve-charge-${i})`}
           >
-            <span class="solve-ghost-num mono">{String(i + 1).padStart(2, '0')}</span>
-            <div class="solve-body">
+            <div class="solve-rail">
+              <span class="solve-num mono">{String(i + 1).padStart(2, '0')}</span>
+              <span class="solve-charge-bar" aria-hidden="true"></span>
+            </div>
+            <div class="solve-problem-zone">
               <h3 class="solve-problem">{s.problem}</h3>
-              <p class="solve-approach">{s.approach}</p>
-              <div class="chips" style="margin-top:12px">
+            </div>
+            <div class="solve-reason-zone">
+              <p class="solve-decision"><span class="solve-decision-marker" aria-hidden="true">▸</span>{s.decision ?? s.approach}</p>
+              {s.detail && <p class="solve-detail">{s.detail}</p>}
+              {s.outcome && <p class="solve-outcome mono" aria-label="outcome">&gt;&gt; {s.outcome}</p>}
+              <div class="chips solve-chips">
                 {(s.stack ?? []).map((tag: string) => (
                   <span class="chip" style={`border-color:color-mix(in srgb,${solveAccents[i % solveAccents.length]} 35%,var(--border));color:${solveAccents[i % solveAccents.length]}`}>{tag}</span>
                 ))}
@@ -356,49 +363,120 @@ const activeHubs = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map
     .manifesto-lines li:not(:last-child)::after { transition: none; transform: scaleY(1); }
   }
 
-  /* ── SOLVE CARDS ───────────────────────── */
-  .solve-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+  /* ── SOLVE LEDGER (Telemetry Dossier) ───── */
+  .solve-ledger {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     margin-top: 32px;
   }
-  @media (max-width: 680px) { .solve-grid { grid-template-columns: 1fr; } }
 
-  .solve-card {
+  .solve-strip {
     position: relative;
-    padding: 28px 24px 24px 20px;
-    /* border-box origin paints the 3px charge gradient strip into the transparent border area */
-    background:
-      linear-gradient(
-        to top,
-        var(--sc) calc(var(--charge, 0) * 100%),
-        color-mix(in srgb, var(--sc) 18%, transparent) calc(var(--charge, 0) * 100%)
-      ) 0 0 / 3px 100% no-repeat border-box border-box,
-      rgba(12, 18, 40, 0.65);
+    display: grid;
+    grid-template-columns: 56px minmax(0, 38%) minmax(0, 1fr);
+    gap: 0 28px;
+    padding: 26px 28px 24px 0;
+    background: color-mix(in srgb, var(--bg-card) 72%, transparent);
     border: 1px solid var(--border);
-    border-left: 3px solid transparent;
     border-radius: var(--radius);
     overflow: hidden;
-    transition: box-shadow 0.3s var(--ease);
+    transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
   }
-  .solve-card:hover {
-    box-shadow: 0 0 28px color-mix(in srgb, var(--sc) 18%, transparent), var(--shadow-lg);
+  .solve-strip:hover {
+    border-color: color-mix(in srgb, var(--sc) 35%, var(--border));
+    box-shadow: 0 0 28px color-mix(in srgb, var(--sc) 14%, transparent), var(--shadow);
   }
-  .solve-ghost-num {
-    position: absolute; top: -4px; right: 14px;
-    font-size: 5rem; font-weight: 800; line-height: 1;
-    color: var(--sc); opacity: 0.07; pointer-events: none; user-select: none;
-    transition: opacity 0.3s;
+  .solve-strip:hover .chip {
+    border-color: color-mix(in srgb, var(--sc) 55%, var(--border)) !important;
   }
-  .solve-card:hover .solve-ghost-num { opacity: 0.13; }
-  .solve-body { position: relative; }
+
+  .solve-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding-top: 2px;
+  }
+  .solve-num {
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--sc); opacity: 0.85;
+  }
+  .solve-charge-bar {
+    flex: 1; width: 3px; border-radius: 2px;
+    background: linear-gradient(
+      to top,
+      var(--sc) calc(var(--charge, 0) * 100%),
+      color-mix(in srgb, var(--sc) 18%, transparent) calc(var(--charge, 0) * 100%)
+    );
+    transition: background 0.2s linear;
+  }
+  .solve-strip:hover .solve-charge-bar {
+    background: var(--sc);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--sc) 45%, transparent);
+  }
+
+  .solve-problem-zone {
+    border-right: 1px solid var(--border-soft);
+    padding-right: 24px;
+  }
   .solve-problem {
-    font-size: 1.1rem; font-weight: 700; margin: 0 0 10px;
-    color: var(--text); max-width: 34ch; line-height: 1.3;
+    font-size: 1.18rem; font-weight: 700; margin: 0;
+    color: var(--text); max-width: 40ch; line-height: 1.32;
   }
-  .solve-approach {
-    color: var(--text-dim); font-size: 0.93rem; line-height: 1.6; margin: 0;
+
+  .solve-reason-zone { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .solve-decision {
+    margin: 0;
+    font-size: 0.97rem; font-weight: 600; line-height: 1.5;
+    color: color-mix(in srgb, var(--sc) 72%, var(--text));
+  }
+  .solve-decision-marker {
+    color: var(--sc);
+    margin-right: 8px;
+    transition: text-shadow 0.3s;
+  }
+  .solve-strip:hover .solve-decision-marker {
+    text-shadow: 0 0 8px var(--sc);
+  }
+  .solve-detail {
+    margin: 0;
+    color: var(--text-dim); font-size: 0.92rem; line-height: 1.6;
+    max-width: 72ch;
+  }
+  .solve-outcome {
+    margin: 0;
+    font-size: 0.78rem; letter-spacing: 0.04em;
+    color: var(--accent-3);
+    opacity: 0.9;
+  }
+  .solve-chips { margin-top: 2px; }
+
+  @media (max-width: 680px) {
+    .solve-strip {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 22px 18px 20px;
+    }
+    .solve-rail {
+      flex-direction: row;
+      align-items: center;
+      padding-top: 0;
+    }
+    .solve-charge-bar {
+      width: auto; height: 3px; flex: 1;
+      background: linear-gradient(
+        to right,
+        var(--sc) calc(var(--charge, 0) * 100%),
+        color-mix(in srgb, var(--sc) 18%, transparent) calc(var(--charge, 0) * 100%)
+      );
+    }
+    .solve-problem-zone { border-right: none; padding-right: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .solve-charge-bar { background: var(--sc) !important; box-shadow: none !important; }
+    .solve-strip, .solve-decision-marker { transition: none; }
   }
 
   /* ── CONSTELLATION CORE ───────────────── */
