@@ -136,6 +136,70 @@
           "type": ["string", "null"],
           "maxLength": 1200,
           "description": "Pre-crafted LinkedIn post text. Hook + 3 insight bullets + link + hashtags. Vietnamese. ~600-900 chars."
+        },
+        "tldr": {
+          "type": "array",
+          "maxItems": 5,
+          "items": { "type": "string", "maxLength": 160 },
+          "description": "Key takeaways for 10s catch-up, rendered above the body as a box."
+        },
+        "blocks": {
+          "type": "array",
+          "maxItems": 12,
+          "description": "Data-driven visual/interactive blocks (P0: callout|chart|comparison|flow|step). LLM emits DATA only; site renders safe HTML/SVG. NO raw HTML/SVG strings.",
+          "items": {
+            "type": "object",
+            "required": ["type", "id"],
+            "additionalProperties": false,
+            "properties": {
+              "type": { "enum": ["callout", "chart", "comparison", "flow", "step"] },
+              "id": { "type": "string", "minLength": 1, "maxLength": 40 },
+              "caption": { "type": "string", "maxLength": 200 },
+              "variant": { "enum": ["insight", "warning", "tradeoff", "fact"] },
+              "title": { "type": "string", "maxLength": 90 },
+              "body": { "type": "string", "maxLength": 600 },
+              "chart": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "variant": { "enum": ["bar", "line"] },
+                  "unit": { "type": "string", "maxLength": 12 },
+                  "data": {
+                    "type": "array", "minItems": 2, "maxItems": 8,
+                    "items": {
+                      "type": "object", "required": ["label", "value"], "additionalProperties": false,
+                      "properties": {
+                        "label": { "type": "string", "maxLength": 24 },
+                        "value": { "type": "number" }
+                      }
+                    }
+                  }
+                }
+              },
+              "comparison": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "left":  { "type": "object", "required": ["title", "points"], "additionalProperties": false, "properties": { "title": { "type": "string", "maxLength": 40 }, "points": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 120 } } } },
+                  "right": { "type": "object", "required": ["title", "points"], "additionalProperties": false, "properties": { "title": { "type": "string", "maxLength": 40 }, "points": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 120 } } } }
+                }
+              },
+              "flow": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "steps": { "type": "array", "minItems": 2, "maxItems": 6, "items": { "type": "object", "required": ["label"], "additionalProperties": false, "properties": { "label": { "type": "string", "maxLength": 40 }, "desc": { "type": "string", "maxLength": 100 } } } }
+                }
+              },
+              "step": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "items": { "type": "array", "minItems": 2, "maxItems": 8, "items": { "type": "object", "required": ["label", "body"], "additionalProperties": false, "properties": { "label": { "type": "string", "maxLength": 60 }, "body": { "type": "string", "maxLength": 240 } } } }
+                }
+              }
+            }
+          }
         }
       }
     },

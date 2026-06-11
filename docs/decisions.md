@@ -180,3 +180,21 @@
 - Setup 1 lần: LinkedIn Developer App → Share on LinkedIn + OIDC products → run setup script (local http callback) → lưu refresh token vào .env.
 
 **References**: `docs/linkedin-auto-post-spec.md` (full architecture, template, OAuth flow, error matrix, script outline).
+
+---
+
+## 2026-06-11 — Multi-AI doctrine v3 + Blog richness P0
+
+**Quyết định (doctrine v3, global)**: Thay vai cố định → capability-routing (4 mode cộng hưởng: parallel/sequential/adversarial/single; evidence-gates; security mode full-power vs redacted). Ghi `~/.claude/CLAUDE.md` + `PART2_WORKFLOW.md`, pushed. Grok raw take + record: `~/.claude/docs/workflow-doctrine-v3.md`.
+
+**Quyết định (blog richness P0)**: Thêm `blog.tldr` + `blog.blocks` (5 type data-driven: callout/chart/comparison/flow/step). LLM emit DATA, `ContentBlocks.astro` render safe HTML/SVG. `[slug].astro`: TL;DR box + blocks interleave giữa H2. `validate-content.mjs` mở rộng quét blocks/tldr.
+
+**Lý do**: (1) Doctrine cũ lagging harness — Grok Build đọc repo trực tiếp; 2 take độc lập + cross-check mới là giá trị multi-AI. (2) Blog "wall of text" khó catch-up; data-driven blocks = điểm nhấn + an toàn auto-gen (LLM không viết HTML/SVG thô → diệt sanitization + vỡ layout). 2 take Grok+Claude hội tụ về data-driven.
+
+**Trade-off**:
+- Data-driven > raw markup: bớt linh hoạt, tin cậy hơn nhiều khi auto-gen hàng ngày.
+- Widget free-compute JS + raw-SVG → P1 (rủi ro logic/geometry); P0 tương tác qua `step` (reveal, không free JS).
+- Interleave theo thứ tự H2 (P0); position-markers chính xác → P1.
+- LinkedIn org dual-post → P2 (scope `w_organization_social` restricted).
+
+**References**: `docs/blog-richness-spec.md` (Grok draft + 3 tie-break resolved), `src/components/blog/ContentBlocks.astro`, `content/schema.json`.

@@ -4,13 +4,35 @@
 Portfolio cá nhân của Đỗ Xuân Lộc (doxuanloc.dev) — Astro 5 static site, tự cập nhật hàng ngày qua Grok CLI.
 
 ## Workflow
-- **Grok** = design spec, content, architecture decisions, UI/UX review
-- **Claude** = implement, refactor, test, debug
-- **User** = priority, tie-breaker
+Theo doctrine global **capability-routing** (`~/.claude/CLAUDE.md`). Portfolio-specific:
+- **UI/UX/layout mới** = high-taste → mode **parallel độc lập**: Grok + Claude mỗi bên 1 take → user chốt. Claude KHÔNG solo-design rồi ship.
+- **Bug fix / tweak nhỏ** (<30', không đổi layout) = single actor, Claude làm thẳng.
+- **Sau khi Claude implement UI/UX** → Grok quick-review (verification owner cho design) trước khi merge.
+- Project này **full-power mode**: Grok đọc repo trực tiếp (public, no PII).
+- Spec lớn theo mẫu `docs/templates/spec-template.md`.
+- **User** = priority, taste, tie-breaker.
 
-→ **Bất kỳ task nào có planning/design** (UI mới, section mới, layout thay đổi): thảo luận với Grok trước, lấy spec rồi Claude mới implement.
-→ Bug fix hoặc tweak nhỏ (< 30 phút, không thay đổi layout): Claude implement trực tiếp.
-→ Claude KHÔNG tự lên kế hoạch UI/UX rồi implement — phải có Grok spec trước.
+## Shared context (Grok ↔ Claude — cùng đọc file này)
+
+File `CLAUDE.md` này được **CẢ Claude Code LẪN Grok Build** đọc (Grok nhận diện `Claude.md` khi chạy trong repo, scan từ repo-root → cwd). Đây là "bộ não chung": sửa 1 chỗ → cả 2 AI cùng cập nhật. KHÔNG tách file riêng cho Grok.
+
+**Dự án này: Grok ĐƯỢC full context.** Đọc trực tiếp repo (code, docs, content) — KHÔNG cần abstract/ẩn danh như rule global, vì portfolio là public, không có PII khách hàng. (Rule abstract chỉ áp dụng cho project có dữ liệu khách thật.)
+
+**Artifact dùng chung — cả 2 AI đọc/ghi:**
+- `docs/decisions.md` — joint decision log (format: Quyết định / Lý do / Trade-off / References). Mọi quyết định kiến trúc ghi vào đây.
+- `docs/*-spec.md` — Grok soạn spec → Claude implement theo.
+- `INSIGHT.md` — system context tổng quan.
+- `content/insights/inbox.md` — ghi chú thực tế của user → feed vào content pipeline mỗi ngày.
+
+**Handoff loop (liên tục cải tiến):** user nêu vấn đề → Grok đọc repo + soạn spec vào `docs/` → Claude implement → cả 2 ghi `decisions.md` → lặp lại.
+
+**Gọi Grok in-repo** (đọc file thật, KHÔNG nhúng context thủ công):
+```bash
+grok -p "đọc <files>, phân tích/spec <task>" --tools read,web_search,web_fetch --experimental-memory
+grok -c                       # tiếp tục session gần nhất của repo
+# Tool thật: read,web_search,web_fetch,write(=search_replace),bash,grep,list_dir. KHÔNG có --effort, browse_page, x_search.
+# write/bash chỉ khi cần Grok sửa file/chạy lệnh (full-power); spec mặc định read-only, Claude review rồi ghi.
+```
 
 ## Stack
 - **Framework**: Astro 5, islands architecture, View Transitions

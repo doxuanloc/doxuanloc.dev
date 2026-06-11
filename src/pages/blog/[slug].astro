@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getAllPosts, getAllSlugs, getPostBySlug, getProfile } from '../../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../../i18n/ui';
 import BlogCoverVisual from '../../components/BlogCoverVisual.astro';
+import ContentBlocks from '../../components/blog/ContentBlocks.astro';
 import { marked } from 'marked';
 
 export function getStaticPaths() {
@@ -14,7 +15,10 @@ const t = useTranslations(lang);
 const { slug } = Astro.params;
 const post = getPostBySlug(slug, lang)!;
 const profile = getProfile(lang);
-const html = marked.parse(post.contentMarkdown ?? '', { async: false }) as string;
+const md = post.contentMarkdown ?? '';
+const rawSections = md.split(/(?=^##\s)/m).map((s) => s.trim()).filter(Boolean);
+const sections = (rawSections.length ? rawSections : [md]).map((s) => marked.parse(s, { async: false }) as string);
+const blocks = post.blocks ?? [];
 
 const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
 const postUrl = `${siteOrigin}/blog/${post.slug}/`;
@@ -83,8 +87,24 @@ const aiPlaceholder = lang === 'vi' ? 'Hỏi về bài viết này…' : lang ==
         <div class="aurora-line" style="margin-top:20px"></div>
       </header>
 
-      {/* Article body */}
-      <article class="prose article-prose" set:html={html} data-reveal style="--reveal-delay:60ms" />
+      {/* TL;DR — 10s catch-up */}
+      {post.tldr && post.tldr.length > 0 && (
+        <aside class="article-tldr" data-reveal>
+          <div class="tldr-head mono">TL;DR</div>
+          <ul>{post.tldr.map((t) => <li>{t}</li>)}</ul>
+        </aside>
+      )}
+
+      {/* Article body — prose sections interleaved with data-driven blocks */}
+      <div class="article-body" data-reveal style="--reveal-delay:60ms">
+        {sections.map((sec, i) => (
+          <>
+            <article class="prose article-prose" set:html={sec} />
+            {blocks[i] && <ContentBlocks blocks={[blocks[i]]} />}
+          </>
+        ))}
+        {blocks.length > sections.length && <ContentBlocks blocks={blocks.slice(sections.length)} />}
+      </div>
 
       {/* AI discussion slot */}
       <div class="ai-slot article-ai-slot" data-reveal style="--reveal-delay:80ms">
@@ -141,6 +161,17 @@ const aiPlaceholder = lang === 'vi' ? 'Hỏi về bài viết này…' : lang ==
     overflow: hidden;
     border: 1px solid var(--border);
   }
+
+  /* TL;DR box */
+  .article-tldr {
+    border: 1px solid var(--border); border-left: 3px solid var(--accent-2);
+    border-radius: 0 12px 12px 0; padding: 16px 20px;
+    background: color-mix(in srgb, var(--accent-2) 5%, transparent);
+  }
+  .tldr-head { font-size: 0.7rem; letter-spacing: 2px; color: var(--accent-2); text-transform: uppercase; margin-bottom: 8px; }
+  .article-tldr ul { margin: 0; padding-left: 18px; }
+  .article-tldr li { font-size: 0.95rem; line-height: 1.55; color: var(--text-dim); margin-bottom: 5px; }
+  .article-body { display: flex; flex-direction: column; }
 
   /* Prose overrides for reading comfort */
   .article-prose {

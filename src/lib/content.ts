@@ -17,6 +17,21 @@ export interface NewsItem {
   importance?: number;
 }
 
+/** Data-driven content block. LLM emits DATA only; ContentBlocks.astro renders. */
+export interface ContentBlock {
+  type: 'callout' | 'chart' | 'comparison' | 'flow' | 'step';
+  id: string;
+  caption?: string;
+  variant?: 'insight' | 'warning' | 'tradeoff' | 'fact';
+  title?: string;
+  body?: string;
+  chart?: { variant: 'bar' | 'line'; unit?: string; data: { label: string; value: number }[] };
+  comparison?: { left: ComparisonCol; right: ComparisonCol };
+  flow?: { steps: { label: string; desc?: string }[] };
+  step?: { items: { label: string; body: string }[] };
+}
+export interface ComparisonCol { title: string; points: string[]; }
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -27,6 +42,8 @@ export interface BlogPost {
   coverImage?: string | null;
   coverKeywords?: string[];
   interactiveBlock?: string | null;
+  tldr?: string[];
+  blocks?: ContentBlock[];
 }
 
 export interface FinanceNewsItem {
@@ -85,6 +102,8 @@ function resolvePost(d: DailyContent, lang: Lang): BlogPost | null {
       interactiveBlock: ja.interactiveBlock ?? vi?.interactiveBlock ?? null,
       coverKeywords:    ja.coverKeywords    ?? vi?.coverKeywords,
       coverImage:       ja.coverImage       ?? vi?.coverImage ?? null,
+      tldr:             ja.tldr             ?? vi?.tldr,
+      blocks:           ja.blocks           ?? vi?.blocks,
     } as BlogPost;
   }
   if (lang === 'en') {
@@ -94,6 +113,8 @@ function resolvePost(d: DailyContent, lang: Lang): BlogPost | null {
       interactiveBlock: en.interactiveBlock ?? vi?.interactiveBlock ?? null,
       coverKeywords:    en.coverKeywords    ?? vi?.coverKeywords,
       coverImage:       en.coverImage       ?? vi?.coverImage ?? null,
+      tldr:             en.tldr             ?? vi?.tldr,
+      blocks:           en.blocks           ?? vi?.blocks,
     } as BlogPost;
   }
   return vi;

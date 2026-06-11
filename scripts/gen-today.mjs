@@ -8,7 +8,7 @@
  * Yêu cầu: `grok` trong PATH và đã auth (local OAuth hoặc XAI_API_KEY trong CI).
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -29,6 +29,13 @@ const focus = [
   .join(", ");
 
 const schema = readFileSync(join(root, "content", "schema.json"), "utf8");
+
+// Đọc insight inbox (ghi chú thực tế của tác giả)
+const inboxPath = join(root, "content", "insights", "inbox.md");
+const inboxRaw = existsSync(inboxPath) ? readFileSync(inboxPath, "utf8") : "";
+// Strip template/comments, giữ lại nội dung thực sau dấu ---
+const inboxContent = inboxRaw.replace(/^[\s\S]*?---\s*\n/m, "").replace(/<!--[\s\S]*?-->/g, "").trim();
+const hasInbox = inboxContent.length > 30;
 
 // expUpdate chỉ sinh 2-3 lần/tuần (Thứ 2 / 4 / 6 UTC) để giảm áp lực nội dung & rủi ro lộ tin.
 const weekday = new Date(`${today}T00:00:00Z`).getUTCDay(); // 0=CN..6=T7
@@ -76,13 +83,28 @@ PHONG CÁCH INSIGHT: Với mỗi tin và bài blog, bạn là người PHÂN TÍ
    - Giọng: thẳng thắn, tối ưu-focused, tạo giá trị thực — KHÔNG sáo rỗng, KHÔNG hỏi "bạn nghĩ sao?"
    - KHÔNG đề cập tên công ty/khách/nội bộ. KHÔNG copy excerpt.
 
+   VISUAL BLOCKS + TL;DR (bắt buộc — điểm nhấn khác biệt của blog, giúp người đọc catch-up qua cách trình bày):
+   - "tldr": 3-5 bullet ngắn — ý chính để catch-up trong 10 giây (KHÔNG phải excerpt, KHÔNG lặp excerpt).
+   - "blocks": 3-6 block DATA-DRIVEN minh họa nội dung bài (KHÔNG trang trí). CHỈ xuất DATA theo schema — TUYỆT ĐỐI KHÔNG viết HTML/SVG/JS thô. Loại block:
+     • callout {variant:insight|warning|tradeoff|fact, title, body} — chốt 1 insight/trade-off quan trọng.
+     • chart {variant:bar|line, unit, data:[{label,value}]} — số liệu so sánh. Số PHẢI có thật/từ nguồn web_search, KHÔNG bịa (vi phạm guardrail bảo mật).
+     • comparison {left:{title,points[]}, right:{title,points[]}} — before/after hoặc A vs B.
+     • flow {steps:[{label,desc}]} — quy trình/kiến trúc 2-6 bước.
+     • step {items:[{label,body}]} — các bước tiết lộ dần (block tương tác duy nhất).
+   - Thứ tự blocks khớp H2: block thứ i hiện SAU section H2 thứ i → phân bổ đều khắp bài, mỗi block 1 "id" ngắn (kebab).
+   - Tối thiểu 1 callout + 1 block trực quan (chart/comparison/flow). Mỗi block phải đúng nội dung bài, làm rõ 1 ý cụ thể — không nhồi cho đủ.
+
 3. FINANCE & FINTECH NEWS — Dùng web_search tìm 3-5 tin tài chính & công nghệ tài chính ĐÁNG CHÚ Ý trong 24-72h qua.
    Ưu tiên: fintech product & regulation, crypto/DeFi (Bitcoin/Ethereum/altcoin), VC funding & startup valuation (tech focus), thị trường chứng khoán tech (NASDAQ, big-tech earnings), macro kinh tế ảnh hưởng tech (Fed rate, inflation, AI investment wave), M&A & IPO tech.
    MỖI tin PHẢI có source URL thật. Tóm tắt tiếng Việt, có câu "Góc nhìn:" cuối summary phân tích tác động đến investor/builder/engineer. Ghi vào field "financeNews", mỗi item cần thêm "category" (một trong: fintech | crypto | vc-startup | market | macro).
 
 ${expInstruction}
 
-GHI KẾT QUẢ: tạo file ${outFile} đúng JSON Schema sau (KHÔNG thêm field lạ, KHÔNG markdown fence quanh JSON):
+${hasInbox ? `CONTEXT TỪ GHI CHÚ THỰC TẾ CỦA TÁC GIẢ (đã ẩn danh, KHÔNG lặp lại trong output):
+${inboxContent}
+→ Dùng để chọn góc blog gần với thực tế tác giả hơn, viết expUpdate sát năng lực thực, viết linkedinPost đúng "tôi vừa làm X" hơn. Không nhắc tên công ty/khách/số liệu nội bộ cụ thể.
+
+` : ""}GHI KẾT QUẢ: tạo file ${outFile} đúng JSON Schema sau (KHÔNG thêm field lạ, KHÔNG markdown fence quanh JSON):
 ${schema}
 
 QUAN TRỌNG: field "date" = "${today}". Mỗi source URL bắt buộc là http(s) có thật. Nội dung vi phạm quy tắc bảo mật sẽ bị guardrail chặn deploy. Ghi xong thì dừng.`;
@@ -111,6 +133,19 @@ if (res.error) {
 if (!existsSync(join(root, outFile))) {
   console.error(`❌ Grok không tạo ${outFile}. Hủy (không deploy).`);
   process.exit(1);
+}
+
+// Archive inbox nếu có nội dung
+if (hasInbox) {
+  const archiveDir = join(root, "content", "insights", "archive");
+  mkdirSync(archiveDir, { recursive: true });
+  writeFileSync(join(archiveDir, `${today}.md`), `# ${today}\n\n${inboxContent}\n`);
+  // Reset inbox về template trống
+  writeFileSync(inboxPath, readFileSync(inboxPath, "utf8").replace(
+    /(?<=---\s*\n)[\s\S]*/,
+    "\n<!-- Viết ghi chú bên dưới. Mỗi ngày 1 block, xóa sau khi publish. -->\n"
+  ));
+  console.log(`📦 Inbox archived → content/insights/archive/${today}.md`);
 }
 
 console.log(`✅ Đã tạo ${outFile}`);

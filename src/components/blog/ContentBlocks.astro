@@ -1,0 +1,253 @@
+---
+/**
+ * ContentBlocks — renders data-driven blog blocks (callout|chart|comparison|flow|step).
+ * LLM emits DATA only (content/schema.json → blog.blocks); this component renders
+ * safe HTML/SVG. No raw markup from content. Reduced-motion + mobile-first.
+ */
+import type { ContentBlock } from '../../lib/content';
+
+interface Props { blocks?: ContentBlock[]; }
+const { blocks = [] } = Astro.props;
+
+const safe = (blocks ?? []).filter((b) => b && b.type && b.id);
+
+// Line-chart geometry — computed server-side so no client math.
+const LW = 320, LH = 120, PAD = 14;
+function linePoints(data: { value: number }[]) {
+  const vals = data.map((d) => d.value);
+  const max = Math.max(...vals, 0), min = Math.min(...vals, 0);
+  const span = max - min || 1;
+  const n = Math.max(data.length - 1, 1);
+  return data.map((d, i) => {
+    const x = PAD + (i * (LW - 2 * PAD)) / n;
+    const y = LH - PAD - ((d.value - min) / span) * (LH - 2 * PAD);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+}
+const barMax = (data: { value: number }[]) => Math.max(...data.map((d) => d.value), 0) || 1;
+---
+
+{safe.length > 0 && (
+  <div class="cbs">
+    {safe.map((b) => (
+      <figure class={`cb cb--${b.type}`} data-block-id={b.id}>
+
+        {b.type === 'callout' && (
+          <div class={`cb-callout cb-callout--${b.variant ?? 'insight'}`}>
+            {b.title && <div class="cb-callout-title">{b.title}</div>}
+            {b.body && <p class="cb-callout-body">{b.body}</p>}
+          </div>
+        )}
+
+        {b.type === 'chart' && b.chart && b.chart.variant === 'bar' && (
+          <div class="cb-chart">
+            <div class="cb-bars" role="img" aria-label={b.caption ?? 'bar chart'}>
+              {b.chart.data.map((d) => (
+                <div class="cb-bar-col">
+                  <div class="cb-bar-val mono">{d.value}{b.chart!.unit ?? ''}</div>
+                  <div class="cb-bar" style={`height:${Math.max(4, (d.value / barMax(b.chart!.data)) * 100)}%`}></div>
+                  <div class="cb-bar-lbl">{d.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {b.type === 'chart' && b.chart && b.chart.variant === 'line' && (
+          <div class="cb-chart">
+            <svg class="cb-line" viewBox={`0 0 ${LW} ${LH}`} role="img" aria-label={b.caption ?? 'line chart'} preserveAspectRatio="none">
+              <polyline
+                points={linePoints(b.chart.data).join(' ')}
+                fill="none" stroke="var(--accent-2)" stroke-width="2"
+                stroke-linejoin="round" stroke-linecap="round"
+              />
+              {linePoints(b.chart.data).map((p) => {
+                const [x, y] = p.split(',');
+                return <circle cx={x} cy={y} r="3" fill="var(--accent-2)" />;
+              })}
+            </svg>
+            <div class="cb-line-lbls">
+              {b.chart.data.map((d) => <span class="cb-bar-lbl">{d.label}</span>)}
+            </div>
+          </div>
+        )}
+
+        {b.type === 'comparison' && b.comparison && (
+          <div class="cb-cmp">
+            {(['left', 'right'] as const).map((side) => (
+              <div class={`cb-cmp-col cb-cmp-col--${side}`}>
+                <div class="cb-cmp-title">{b.comparison![side].title}</div>
+                <ul class="cb-cmp-list">
+                  {b.comparison![side].points.map((p) => <li>{p}</li>)}
+                </ul>
+              </div>
+            ))}
+            <div class="cb-cmp-vs mono" aria-hidden="true">vs</div>
+          </div>
+        )}
+
+        {b.type === 'flow' && b.flow && (
+          <ol class="cb-flow">
+            {b.flow.steps.map((s, i) => (
+              <li class="cb-flow-node">
+                <span class="cb-flow-idx mono">{i + 1}</span>
+                <span class="cb-flow-label">{s.label}</span>
+                {s.desc && <span class="cb-flow-desc">{s.desc}</span>}
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {b.type === 'step' && b.step && (
+          <div class="cb-step" data-step-block data-step-total={b.step.items.length}>
+            <ol class="cb-step-list">
+              {b.step.items.map((it, i) => (
+                <li class="cb-step-item" data-step-idx={i} hidden={false}>
+                  <div class="cb-step-label">{it.label}</div>
+                  <p class="cb-step-body">{it.body}</p>
+                </li>
+              ))}
+            </ol>
+            <button class="cb-step-next" type="button" data-step-next hidden>
+              <span data-step-next-label>Tiếp</span>
+              <span class="cb-step-count mono" data-step-count></span>
+            </button>
+          </div>
+        )}
+
+        {b.caption && b.type !== 'callout' && <figcaption class="cb-cap mono">{b.caption}</figcaption>}
+      </figure>
+    ))}
+  </div>
+)}
+
+<style>
+  .cbs { display: flex; flex-direction: column; gap: 30px; margin: 28px 0; }
+  .cb { margin: 0; }
+  .cb-cap { font-size: 0.74rem; color: var(--text-mute); margin-top: 10px; letter-spacing: 0.3px; }
+
+  /* ── callout ── */
+  .cb-callout {
+    border-left: 3px solid var(--accent-2);
+    background: color-mix(in srgb, var(--accent-2) 6%, transparent);
+    border-radius: 0 10px 10px 0; padding: 16px 20px;
+  }
+  .cb-callout--warning  { border-color: var(--accent);   background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  .cb-callout--tradeoff { border-color: var(--accent-3); background: color-mix(in srgb, var(--accent-3) 7%, transparent); }
+  .cb-callout--fact     { border-color: var(--accent-2); }
+  .cb-callout-title {
+    font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+  .cb-callout--warning  .cb-callout-title { color: var(--accent); }
+  .cb-callout--tradeoff .cb-callout-title { color: var(--accent-3); }
+  .cb-callout--insight  .cb-callout-title,
+  .cb-callout--fact     .cb-callout-title { color: var(--accent-2); }
+  .cb-callout-body { margin: 0; font-size: 0.92rem; line-height: 1.6; color: var(--text-dim); }
+
+  /* ── chart ── */
+  .cb-chart {
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px 20px 14px; background: var(--bg-card, rgba(12,18,40,0.5));
+  }
+  .cb-bars { display: flex; align-items: flex-end; gap: 10px; height: 160px; }
+  .cb-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+  .cb-bar {
+    width: 100%; max-width: 54px; border-radius: 6px 6px 0 0;
+    background: linear-gradient(to top, var(--accent), var(--accent-2));
+    min-height: 4px; transition: none;
+  }
+  .cb-bar-val { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 6px; }
+  .cb-bar-lbl { font-size: 0.7rem; color: var(--text-mute); margin-top: 8px; text-align: center; line-height: 1.2; }
+  .cb-line { width: 100%; height: 120px; display: block; overflow: visible; }
+  .cb-line-lbls { display: flex; justify-content: space-between; margin-top: 6px; }
+
+  /* ── comparison ── */
+  .cb-cmp {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; position: relative;
+  }
+  .cb-cmp-col {
+    border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px;
+    background: var(--bg-card, rgba(12,18,40,0.4));
+  }
+  .cb-cmp-col--left  { border-top: 2px solid var(--accent); }
+  .cb-cmp-col--right { border-top: 2px solid var(--accent-2); }
+  .cb-cmp-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; color: var(--text); }
+  .cb-cmp-list { margin: 0; padding-left: 18px; }
+  .cb-cmp-list li { font-size: 0.88rem; line-height: 1.55; color: var(--text-dim); margin-bottom: 6px; }
+  .cb-cmp-vs {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--bg); border: 1px solid var(--border); font-size: 0.72rem; color: var(--text-mute);
+  }
+
+  /* ── flow ── */
+  .cb-flow {
+    display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 0; padding: 0; list-style: none;
+  }
+  .cb-flow-node {
+    flex: 1; min-width: 120px; position: relative; display: flex; flex-direction: column; gap: 4px;
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+    background: var(--bg-card, rgba(12,18,40,0.4)); margin: 0 18px 12px 0;
+  }
+  .cb-flow-node:not(:last-child)::after {
+    content: '→'; position: absolute; right: -16px; top: 50%; transform: translateY(-50%);
+    color: var(--accent-2); font-size: 1rem;
+  }
+  .cb-flow-idx {
+    font-size: 0.66rem; color: var(--accent-2); letter-spacing: 1px;
+  }
+  .cb-flow-label { font-weight: 600; font-size: 0.88rem; color: var(--text); }
+  .cb-flow-desc { font-size: 0.78rem; color: var(--text-mute); line-height: 1.45; }
+
+  /* ── step (progressive reveal) ── */
+  .cb-step { border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; background: var(--bg-card, rgba(12,18,40,0.4)); }
+  .cb-step-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .cb-step-item { padding-left: 16px; border-left: 2px solid var(--border-soft, var(--border)); }
+  .cb-step-item[hidden] { display: none; }
+  .cb-step-label { font-weight: 600; font-size: 0.9rem; color: var(--accent-2); margin-bottom: 4px; }
+  .cb-step-body { margin: 0; font-size: 0.88rem; line-height: 1.6; color: var(--text-dim); }
+  .cb-step-next {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 10px;
+    font: inherit; font-size: 0.82rem; cursor: pointer;
+    background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+    color: var(--accent-2); border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent);
+    border-radius: 8px; padding: 8px 16px; transition: background 0.15s;
+  }
+  .cb-step-next:hover { background: color-mix(in srgb, var(--accent-2) 20%, transparent); }
+  .cb-step-count { opacity: 0.7; }
+
+  @media (max-width: 600px) {
+    .cb-cmp { grid-template-columns: 1fr; }
+    .cb-cmp-vs { display: none; }
+    .cb-flow-node { flex: 1 1 100%; margin-right: 0; }
+    .cb-flow-node:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -15px; transform: translateX(50%); }
+    .cb-bars { height: 130px; }
+  }
+</style>
+
+<script>
+  // Step block: progressive reveal. Progressive-enhancement — no JS = all items visible.
+  function initStepBlocks() {
+    document.querySelectorAll<HTMLElement>('[data-step-block]').forEach((block) => {
+      if (block.dataset.stepInit) return;
+      block.dataset.stepInit = '1';
+      const items = Array.from(block.querySelectorAll<HTMLElement>('.cb-step-item'));
+      const btn = block.querySelector<HTMLButtonElement>('[data-step-next]');
+      const count = block.querySelector<HTMLElement>('[data-step-count]');
+      const total = items.length;
+      if (total <= 1 || !btn) return;
+
+      let shown = 1;
+      const render = () => {
+        items.forEach((it, i) => { it.hidden = i >= shown; });
+        if (shown >= total) { btn.hidden = true; }
+        else { btn.hidden = false; if (count) count.textContent = `${shown}/${total}`; }
+      };
+      btn.addEventListener('click', () => { shown = Math.min(shown + 1, total); render(); });
+      render();
+    });
+  }
+  initStepBlocks();
+  document.addEventListener('astro:page-load', initStepBlocks);
+</script>

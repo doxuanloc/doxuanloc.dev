@@ -133,6 +133,28 @@ function scanSafety(file, data) {
           `[${file}] ${path}: lộ thông tin nhạy cảm (${hits.join(", ")}).`,
         );
     }
+    // tldr + blocks (data-driven) cũng do Grok sinh → quét toàn bộ text fields.
+    for (let i = 0; i < (blog.tldr ?? []).length; i++) {
+      const hits = hasSensitive(blog.tldr[i]);
+      if (hits.length)
+        v.push(`[${file}] blog.tldr[${i}]: lộ thông tin nhạy cảm (${hits.join(", ")}).`);
+    }
+    for (let i = 0; i < (blog.blocks ?? []).length; i++) {
+      const b = blog.blocks[i] ?? {};
+      const texts = [
+        b.title, b.body, b.caption,
+        ...(b.comparison ? [b.comparison.left?.title, b.comparison.right?.title,
+          ...(b.comparison.left?.points ?? []), ...(b.comparison.right?.points ?? [])] : []),
+        ...(b.flow ? b.flow.steps.flatMap((s) => [s.label, s.desc]) : []),
+        ...(b.step ? b.step.items.flatMap((s) => [s.label, s.body]) : []),
+        ...(b.chart ? [b.chart.unit, ...b.chart.data.map((d) => d.label)] : []),
+      ].filter(Boolean);
+      for (const text of texts) {
+        const hits = hasSensitive(text);
+        if (hits.length)
+          v.push(`[${file}] blog.blocks[${i}] (${b.type}/${b.id}): lộ thông tin nhạy cảm (${hits.join(", ")}).`);
+      }
+    }
   }
   return v;
 }
