@@ -28,10 +28,11 @@ File `CLAUDE.md` này được **CẢ Claude Code LẪN Grok Build** đọc (Gro
 
 **Gọi Grok in-repo** (đọc file thật, KHÔNG nhúng context thủ công):
 ```bash
-grok -p "đọc <files>, phân tích/spec <task>" --tools read,web_search,web_fetch --experimental-memory
+grok -p "đọc <files>, phân tích/spec <task>" --tools read_file,grep,list_dir --experimental-memory
 grok -c                       # tiếp tục session gần nhất của repo
-# Tool thật: read,web_search,web_fetch,write(=search_replace),bash,grep,list_dir. KHÔNG có --effort, browse_page, x_search.
-# write/bash chỉ khi cần Grok sửa file/chạy lệnh (full-power); spec mặc định read-only, Claude review rồi ghi.
+# Tool ID thật (headless --tools): read_file,grep,list_dir,web_search,web_fetch,search_replace,run_terminal_cmd. KHÔNG có --effort, browse_page, x_search.
+# Lưu ý 0.2.32: tool ID sai (vd "read") → fallback default toolset → crash "auto_background_on_timeout requires enabled_background". Spec/review chỉ cần read_file,grep,list_dir.
+# search_replace/run_terminal_cmd chỉ khi cần Grok sửa file/chạy lệnh (full-power); spec mặc định read-only, Claude review rồi ghi.
 ```
 
 ## Stack
