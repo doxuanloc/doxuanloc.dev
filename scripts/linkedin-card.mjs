@@ -76,7 +76,7 @@ function loadFonts() {
   const read = (pkg, file) => readFileSync(join(FONT_DIR, pkg, "files", file));
   _fonts = [
     { name: "Be Vietnam Pro", data: read("be-vietnam-pro", "be-vietnam-pro-vietnamese-400-normal.woff"), weight: 400 },
-    { name: "Be Vietnam Pro", data: read("be-vietnam-pro", "be-vietnam-pro-latin-700-normal.woff"), weight: 700 },
+    { name: "Be Vietnam Pro", data: read("be-vietnam-pro", "be-vietnam-pro-vietnamese-700-normal.woff"), weight: 700 },
     { name: "Tektur",         data: read("tektur",          "tektur-latin-600-normal.woff"),           weight: 600 },
     { name: "JetBrains Mono", data: read("jetbrains-mono",  "jetbrains-mono-latin-500-normal.woff"),   weight: 500 },
   ];
@@ -97,7 +97,7 @@ function buildCardElement(blog, { avatarDataUri, palette, stars, glowFactor = 1 
   const excerpt = truncate(blog.excerpt ?? "", 155);
   const tags    = (blog.tags ?? []).slice(0, 3);
   const kw      = blog.coverKeywords?.[0] ?? "";
-  const readLabel = blog.readingTimeMin ? `◷ ${blog.readingTimeMin} min read` : "";
+  const readLabel = blog.readingTimeMin ? `${blog.readingTimeMin} MIN READ` : "";
 
   const orbOpacity = (0.35 * glowFactor).toFixed(2);
   const glowShadow = `0 0 ${Math.round(60 * glowFactor)}px ${hex(g1, 0.4 * glowFactor)}`;
