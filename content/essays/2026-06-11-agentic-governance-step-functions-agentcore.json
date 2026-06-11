@@ -104,7 +104,112 @@
         }
       }
     ],
-    "linkedinPost": "Điều mà agentic workflow demo không bao giờ nói đến: agent thứ 4 của 6 sai ở production lúc 2 giờ sáng — bạn làm gì?\n\nHầu hết pipeline xử lý bằng try-catch rải rác. Production cần tư duy khác.\n\n3 governance pattern tôi dùng với Step Functions + AgentCore:\n\n1. Wait for Task Token — không phải polling. State machine pause ngay lập tức (zero compute) và emit token. Human approve → sendTaskSuccess(token) → resume. Pause nhiều ngày không tốn một đồng Lambda idle.\n\n2. Idempotency key per step — mỗi Lambda dùng executionId + stepName làm key. Step Functions retry bao nhiêu lần cũng không duplicate side effects (email, payment, DB write). Không có lý do gì để không implement điều này từ đầu.\n\n3. AgentCore không replace Step Functions. AgentCore govern tool routing + memory + identity của từng agent step. Step Functions govern workflow state transitions + error routing + compensation. Chúng stack nhau — không phải lựa chọn loại trừ.\n\nMột điều tôi học từ production: compensation logic là domain-specific. Step Functions route execution đến CompensationFlow khi fail. Nhưng bạn phải thiết kế rollback — ghi compensationData trong mỗi step, undo theo thứ tự ngược, xử lý partial compensation fail. Không service nào làm thay điều này.\n\nFull breakdown + sequence diagram: doxuanloc.dev\n\n#AWS #AgentCore #StepFunctions #AIEngineering",
+    "linkedinPost": "Điều mà agentic workflow demo không bao giờ nói đến: agent thứ 4 của 6 sai ở production lúc 2 giờ sáng — bạn làm gì?\n\nHầu hết pipeline xử lý bằng try-catch rải rác. Production cần tư duy khác.\n\n3 governance pattern tôi dùng với Step Functions + AgentCore:\n\n1. Wait for Task Token — không phải polling. State machine pause ngay lập tức (zero compute) và emit token. Human approve → sendTaskSuccess(token) → resume. Pause nhiều ngày không tốn một đồng Lambda idle.\n\n2. Idempotency key per step — mỗi Lambda dùng executionId + stepName làm key. Step Functions retry bao nhiêu lần cũng không duplicate side effects (email, payment, DB write). Không có lý do gì để không implement điều này từ đầu.\n\n3. AgentCore không replace Step Functions. AgentCore govern tool routing + memory + identity của từng agent step. Step Functions govern workflow state transitions + error routing + compensation. Chúng stack nhau — không phải lựa chọn loại trừ.\n\nMột điều tôi học từ production: compensation logic là domain-specific. Step Functions route execution đến CompensationFlow khi fail. Nhưng bạn phải thiết kế rollback — ghi compensationData trong mỗi step, undo theo thứ tự ngược, xử lý partial compensation fail. Không service nào làm thay điều này.\n\nFull breakdown + sequence diagram: doxuanloc.space\n\n#AWS #AgentCore #StepFunctions #AIEngineering",
+    "mechanismGif": null
+  },
+  "blog.en": {
+    "slug": "2026-06-11-agentic-governance-step-functions-agentcore",
+    "title": "Agentic Governance in Production: Step Functions + AgentCore Realities",
+    "excerpt": "Governance in agentic workflows is not an afterthought layer — it is a state machine you must design from day one. Step Functions + AgentCore: retry semantics, Wait for Task Token for human-in-the-loop with zero Lambda idle cost, per-step idempotency contracts, and Saga compensation for production-grade agentic pipelines.",
+    "tags": ["AWS", "Step Functions", "AgentCore", "AI Engineering", "Governance", "Production"],
+    "readingTimeMin": 10,
+    "coverImage": null,
+    "coverKeywords": ["Step Functions", "AgentCore", "agentic governance", "AWS production"],
+    "tldr": [
+      "Step Functions state machine: retry semantics + visual debugger + 90-day history — governance lives in the definition, not scattered code",
+      "Wait for Task Token: state machine pauses indefinitely with zero compute cost; external systems resume via opaque token — no polling Lambda",
+      "AgentCore governs tool routing + memory + identity; Step Functions governs state transitions + compensation — they compose, they do not replace each other",
+      "Idempotency key (executionId + stepId) per Lambda step: Step Functions can retry any number of times without duplicating side effects",
+      "Compensation logic is domain-specific: Step Functions routes to CompensationFlow, but you design the rollback — no service does it for you"
+    ],
+    "contentMarkdown": "## What agentic workflow demos never show\n\nMost agentic workflow demos end at the happy path: the agent receives a task, calls a tool, returns a result. Pretty slides, clean flow. What never appears: the agent calls a tool with bad input in step 4 of 6, the LLM returns a hallucinated action in step 3, a downstream service times out after 15 minutes, or worse — the agent runs correctly but commits a side effect it should never have committed.\n\nThese are real governance problems in production. The answer is not sprinkling try-catch everywhere in code. It is designing a state machine with retry semantics, human approval gates, idempotency contracts, and compensation flows from day one.\n\n## Why state machine, not code\n\nThe common pattern when first building an agentic pipeline: orchestrate everything in code. Call Lambda A, get result, call Lambda B conditionally. Simple when small, but it fractures in non-obvious ways:\n\n**Timeout**: Lambda execution limit is 15 minutes. Long pipelines (voice transcription + diarization + summarization) with variable-length inputs — 2-hour audio easily exceeds the limit.\n\n**No history**: When a production incident happens at 2 a.m., there is no way to know where the execution reached, which step failed, or with what input.\n\n**Scattered retry logic**: Every step writes its own retry, inconsistent, no standard exponential backoff.\n\n**Human approval**: Implementing human-in-the-loop without burning Lambda idle time while waiting requires special architecture — most naive implementations poll DynamoDB and waste money.\n\nAWS Step Functions solves all of this at the infrastructure level. The state machine is a **definition** (JSON/YAML), not running code. Built-in visual debugger. 90 days of execution history. Retry semantics defined once at the state level.\n\n## Wait for Task Token is the killer feature\n\nStep Functions can emit an opaque token and pause the state machine immediately — no Lambda running, no compute billed. The token is the contract: whoever holds it can resume the execution later. Human approves the next day? The state machine resumes in milliseconds after sendTaskSuccess(token). Lambda timeout is irrelevant. Heartbeat timeout handles abandonment.\n\nThis is how you do human-in-the-loop in production without paying for idle compute.\n\n## AgentCore and Step Functions are complementary, not alternatives\n\nAgentCore governs per-agent concerns: tool routing by intent, multi-turn memory (episodic, semantic, procedural), and fine-grained identity/permissions.\n\nStep Functions governs the workflow: state transitions, error routing, retry/backoff policies, and compensation (Saga pattern).\n\nYou stack them. AgentCore steps become tasks inside the Step Functions definition.\n\n## Idempotency and compensation are non-negotiable\n\nEvery Lambda step must be idempotent using a key derived from executionId + stepId. When Step Functions retries (for any reason), the step sees the same key, finds the prior result (or in-progress marker), and returns safely without duplicate side effects.\n\nCompensation is domain-specific. When a step fails, Step Functions can route to a CompensationFlow. But you must design what \"undo\" means for your domain — write compensationData alongside the result in each step, then execute undos in reverse order, handling partial failures.\n\nNo managed service will write your business rollback logic for you.",
+    "blocks": [
+      {
+        "type": "sequence",
+        "id": "stepfn-agentcore-flow",
+        "title": "Execution Flow: Step Functions + AgentCore",
+        "caption": "Wait for Task Token: state machine pauses, zero compute, until human sends callback",
+        "sequence": {
+          "actors": [
+            {"id": "trigger", "label": "EventBridge / SQS"},
+            {"id": "sfn", "label": "Step Functions"},
+            {"id": "agentcore", "label": "AgentCore"},
+            {"id": "lambda", "label": "Lambda Worker"},
+            {"id": "human", "label": "Human Approver"}
+          ],
+          "events": [
+            {"phase": 0.0, "from": "trigger", "to": "sfn", "label": "start execution", "kind": "event"},
+            {"phase": 0.15, "from": "sfn", "to": "agentcore", "label": "invoke agent step", "kind": "request"},
+            {"phase": 0.3, "from": "agentcore", "to": "lambda", "label": "tool call (async)", "kind": "request"},
+            {"phase": 0.45, "from": "lambda", "to": "agentcore", "label": "result + compensationData", "kind": "response"},
+            {"phase": 0.55, "from": "sfn", "to": "human", "label": "emit task token (pause)", "kind": "event"},
+            {"phase": 0.7, "from": "human", "to": "sfn", "label": "sendTaskSuccess(token)", "kind": "event"},
+            {"phase": 0.85, "from": "sfn", "to": "agentcore", "label": "continue next state", "kind": "request"},
+            {"phase": 1.0, "from": "agentcore", "to": "sfn", "label": "final result", "kind": "response"}
+          ]
+        }
+      },
+      {
+        "type": "comparison",
+        "id": "code-vs-sfn",
+        "title": "Code Orchestration vs Step Functions",
+        "comparison": {
+          "left": {
+            "title": "Code Orchestration",
+            "points": [
+              "Retry logic written differently in every Lambda — no consistent BackoffRate or MaxAttempts",
+              "Lambda timeout (15 min) blocks long-running steps with variable-length inputs",
+              "No execution history: debug production incidents by adding log statements",
+              "Human approval requires Lambda polling DynamoDB — billed during idle wait time"
+            ]
+          },
+          "right": {
+            "title": "Step Functions",
+            "points": [
+              "MaxAttempts + BackoffRate defined once at state level — uniform across all steps",
+              "Wait for Task Token: pause state machine for hours/days — zero compute billing",
+              "90-day execution history with visual debugger — replay any execution to any state",
+              "Catch → CompensationFlow: native Saga routing with full execution context preserved"
+            ]
+          }
+        }
+      },
+      {
+        "type": "callout",
+        "id": "wait-task-token",
+        "variant": "insight",
+        "title": "Wait for Task Token ≠ polling",
+        "body": "Step Functions emits an opaque token and pauses immediately — no Lambda running, no compute billed. The token is the contract: whoever holds it can resume the execution. Human approves next day? State machine resumes in milliseconds after sendTaskSuccess(token). Lambda timeout is irrelevant. Heartbeat timeout handles abandonment."
+      },
+      {
+        "type": "step",
+        "id": "agentcore-components",
+        "title": "4 AgentCore Components — What Each Governs",
+        "step": {
+          "items": [
+            {"label": "Runtime", "body": "Tool routing by intent, multi-turn conversation state, retry on tool call failure. Agent developer writes intent, not routing logic."},
+            {"label": "Memory", "body": "Episodic (conversation history), semantic (extracted facts), procedural (learned patterns). Persists across sessions without application code managing state."},
+            {"label": "Identity", "body": "Agent-level permissions: agent X, tool Y, tenant Z. Finer-grained than IAM roles — authorization at the agent action level, not function level."},
+            {"label": "Gateway", "body": "Unified API for Lambda, API Gateway, MCP servers. Tool implementation can migrate without touching agent logic — clean abstraction boundary."}
+          ]
+        }
+      },
+      {
+        "type": "flow",
+        "id": "idempotency-pattern",
+        "title": "Idempotency Pattern per Lambda Step",
+        "flow": {
+          "steps": [
+            {"label": "Check DynamoDB key", "desc": "Query executionId + stepName — unique per Step Functions execution per state"},
+            {"label": "Already completed?", "desc": "Return cached result — safe regardless of how many times Step Functions retried"},
+            {"label": "In progress?", "desc": "Concurrent retry detected — throw CONCURRENT_EXECUTION, Step Functions retries after interval"},
+            {"label": "Execute + compensate", "desc": "Run step logic, write compensationData for Saga rollback alongside result"},
+            {"label": "Mark completed", "desc": "Update key to status:completed with TTL 24h — stale keys auto-expire, no cleanup job needed"}
+          ]
+        }
+      }
+    ],
+    "linkedinPost": "What agentic workflow demos never show: the 4th of 6 agents fails in production at 2 a.m. — what do you do?\n\nMost pipelines handle this with scattered try-catch. Production requires different thinking.\n\n3 governance patterns I use with Step Functions + AgentCore:\n\n1. Wait for Task Token — not polling. The state machine pauses instantly (zero compute) and emits a token. Human approves → sendTaskSuccess(token) → resume. Pausing for days costs nothing in Lambda idle.\n\n2. Idempotency key per step — every Lambda uses executionId + stepName as key. Step Functions can retry any number of times without duplicating side effects (email, payment, DB write). There is no reason not to implement this from the start.\n\n3. AgentCore does not replace Step Functions. AgentCore governs tool routing + memory + identity for each agent step. Step Functions governs workflow state transitions + error routing + compensation. They stack — not a mutually exclusive choice.\n\nOne hard lesson from production: compensation logic is domain-specific. Step Functions routes the execution to CompensationFlow on failure. But you must design the rollback — record compensationData in every step, undo in reverse order, handle partial compensation failures. No service will do this for you.\n\nFull breakdown + sequence diagram: doxuanloc.space\n\n#AWS #AgentCore #StepFunctions #AIEngineering",
     "mechanismGif": null
   }
 }

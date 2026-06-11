@@ -215,9 +215,12 @@ export function getPostBySlug(slug: string, lang: Lang = 'vi') {
 
 /** Static paths helper: tất cả slugs (dùng cho getStaticPaths). */
 export function getAllSlugs(): string[] {
-  return getDailyContent()
+  const daily = getDailyContent()
     .filter((d) => d.blog && d.blog.slug)
     .map((d) => d.blog!.slug);
+  const essays = getEssayPosts() // slugs are language-independent
+    .map((e) => e.slug);
+  return Array.from(new Set([...daily, ...essays]));
 }
 
 /** Gộp toàn bộ finance news từ mọi ngày, mới nhất trước, kèm ngày. */
