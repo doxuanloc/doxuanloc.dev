@@ -158,7 +158,7 @@
       "fintech"
     ],
     "readingTimeMin": 6,
-    "coverImage": null,
+    "coverImage": "/images/blog/2026-06-11-ai-agent-payments-tradeoff-agentic-commerce.png",
     "coverKeywords": [
       "ai agent payments",
       "agentic commerce",
@@ -281,5 +281,12 @@
         }
       }
     ]
+  },
+  "linkedin": {
+    "posted": true,
+    "postedAt": "2026-06-11T01:25:11.641Z",
+    "urn": "urn:li:share:7470647287388569600",
+    "hasImage": true,
+    "imageAssetUrn": "urn:li:digitalmediaAsset:D5622AQEvj8zMK7KFFQ"
   }
 }
