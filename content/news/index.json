@@ -1,137 +1,53 @@
 {
   "updatedAt": "2026-06-11",
   "totalDays": 7,
-  "totalEssays": 0,
+  "totalEssays": 2,
   "posts": [
     {
       "date": "2026-06-11",
-      "slug": "2026-06-11-ai-agent-payments-tradeoff-agentic-commerce",
-      "title": "AI Agent Payments Production: Trade-off Khi Nhiều Agentic Commerce Protocol Cạnh Tranh",
-      "excerpt": "Agent Pay, x402, MPP — nhiều protocol AI payment đang cạnh tranh. Phân tích trade-off khi thiết kế hệ thống agent payments production-ready.",
+      "slug": "2026-06-11-portfolio-grok-claude-agentic-pipeline",
+      "title": "Xây Portfolio Tự Cập Nhật Hàng Ngày bằng Grok × Claude",
+      "excerpt": "Pipeline tự động hóa toàn bộ content lifecycle: Grok research real-time → Claude validate schema + guardrail bảo mật → Astro render data-driven blocks → deploy + LinkedIn auto-post. Không phải demo — đây là evidence của hệ thống production với capability routing, security boundary, lazy archive, và mechanism GIF không dùng WebGL.",
       "tags": [
-        "ai agent payments",
-        "agentic commerce",
-        "stablecoin",
-        "agent pay",
-        "micropayment",
-        "fintech"
-      ],
-      "readingTimeMin": 6,
-      "coverImage": "/images/blog/2026-06-11-ai-agent-payments-tradeoff-agentic-commerce.png",
-      "coverKeywords": [
-        "ai agent payments",
-        "agentic commerce",
-        "stablecoin rail"
-      ],
-      "isEssay": false
-    },
-    {
-      "date": "2026-06-10",
-      "slug": "2026-06-10-agentic-workflow-step-functions-agentcore-governance",
-      "title": "Agentic Workflow Production với Step Functions + AgentCore: Governance Thực Tế Developer Phải Thiết Kế",
-      "excerpt": "Step Functions tích hợp AgentCore harness cho phép nhúng AI agent reasoning vào workflow production có approval và error handling. Phân tích governance, stateful shell, cost-per-outcome và khi nào agent step đáng giá thực tế.",
-      "tags": [
-        "ai agent",
-        "aws bedrock",
-        "agentic workflow",
-        "step functions",
-        "governance",
-        "aws"
-      ],
-      "readingTimeMin": 7,
-      "coverImage": null,
-      "coverKeywords": [
-        "agentic workflow",
-        "step functions harness",
-        "production governance"
-      ],
-      "isEssay": false
-    },
-    {
-      "date": "2026-06-09",
-      "slug": "2026-06-09-siri-ai-dma-va-bai-hoc-permission-cho-agent-builder",
-      "title": "Siri AI, DMA và bài học permission: agent mạnh phải có boundary trước khi scale",
-      "excerpt": "WWDC26 đưa Siri AI thành agent xuyên app, nhưng EU không được dùng vì DMA. Bài học cho builder: quyền truy cập agent rộng phải đi kèm permission boundary và audit — không thì regulation hoặc incident sẽ chặn bạn trước khi product scale.",
-      "tags": [
-        "ai",
-        "agent",
-        "privacy",
-        "trade-off",
-        "system-optimization"
-      ],
-      "readingTimeMin": 5,
-      "coverImage": null,
-      "coverKeywords": [],
-      "isEssay": false
-    },
-    {
-      "date": "2026-06-08",
-      "slug": "2026-06-08-khi-agent-biet-chi-tien-agentcore-payments-va-kiem-soat-thuc-te",
-      "title": "Khi AI agent biết 'chi tiền': AgentCore Payments và những kiểm soát developer cần có trước khi triển khai",
-      "excerpt": "AgentCore Payments cho phép agent tự thực thi thanh toán cho API, MCP server hay nội dung web qua stablecoin mà không cần custom integration. Lợi ích tiện lợi nhưng surface rủi ro tài chính và operational đòi hỏi governance từ ngày đầu.",
-      "tags": [
-        "ai",
-        "agent",
-        "aws",
-        "bedrock",
-        "trade-off",
-        "system-optimization"
-      ],
-      "readingTimeMin": 7,
-      "coverImage": null,
-      "coverKeywords": [],
-      "isEssay": false
-    },
-    {
-      "date": "2026-06-07",
-      "slug": "2026-06-07-agentic-coding-models-mai-codex-va-open-weight",
-      "title": "Agentic coding models 2026: MAI-Code-1-Flash, Codex và open-weight — tích hợp thực sao cho hiệu quả",
-      "excerpt": "Model coding agent mới (MAI-Code, Codex, DeepSeek-V4, GLM-5.1) giúp prototype nhanh, nhưng khi áp dụng vào repo lớn, CI nghiêm ngặt và gate review thì chi phí, độ tin cậy và kiểm soát mới là vấn đề then chốt với developer productivity thực.",
-      "tags": [
-        "ai",
-        "agent",
-        "llm",
-        "developer-productivity",
-        "trade-off"
+        "Agentic Pipeline",
+        "Grok",
+        "Claude",
+        "Astro",
+        "CI/CD",
+        "AI Engineering"
       ],
       "readingTimeMin": 8,
       "coverImage": null,
-      "coverKeywords": [],
-      "isEssay": false
+      "coverKeywords": [
+        "agentic pipeline",
+        "Grok Claude",
+        "portfolio automation",
+        "AI workflow"
+      ],
+      "isEssay": true
     },
     {
-      "date": "2026-06-06",
-      "slug": "2026-06-06-gpt-5-5-bedrock-vs-minimax-m3-trade-off-cho-ai-agent",
-      "title": "GPT-5.5 trên Bedrock và MiniMax M3: trade-off thực tế khi chọn model cho AI agent production",
-      "excerpt": "Nhiều lựa chọn frontier model cùng lúc: closed qua hyperscaler với governance đầy đủ, và open-weight rẻ với context khổng lồ. Vấn đề là chọn sai sẽ tốn kém hoặc rủi ro pháp lý không ngờ khi agent chạy ở scale thực.",
+      "date": "2026-06-11",
+      "slug": "2026-06-11-agentic-governance-step-functions-agentcore",
+      "title": "Agentic Governance Production: Step Functions + AgentCore Thực Tế",
+      "excerpt": "Governance trong agentic workflow không phải layer thêm sau — đó là state machine bạn phải thiết kế từ ngày 1. Step Functions + AgentCore: retry semantics, Wait for Task Token cho human-in-the-loop không tốn Lambda idle, idempotency contract per step, và Saga compensation cho production-grade agentic pipeline.",
       "tags": [
-        "ai",
-        "llm",
-        "agent",
-        "aws",
-        "trade-off",
-        "optimization"
+        "AWS",
+        "Step Functions",
+        "AgentCore",
+        "AI Engineering",
+        "Governance",
+        "Production"
       ],
-      "readingTimeMin": 8,
+      "readingTimeMin": 10,
       "coverImage": null,
-      "coverKeywords": [],
-      "isEssay": false
-    },
-    {
-      "date": "2026-06-05",
-      "slug": "2026-06-05-portfolio-tu-cap-nhat-bang-grok-va-claude",
-      "title": "Xây portfolio tự cập nhật hàng ngày bằng Grok × Claude",
-      "excerpt": "Tại sao và làm thế nào mình dựng một portfolio tự sinh tin tức & blog mỗi ngày, với Grok làm content-engine và Claude làm architect.",
-      "tags": [
-        "meta",
-        "ai",
-        "astro",
-        "automation"
+      "coverKeywords": [
+        "Step Functions",
+        "AgentCore",
+        "agentic governance",
+        "AWS production"
       ],
-      "readingTimeMin": 4,
-      "coverImage": null,
-      "coverKeywords": [],
-      "isEssay": false
+      "isEssay": true
     }
   ],
   "newsIndex": [
