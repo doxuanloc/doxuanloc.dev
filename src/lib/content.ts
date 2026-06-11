@@ -149,13 +149,50 @@ function resolvePost(d: DailyContent, lang: Lang): BlogPost | null {
   return vi;
 }
 
-/** Essays từ content/essays/ (deep-dive posts từ gen-blog-agent). */
-function getEssayPosts(): (BlogPost & { date: string })[] {
+/** Resolve language variant for a standalone essay (supports blog.en / blog.ja inside the essay JSON, with fallback to base blog). */
+function resolveEssay(e: any, lang: Lang): BlogPost | null {
+  if (!e || !e.blog?.slug) return null;
+  const base = e.blog as BlogPost;
+
+  if (lang === 'en') {
+    const en = (e as any)['blog.en'];
+    if (en && en.slug) {
+      return {
+        ...base,
+        ...en,
+        interactiveBlock: en.interactiveBlock ?? base.interactiveBlock ?? null,
+        coverKeywords: en.coverKeywords ?? base.coverKeywords,
+        coverImage: en.coverImage ?? base.coverImage ?? null,
+        tldr: en.tldr ?? base.tldr,
+        blocks: en.blocks ?? base.blocks,
+      } as BlogPost;
+    }
+  }
+  if (lang === 'ja') {
+    const ja = (e as any)['blog.ja'];
+    if (ja && ja.slug) {
+      return {
+        ...base,
+        ...ja,
+        interactiveBlock: ja.interactiveBlock ?? base.interactiveBlock ?? null,
+        coverKeywords: ja.coverKeywords ?? base.coverKeywords,
+        coverImage: ja.coverImage ?? base.coverImage ?? null,
+        tldr: ja.tldr ?? base.tldr,
+        blocks: ja.blocks ?? base.blocks,
+      } as BlogPost;
+    }
+  }
+  return base;
+}
+
+/** Essays từ content/essays/ (deep-dive posts từ gen-blog-agent). Lang-aware with fallback. */
+function getEssayPosts(lang: Lang = 'vi'): (BlogPost & { date: string })[] {
   return Object.values(essayModules)
     .map((m: any) => {
       const e = m && m.default ? m.default : m;
-      if (!e || !e.blog?.slug) return null;
-      return { ...e.blog, date: e.date ?? '' } as BlogPost & { date: string };
+      const post = resolveEssay(e, lang);
+      if (!post) return null;
+      return { ...post, date: e.date ?? '' } as BlogPost & { date: string };
     })
     .filter((p): p is BlogPost & { date: string } => p !== null);
 }
@@ -168,7 +205,7 @@ export function getAllPosts(lang: Lang = 'vi'): (BlogPost & { date: string })[] 
       return post ? { ...post, date: d.date } : null;
     })
     .filter((p): p is BlogPost & { date: string } => p !== null);
-  const essays = getEssayPosts();
+  const essays = getEssayPosts(lang);
   return [...daily, ...essays].sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
