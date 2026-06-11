@@ -115,6 +115,115 @@ const barMax = (data: { value: number }[]) => Math.max(...data.map((d) => d.valu
           </div>
         )}
 
+        {b.type === 'sequence' && b.sequence && (() => {
+          const actors = b.sequence.actors;
+          const events = b.sequence.events.slice().sort((a, z) => a.phase - z.phase);
+          const AW = 90, GAP = 80, PAD = 24;
+          const totalW = PAD * 2 + actors.length * AW + (actors.length - 1) * GAP;
+          const ROW_H = 44, TOP = 54, BOTTOM = TOP + events.length * ROW_H + 20;
+          const actorX = (id: string) => {
+            const i = actors.findIndex((a) => a.id === id);
+            return PAD + i * (AW + GAP) + AW / 2;
+          };
+          return (
+            <div class="cb-seq-wrap">
+              <svg class="cb-seq" viewBox={`0 0 ${totalW} ${BOTTOM + PAD}`} role="img" aria-label={b.caption ?? 'sequence diagram'}>
+                {/* actor boxes */}
+                {actors.map((a, i) => {
+                  const x = PAD + i * (AW + GAP);
+                  return (
+                    <g>
+                      <rect x={x} y={8} width={AW} height={34} rx={6} class="seq-actor-box" />
+                      <text x={x + AW / 2} y={30} text-anchor="middle" class="seq-actor-lbl">{a.label}</text>
+                    </g>
+                  );
+                })}
+                {/* lifelines */}
+                {actors.map((a, i) => {
+                  const cx = PAD + i * (AW + GAP) + AW / 2;
+                  return <line x1={cx} y1={42} x2={cx} y2={BOTTOM} class="seq-lifeline" />;
+                })}
+                {/* events */}
+                {events.map((ev, i) => {
+                  const y = TOP + i * ROW_H;
+                  const x1 = actorX(ev.from);
+                  const x2 = ev.to ? actorX(ev.to) : x1;
+                  const isSelf = x1 === x2;
+                  const isReturn = ev.kind === 'response';
+                  return (
+                    <g>
+                      {isSelf ? (
+                        <>
+                          <path d={`M${x1},${y} C${x1 + 40},${y} ${x1 + 40},${y + 18} ${x1},${y + 18}`} class={`seq-msg ${isReturn ? 'seq-msg--return' : ''}`} fill="none" />
+                          <polygon points={`${x1},${y + 14} ${x1 - 5},${y + 18} ${x1 + 5},${y + 18}`} class="seq-arrow" />
+                        </>
+                      ) : (
+                        <>
+                          <line x1={x1} y1={y} x2={x2} y2={y} class={`seq-msg ${isReturn ? 'seq-msg--return' : ''}`} />
+                          <polygon points={`${x2},${y} ${x2 + (x1 < x2 ? -9 : 9)},${y - 5} ${x2 + (x1 < x2 ? -9 : 9)},${y + 5}`} class="seq-arrow" />
+                        </>
+                      )}
+                      <text x={(x1 + x2) / 2} y={y - 5} text-anchor="middle" class="seq-msg-lbl">{ev.label}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          );
+        })()}
+
+        {b.type === 'architecture' && b.architecture && (() => {
+          const comps = b.architecture.components;
+          const conns = b.architecture.connections;
+          const cols = Math.min(comps.length, 4);
+          const rows = Math.ceil(comps.length / cols);
+          const CW = 110, CH = 40, HGAP = 50, VGAP = 48, HPAD = 20, VPAD = 20;
+          const totalW = HPAD * 2 + cols * CW + (cols - 1) * HGAP;
+          const totalH = VPAD * 2 + rows * CH + (rows - 1) * VGAP;
+          const pos = (id: string) => {
+            const i = comps.findIndex((c) => c.id === id);
+            if (i < 0) return { x: 0, y: 0, cx: 0, cy: 0 };
+            const col = i % cols, row = Math.floor(i / cols);
+            const x = HPAD + col * (CW + HGAP);
+            const y = VPAD + row * (CH + VGAP);
+            return { x, y, cx: x + CW / 2, cy: y + CH / 2 };
+          };
+          const kindClass = (k?: string) => k ? `arch-node--${k}` : '';
+          return (
+            <div class="cb-arch-wrap">
+              <svg class="cb-arch" viewBox={`0 0 ${totalW} ${totalH}`} role="img" aria-label={b.caption ?? 'architecture diagram'}>
+                {/* connections first (under nodes) */}
+                {conns.map((c) => {
+                  const a = pos(c.from), b2 = pos(c.to);
+                  const mx = (a.cx + b2.cx) / 2, my = (a.cy + b2.cy) / 2;
+                  const isDashed = c.type === 'async' || c.type === 'event';
+                  return (
+                    <g>
+                      <line x1={a.cx} y1={a.cy} x2={b2.cx} y2={b2.cy}
+                        class={`arch-edge${isDashed ? ' arch-edge--dashed' : ''}`} />
+                      {c.label && <text x={mx} y={my - 5} text-anchor="middle" class="arch-edge-lbl">{c.label}</text>}
+                      <polygon
+                        points={`${b2.cx},${b2.cy} ${b2.cx + (a.cx < b2.cx ? -8 : 8)},${b2.cy - 4} ${b2.cx + (a.cx < b2.cx ? -8 : 8)},${b2.cy + 4}`}
+                        class="arch-arrow"
+                      />
+                    </g>
+                  );
+                })}
+                {/* nodes */}
+                {comps.map((c) => {
+                  const p = pos(c.id);
+                  return (
+                    <g>
+                      <rect x={p.x} y={p.y} width={CW} height={CH} rx={7} class={`arch-node ${kindClass(c.kind)}`} />
+                      <text x={p.cx} y={p.cy + 5} text-anchor="middle" class="arch-node-lbl">{c.label}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          );
+        })()}
+
         {b.caption && b.type !== 'callout' && <figcaption class="cb-cap mono">{b.caption}</figcaption>}
       </figure>
     ))}
@@ -216,6 +325,38 @@ const barMax = (data: { value: number }[]) => Math.max(...data.map((d) => d.valu
   }
   .cb-step-next:hover { background: color-mix(in srgb, var(--accent-2) 20%, transparent); }
   .cb-step-count { opacity: 0.7; }
+
+  /* ── sequence diagram ── */
+  .cb-seq-wrap {
+    border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+    background: var(--bg-card, rgba(12,18,40,0.4)); overflow-x: auto;
+  }
+  .cb-seq { display: block; min-width: 280px; width: 100%; height: auto; }
+  .seq-actor-box { fill: var(--bg-soft, rgba(255,255,255,0.04)); stroke: var(--accent-2); stroke-width: 1.5; }
+  .seq-actor-lbl { font-family: var(--mono, monospace); font-size: 11px; fill: var(--text); font-weight: 600; }
+  .seq-lifeline { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4 3; }
+  .seq-msg { stroke: var(--accent-2); stroke-width: 1.5; }
+  .seq-msg--return { stroke: var(--accent); stroke-dasharray: 5 3; }
+  .seq-arrow { fill: var(--accent-2); }
+  .seq-msg-lbl { font-family: var(--mono, monospace); font-size: 10px; fill: var(--text-dim); }
+
+  /* ── architecture diagram ── */
+  .cb-arch-wrap {
+    border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+    background: var(--bg-card, rgba(12,18,40,0.4)); overflow-x: auto;
+  }
+  .cb-arch { display: block; min-width: 260px; width: 100%; height: auto; }
+  .arch-node { fill: var(--bg-soft, rgba(255,255,255,0.04)); stroke: var(--border); stroke-width: 1.5; }
+  .arch-node--orchestrator { stroke: var(--accent-2); fill: color-mix(in srgb, var(--accent-2) 8%, transparent); }
+  .arch-node--reasoner     { stroke: var(--accent-3); fill: color-mix(in srgb, var(--accent-3) 8%, transparent); }
+  .arch-node--control      { stroke: var(--accent);   fill: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .arch-node--storage      { stroke: var(--text-mute); stroke-dasharray: 5 3; }
+  .arch-node--external     { stroke: var(--text-mute); opacity: 0.7; }
+  .arch-node-lbl { font-family: var(--mono, monospace); font-size: 11px; fill: var(--text); font-weight: 600; }
+  .arch-edge { stroke: var(--border); stroke-width: 1.5; }
+  .arch-edge--dashed { stroke-dasharray: 5 3; stroke: var(--text-mute); }
+  .arch-edge-lbl { font-family: var(--mono, monospace); font-size: 9px; fill: var(--text-mute); }
+  .arch-arrow { fill: var(--border); }
 
   @media (max-width: 600px) {
     .cb-cmp { grid-template-columns: 1fr; }

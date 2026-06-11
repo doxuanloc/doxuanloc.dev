@@ -148,6 +148,14 @@ function scanSafety(file, data) {
         ...(b.flow ? b.flow.steps.flatMap((s) => [s.label, s.desc]) : []),
         ...(b.step ? b.step.items.flatMap((s) => [s.label, s.body]) : []),
         ...(b.chart ? [b.chart.unit, ...b.chart.data.map((d) => d.label)] : []),
+        ...(b.sequence ? [
+          ...b.sequence.actors.map((a) => a.label),
+          ...b.sequence.events.map((e) => e.label),
+        ] : []),
+        ...(b.architecture ? [
+          ...b.architecture.components.map((c) => c.label),
+          ...b.architecture.connections.map((c) => c.label).filter(Boolean),
+        ] : []),
       ].filter(Boolean);
       for (const text of texts) {
         const hits = hasSensitive(text);

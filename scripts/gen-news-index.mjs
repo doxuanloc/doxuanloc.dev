@@ -10,17 +10,22 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const newsDir = join(root, "content", "news");
+const essaysDir = join(root, "content", "essays");
 const outPath = join(newsDir, "index.json");
 
-const files = readdirSync(newsDir)
+const dailyFiles = readdirSync(newsDir)
   .filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f))
   .sort()
   .reverse(); // newest first
 
+const essayFiles = existsSync(essaysDir)
+  ? readdirSync(essaysDir).filter((f) => f.endsWith(".json") && f !== ".gitkeep")
+  : [];
+
 const posts = [];
 const newsIndex = [];
 
-for (const file of files) {
+for (const file of dailyFiles) {
   const date = file.replace(".json", "");
   let data;
   try {
@@ -42,6 +47,7 @@ for (const file of files) {
       readingTimeMin: b.readingTimeMin ?? null,
       coverImage: b.coverImage ?? null,
       coverKeywords: b.coverKeywords ?? [],
+      isEssay: false,
     });
   }
 
@@ -59,9 +65,38 @@ for (const file of files) {
   });
 }
 
+// Essay posts (deep-dive, standalone)
+for (const file of essayFiles) {
+  let data;
+  try {
+    data = JSON.parse(readFileSync(join(essaysDir, file), "utf8"));
+  } catch {
+    console.warn(`  skip essay ${file} (invalid JSON)`);
+    continue;
+  }
+  const b = data.blog;
+  if (b?.slug) {
+    posts.push({
+      date: data.date ?? file.slice(0, 10),
+      slug: b.slug,
+      title: b.title ?? "",
+      excerpt: b.excerpt ?? "",
+      tags: b.tags ?? [],
+      readingTimeMin: b.readingTimeMin ?? null,
+      coverImage: b.coverImage ?? b.mechanismGif ?? null,
+      coverKeywords: b.coverKeywords ?? [],
+      isEssay: true,
+    });
+  }
+}
+
+// Sort by date descending
+posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+
 const index = {
   updatedAt: new Date().toISOString().slice(0, 10),
-  totalDays: files.length,
+  totalDays: dailyFiles.length,
+  totalEssays: essayFiles.length,
   posts,
   newsIndex,
 };

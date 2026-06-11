@@ -20,7 +20,7 @@ export interface NewsItem {
 
 /** Data-driven content block. LLM emits DATA only; ContentBlocks.astro renders. */
 export interface ContentBlock {
-  type: 'callout' | 'chart' | 'comparison' | 'flow' | 'step';
+  type: 'callout' | 'chart' | 'comparison' | 'flow' | 'step' | 'sequence' | 'architecture';
   id: string;
   caption?: string;
   variant?: 'insight' | 'warning' | 'tradeoff' | 'fact';
@@ -30,6 +30,14 @@ export interface ContentBlock {
   comparison?: { left: ComparisonCol; right: ComparisonCol };
   flow?: { steps: { label: string; desc?: string }[] };
   step?: { items: { label: string; body: string }[] };
+  sequence?: {
+    actors: { id: string; label: string }[];
+    events: { phase: number; from: string; to?: string; label: string; kind?: 'request' | 'internal' | 'response' | 'event' }[];
+  };
+  architecture?: {
+    components: { id: string; label: string; kind?: 'orchestrator' | 'reasoner' | 'control' | 'side-effect' | 'storage' | 'external' }[];
+    connections: { from: string; to: string; label?: string; type?: 'sync' | 'async' | 'event' | 'control' | 'data' }[];
+  };
 }
 export interface ComparisonCol { title: string; points: string[]; }
 
@@ -45,6 +53,7 @@ export interface BlogPost {
   interactiveBlock?: string | null;
   tldr?: string[];
   blocks?: ContentBlock[];
+  mechanismGif?: string | null;
 }
 
 /** Slim listing type — no contentMarkdown/blocks/tldr. Used for blog index + news listing. */
@@ -87,6 +96,8 @@ export function getBlogListing(): BlogListing[] {
 
 // Vite glob: pattern bắt đầu bằng "/" tính từ project root.
 const dailyModules = import.meta.glob<DailyContent>('/content/news/*.json', { eager: true });
+// Essays: standalone deep-dive posts from gen-blog-agent (content/essays/*.json)
+const essayModules = import.meta.glob<{ date: string; type: string; blog?: BlogPost | null }>('/content/essays/*.json', { eager: true });
 
 function isDaily(d: any): d is DailyContent {
   return d && typeof d === 'object' && typeof d.date === 'string';
@@ -138,15 +149,27 @@ function resolvePost(d: DailyContent, lang: Lang): BlogPost | null {
   return vi;
 }
 
-/** Tất cả blog post, mới nhất trước, kèm ngày. Lang-aware với fallback VI. */
+/** Essays từ content/essays/ (deep-dive posts từ gen-blog-agent). */
+function getEssayPosts(): (BlogPost & { date: string })[] {
+  return Object.values(essayModules)
+    .map((m: any) => {
+      const e = m && m.default ? m.default : m;
+      if (!e || !e.blog?.slug) return null;
+      return { ...e.blog, date: e.date ?? '' } as BlogPost & { date: string };
+    })
+    .filter((p): p is BlogPost & { date: string } => p !== null);
+}
+
+/** Tất cả blog post (daily + essays), mới nhất trước, kèm ngày. Lang-aware với fallback VI. */
 export function getAllPosts(lang: Lang = 'vi'): (BlogPost & { date: string })[] {
-  return getDailyContent()
+  const daily = getDailyContent()
     .map((d) => {
       const post = resolvePost(d, lang);
       return post ? { ...post, date: d.date } : null;
     })
-    .filter((p): p is BlogPost & { date: string } => p !== null)
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+    .filter((p): p is BlogPost & { date: string } => p !== null);
+  const essays = getEssayPosts();
+  return [...daily, ...essays].sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 export function getPostBySlug(slug: string, lang: Lang = 'vi') {

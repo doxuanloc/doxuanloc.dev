@@ -152,7 +152,7 @@
             "required": ["type", "id"],
             "additionalProperties": false,
             "properties": {
-              "type": { "enum": ["callout", "chart", "comparison", "flow", "step"] },
+              "type": { "enum": ["callout", "chart", "comparison", "flow", "step", "sequence", "architecture"] },
               "id": { "type": "string", "minLength": 1, "maxLength": 40 },
               "caption": { "type": "string", "maxLength": 200 },
               "variant": { "enum": ["insight", "warning", "tradeoff", "fact"] },
@@ -197,9 +197,29 @@
                 "properties": {
                   "items": { "type": "array", "minItems": 2, "maxItems": 8, "items": { "type": "object", "required": ["label", "body"], "additionalProperties": false, "properties": { "label": { "type": "string", "maxLength": 60 }, "body": { "type": "string", "maxLength": 240 } } } }
                 }
+              },
+              "sequence": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "actors": { "type": "array", "minItems": 2, "maxItems": 6, "items": { "type": "object", "required": ["id", "label"], "additionalProperties": false, "properties": { "id": { "type": "string", "maxLength": 24 }, "label": { "type": "string", "maxLength": 32 } } } },
+                  "events": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "type": "object", "required": ["phase", "from", "label"], "additionalProperties": false, "properties": { "phase": { "type": "number", "minimum": 0, "maximum": 1 }, "from": { "type": "string", "maxLength": 24 }, "to": { "type": "string", "maxLength": 24 }, "label": { "type": "string", "maxLength": 60 }, "kind": { "enum": ["request", "internal", "response", "event"] } } } }
+                }
+              },
+              "architecture": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "components": { "type": "array", "minItems": 2, "maxItems": 8, "items": { "type": "object", "required": ["id", "label"], "additionalProperties": false, "properties": { "id": { "type": "string", "maxLength": 24 }, "label": { "type": "string", "maxLength": 36 }, "kind": { "enum": ["orchestrator", "reasoner", "control", "side-effect", "storage", "external"] } } } },
+                  "connections": { "type": "array", "minItems": 1, "maxItems": 12, "items": { "type": "object", "required": ["from", "to"], "additionalProperties": false, "properties": { "from": { "type": "string", "maxLength": 24 }, "to": { "type": "string", "maxLength": 24 }, "label": { "type": "string", "maxLength": 40 }, "type": { "enum": ["sync", "async", "event", "control", "data"] } } } }
+                }
               }
             }
           }
+        },
+        "mechanismGif": {
+          "type": ["string", "null"],
+          "description": "Path to generated mechanism GIF (set by gen-blog-agent, not LLM)."
         }
       }
     },

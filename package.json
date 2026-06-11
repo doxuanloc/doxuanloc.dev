@@ -14,6 +14,8 @@
     "post:linkedin": "node scripts/post-to-linkedin.mjs",
     "card:preview": "node scripts/linkedin-card.mjs --preview",
     "gen:index": "node scripts/gen-news-index.mjs",
+    "gen:agent": "node scripts/gen-blog-agent.mjs",
+    "mechanism:preview": "node scripts/mechanism-gif.mjs --preview",
     "publish:today": "node scripts/gen-today.mjs && npm run validate && node scripts/gen-news-index.mjs && node scripts/post-to-linkedin.mjs && git add content/news public/images/blog && (git diff --cached --quiet || git commit -m \"content: auto $(date -u +%F)\") && git push"
   },
   "dependencies": {
