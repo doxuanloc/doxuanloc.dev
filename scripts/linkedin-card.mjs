@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
  * LinkedIn card generator — PNG (blog cover) + animated GIF (LinkedIn post).
- * PNG: saved to public/images/blog/{slug}.png and set as blog.coverImage.
- * GIF: 3-frame orbital pulse loop, uploaded to LinkedIn for higher engagement.
+ * PNG: dark decorative cover, saved to public/images/blog/{slug}.png (site theme).
+ * GIF: animated insight card — best content block rendered as light-editorial
+ * infographic, 4-frame eased reveal. Falls back to orbital pulse when the post
+ * has no cover-worthy block. (docs/decisions.md 2026-06-11)
  *
  * CLI: node scripts/linkedin-card.mjs --preview  (writes tmp/ files, no upload)
  */
@@ -227,9 +229,8 @@ function buildCardElement(blog, { avatarDataUri, palette, stars, glowFactor = 1 
 
 // ── render helpers ────────────────────────────────────────────────────────────
 
-async function renderFrame(blog, { avatarDataUri, palette, stars, glowFactor = 1 }) {
+async function rasterize(element) {
   const fonts = loadFonts();
-  const element = buildCardElement(blog, { avatarDataUri, palette, stars, glowFactor });
   const svg = await satori(element, { width: W, height: H, fonts });
   const resvg = new Resvg(svg, { fitTo: { mode: "width", value: W } });
   const rendered = resvg.render();
@@ -239,6 +240,23 @@ async function renderFrame(blog, { avatarDataUri, palette, stars, glowFactor = 1
     width: rendered.width,
     height: rendered.height,
   };
+}
+
+async function renderFrame(blog, { avatarDataUri, palette, stars, glowFactor = 1 }) {
+  return rasterize(buildCardElement(blog, { avatarDataUri, palette, stars, glowFactor }));
+}
+
+async function encodeGif(frames) {
+  const { default: gifenc } = await import("gifenc");
+  const { GIFEncoder, quantize, applyPalette } = gifenc;
+  const gif = GIFEncoder();
+  for (const { pixels, width, height, delay } of frames) {
+    const pal = quantize(pixels, 256, { format: "rgba4444", oneBitAlpha: false });
+    const idx = applyPalette(pixels, pal, "rgba4444");
+    gif.writeFrame(idx, width, height, { palette: pal, delay, repeat: 0 });
+  }
+  gif.finish();
+  return Buffer.from(gif.bytesView());
 }
 
 function loadAvatar() {

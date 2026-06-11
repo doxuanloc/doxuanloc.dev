@@ -20,43 +20,62 @@
   "summary": "Kỹ sư phần mềm với kinh nghiệm phát triển từ frontend đến thiết kế kiến trúc hệ thống tổng thể. Quá trình làm việc đa dạng—từ các sản phẩm tương tác 3D đến kiến trúc microservices trên AWS cho các nền tảng quy mô lớn tại Nhật Bản—đã giúp tôi rèn luyện tư duy giải quyết vấn đề một cách có hệ thống. Hiện tại, tôi áp dụng các nguyên tắc thiết kế như SOLID và Feature-Based Design để tích hợp các giải pháp AI (RAG, Voice AI, Multi-agent) vào sản phẩm thực tiễn. Mục tiêu của tôi luôn là xây dựng những hệ thống đảm bảo tính an toàn, dễ bảo trì và mang lại giá trị vận hành bền vững cho doanh nghiệp.",
   "solves": [
     {
-      "problem": "Nâng cao khả năng mở rộng và bảo trì hệ thống",
-      "approach": "Chuyển đổi sang kiến trúc microservices với NX Monorepo, xác định ranh giới API rõ ràng và tự động hóa quy trình CI/CD theo từng môi trường.",
+      "problem": "Tách monolithic thành microservices mà không tích lũy coupling và chặn lẫn nhau giữa các team",
+      "approach": "Dùng NX Monorepo để áp đặt ranh giới project rõ ràng giữa internal services và public APIs; mỗi service NestJS tuân thủ SOLID với contract ổn định, CI/CD độc lập theo môi trường trên AWS (EC2 + CodePipeline) cho phép deploy riêng lẻ mà không cần release train chung hay chia sẻ mutable state.",
       "stack": [
-        "NestJS",
         "NX Monorepo",
-        "AWS",
-        "CI/CD"
+        "NestJS",
+        "AWS (EC2, CodePipeline, SQS)",
+        "MySQL"
       ]
     },
     {
-      "problem": "Đồng bộ và xử lý dữ liệu đa nguồn theo thời gian thực",
-      "approach": "Áp dụng kiến trúc event-driven và serverless để giảm thiểu sự phụ thuộc giữa các dịch vụ, đảm bảo luồng dữ liệu hoạt động ổn định.",
-      "stack": [
-        "AWS Lambda",
-        "EventBridge",
-        "SAM",
-        "SQS"
-      ]
-    },
-    {
-      "problem": "Ứng dụng LLM vào sản phẩm đảm bảo độ chính xác và bảo mật",
-      "approach": "Sử dụng kiến trúc RAG kết hợp embeddings để trích xuất thông tin từ tài liệu nội bộ, triển khai LLM cục bộ để kiểm soát hoàn toàn dữ liệu.",
-      "stack": [
-        "RAG",
-        "Embeddings",
-        "LLM (Ollama)",
-        "Python"
-      ]
-    },
-    {
-      "problem": "Xử lý giọng nói tiếng Nhật với các luồng hội thoại phức tạp",
-      "approach": "Tích hợp Amazon Connect, Lex V2 và Bedrock Claude Haiku để bóc tách ý định người dùng, xử lý các trường hợp nhiễu âm hoặc gián đoạn.",
+      "problem": "Voicebot trên thoại điện thoại tiếng Nhật thực gặp failure modes không có trong text chat: dead air làm khách ngắt, brand recognition và PostCode format lỗi làm hỏng dữ liệu downstream",
+      "approach": "Xây dựng state machine trên Amazon Connect + Lex V2 (ja_JP) để kiểm soát turn-taking và chèn guard (timeout, rate limit) cho dead air; chuyển intent classification và structured extraction qua Bedrock Claude Haiku, bổ sung rule-based normalization PostCode và fuzzy handling cho brand errors để chỉ dữ liệu sạch đi tiếp vào hệ thống sau.",
       "stack": [
         "Amazon Connect",
-        "Lex V2",
+        "Lex V2 (ja_JP)",
+        "Bedrock (Claude 3 Haiku)",
+        "AWS Lambda",
+        "DynamoDB",
+        "S3"
+      ]
+    },
+    {
+      "problem": "Pipeline xử lý audio cuộc gọi nghiệp vụ thực (nhiễu, cross-talk, độ dài biến thiên) cần STT + diarization + summarization + extract cấu trúc nhưng inference nặng sync làm chi phí GPU cao và không chịu burst",
+      "approach": "Kết hợp Whisper Large-v3/Turbo cho STT với Pyannote diarization, sau đó summarization/extraction qua Bedrock và Gemini; Lambda workers điều phối gọi SageMaker async endpoints để tách compute khỏi critical path, chỉ tính phí khi chạy inference thực sự và scale theo burst; hậu xử lý robustness cho cross-talk, kết quả structured xuất S3 Tables (Iceberg) để vận hành query trực tiếp.",
+      "stack": [
+        "Whisper Large-v3/Turbo",
+        "Pyannote",
+        "SageMaker (async endpoints)",
+        "AWS Lambda",
         "Bedrock",
-        "State Machine"
+        "Gemini",
+        "S3 Tables (Iceberg)"
+      ]
+    },
+    {
+      "problem": "Xử lý batch ảnh sản phẩm e-comm thủ công chậm và sai: generic background removal không đạt chuẩn nền trắng sạch, gán Product ID bằng tay, upload lẻ tẻ dễ lỗi",
+      "approach": "Triển khai Bilateral Reference ML model trên SageMaker cho xóa nền trắng — chọn thay vì general removers vì đáp ứng chuẩn catalog e-comm — Florence-2 routing requests để phân loại ảnh vào pipeline xử lý phù hợp; barcode scan tự động nhóm theo Product ID trước khi edit; Next.js 15 + SQS + API Gateway batch upload thẳng V2 management system.",
+      "stack": [
+        "Next.js 15",
+        "React 19",
+        "TypeScript",
+        "Florence-2",
+        "SageMaker",
+        "AWS (Lambda, S3, SQS, API Gateway)",
+        "Docker",
+        "ECS"
+      ]
+    },
+    {
+      "problem": "Tự động hóa một phần workflow IS/FS từ dữ liệu Voicebot đòi hỏi multi-step stateful reasoning nhưng single LLM thiếu memory liên tục và tạo tight coupling giữa collector và decision layer",
+      "approach": "Mô hình hóa workflow thành directed graph của specialized agents dùng LangGraph trên Gemini để duy trì explicit state và branching logic; áp dụng Agent-to-Agent (A2A) communication chuẩn để Voicebot push structured data sang decision agents, kết hợp selective memory + caching để tránh re-compute; tích hợp trực tiếp với S3 và DynamoDB hiện hữu thay vì duplicate storage.",
+      "stack": [
+        "LangGraph",
+        "Gemini",
+        "Python",
+        "AWS (S3, DynamoDB)"
       ]
     }
   ],

@@ -198,3 +198,19 @@
 - LinkedIn org dual-post → P2 (scope `w_organization_social` restricted).
 
 **References**: `docs/blog-richness-spec.md` (Grok draft + 3 tie-break resolved), `src/components/blog/ContentBlocks.astro`, `content/schema.json`.
+
+---
+
+## 2026-06-11 — Cover GIF: decorative → animated insight card
+
+**Quyết định**: GIF LinkedIn bỏ orbital-pulse decorative → render block đắt nhất của bài thành infographic động trên nền **light editorial** (#f4f6f8). Ưu tiên chọn block: `chart` (bar, ≥3 điểm, cap 5) > `comparison` (2×3 bullets) > `flow` (cap 4 bước). 4 frame eased reveal (bar mọc dần / bullets hiện dần / step highlight), frame cuối hold ~1.4s. Bài không có block phù hợp → fallback GIF orbital cũ. PNG cover trên site giữ dark decorative (đồng bộ theme site).
+
+**Lý do**: User feedback "GIF không có giá trị" — cover phải là hình vẽ mô tả kĩ thuật (tham chiếu style AI Insiders bar chart / RAG patterns diagram). Parallel mode Grok + Claude: đồng thuận animate THÔNG TIN không animate trang trí, dùng `blocks[]` có sẵn không thêm schema field. Grok thắng 2 điểm: nền sáng (dark làm diagram chết trên feed), 4 frame (size <420KB). Claude giữ easing trong 4 frame.
+
+**Trade-off**:
+- Light cover ≠ dark brand site → chấp nhận: legibility trên feed > brand consistency của cover; PNG site vẫn dark.
+- Không icon library (satori flexbox-only) → node hình học + Unicode (→ ● ✓ số trong vòng tròn).
+- LLM emit block quá dày (flow 6 bước, chart 7 bar) → renderer tự cap, không tin LLM.
+- 2 generator (PNG dark / GIF light) → chi phí maintain 2 visual path.
+
+**References**: `scripts/linkedin-card.mjs`, raw takes trong session 2026-06-11 (Grok in-repo `--tools read_file,grep,list_dir`).

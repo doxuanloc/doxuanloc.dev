@@ -20,43 +20,62 @@
   "summary": "Software engineer with experience growing from frontend development to overall system architecture design. My diverse journey—from interactive 3D products to microservices architecture on AWS for large-scale platforms in Japan—has helped me develop systematic problem-solving thinking. Currently, I apply design principles such as SOLID and Feature-Based Design to integrate AI solutions (RAG, Voice AI, Multi-agent) into practical products. My goal is always to build systems that are secure, maintainable, and deliver sustainable operational value for businesses.",
   "solves": [
     {
-      "problem": "Enhancing system scalability and maintainability",
-      "approach": "Transitioning to microservices architecture with NX Monorepo, defining clear API boundaries, and automating CI/CD pipelines per environment.",
+      "problem": "Decomposing a monolith into microservices without accumulating hidden coupling and cross-team deployment blocking",
+      "approach": "Enforced explicit project boundaries in an NX Monorepo between internal services and public APIs; each NestJS service followed SOLID with stable contracts while per-environment CI/CD on AWS (EC2 + CodePipeline) let teams ship independently without shared mutable state or synchronized releases.",
       "stack": [
-        "NestJS",
         "NX Monorepo",
-        "AWS",
-        "CI/CD"
+        "NestJS",
+        "AWS (EC2, CodePipeline, SQS)",
+        "MySQL"
       ]
     },
     {
-      "problem": "Real-time synchronization and multi-source data processing",
-      "approach": "Applying event-driven and serverless architecture to minimize service dependencies and ensure stable data flow.",
-      "stack": [
-        "AWS Lambda",
-        "EventBridge",
-        "SAM",
-        "SQS"
-      ]
-    },
-    {
-      "problem": "Applying LLMs to products with accuracy and security",
-      "approach": "Using RAG architecture combined with embeddings to extract information from internal documents, deploying LLMs locally for complete data control.",
-      "stack": [
-        "RAG",
-        "Embeddings",
-        "LLM (Ollama)",
-        "Python"
-      ]
-    },
-    {
-      "problem": "Processing Japanese voice with complex conversation flows",
-      "approach": "Integrating Amazon Connect, Lex V2, and Bedrock Claude Haiku to extract user intent, handling noise and interruption cases.",
+      "problem": "Real-world Japanese telephony voicebots hit failure modes invisible in text: dead air triggers hang-ups, brand name misrecognitions and PostCode format errors corrupt downstream records, and pure NLU cannot govern turn-taking or telephony artifacts",
+      "approach": "Implemented a state machine on Amazon Connect + Lex V2 (ja_JP) to enforce conversation control and insert dead-air guards (timeouts, rate limits); intent classification and structured extraction went through Bedrock Claude Haiku with added rule-based PostCode normalization and fuzzy brand recovery so only validated data reached backend processing.",
       "stack": [
         "Amazon Connect",
-        "Lex V2",
+        "Lex V2 (ja_JP)",
+        "Bedrock (Claude 3 Haiku)",
+        "AWS Lambda",
+        "DynamoDB",
+        "S3"
+      ]
+    },
+    {
+      "problem": "End-to-end processing of real business call audio (background noise, cross-talk, variable duration) requires chained STT + diarization + summarization + structured extraction, yet synchronous heavy-model inference drives high idle GPU cost and collapses under bursty volume",
+      "approach": "Composed the flow as Whisper Large-v3/Turbo STT → Pyannote diarization → Bedrock/Gemini summarization and extraction; Lambda workers drove SageMaker async endpoints so inference ran off the request path and was charged only for actual execution, absorbing bursts without provisioned capacity; cross-talk robustness was added in post-processing and structured results landed in S3 Tables (Iceberg) for direct ops access.",
+      "stack": [
+        "Whisper Large-v3/Turbo",
+        "Pyannote",
+        "SageMaker (async endpoints)",
+        "AWS Lambda",
         "Bedrock",
-        "State Machine"
+        "Gemini",
+        "S3 Tables (Iceberg)"
+      ]
+    },
+    {
+      "problem": "High-volume e-commerce product photography batch processing is slow and error-prone when done manually: generic background removal fails the clean white standard, Product ID grouping is manual, and piecemeal uploads are fragile",
+      "approach": "Deployed a Bilateral Reference ML model on SageMaker for white-background removal — chosen over generic removers for e-comm catalog precision — with Florence-2 routing incoming image requests to the appropriate processing path; barcode scanning automated Product ID grouping before any edits, and Next.js 15 + SQS + API Gateway handled reliable batch upload directly into the V2 management system.",
+      "stack": [
+        "Next.js 15",
+        "React 19",
+        "TypeScript",
+        "Florence-2",
+        "SageMaker",
+        "AWS (Lambda, S3, SQS, API Gateway)",
+        "Docker",
+        "ECS"
+      ]
+    },
+    {
+      "problem": "Partially automating IS/FS workflows from Voicebot-collected data requires multi-step stateful reasoning, but single-shot LLM calls lack cross-step memory and create tight coupling between the data collector and downstream decision systems",
+      "approach": "Modeled the workflow as a directed graph of specialized agents in LangGraph backed by Gemini to maintain explicit state and branching logic; standardized Agent-to-Agent (A2A) communication allowed the Voicebot to push clean structured records to decision agents, with selective memory and caching to limit re-inference; direct integration against existing S3 and DynamoDB avoided new persistent stores.",
+      "stack": [
+        "LangGraph",
+        "Gemini",
+        "Python",
+        "AWS (S3, DynamoDB)"
       ]
     }
   ],

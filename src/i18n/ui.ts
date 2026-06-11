@@ -32,7 +32,7 @@ export const ui = {
     "home.solve.eyebrow": "Problems solved in production",
     "home.solve.title": "What I systematically dismantle",
     "home.solve.sub":
-      "Each challenge represents recurring architectural and operational problems I have resolved through deliberate system design and optimization.",
+      "A representative sample — not the full list. Each one taken from diagnosis to production, built on systems thinking that transfers to the next problem.",
 
     // Home — Skills
     "home.skills.eyebrow": "Technical DNA",
@@ -162,7 +162,7 @@ export const ui = {
     "home.solve.eyebrow": "Bài toán đã giải quyết trong production",
     "home.solve.title": "Những thách thức tôi thường xuyên tháo gỡ",
     "home.solve.sub":
-      "Mỗi vấn đề đại diện cho những thách thức kiến trúc và vận hành lặp lại mà tôi đã giải quyết thông qua thiết kế hệ thống có chủ đích.",
+      "Vài bài toán tiêu biểu — không phải tất cả. Mỗi cái đi từ chẩn đoán đến production, trên nền tư duy hệ thống áp dụng được cho bài toán tiếp theo.",
 
     "home.skills.eyebrow": "Technical DNA",
     "home.skills.title": "Từ giao diện đến inference pipeline",
@@ -278,7 +278,7 @@ export const ui = {
     "home.solve.eyebrow": "本番環境で解決した課題",
     "home.solve.title": "体系的に解決する問題領域",
     "home.solve.sub":
-      "各課題は、意図的なシステム設計によって解決してきた反復的なアーキテクチャおよび運用上の問題を表しています。",
+      "代表的な事例であり、これが全てではありません。いずれも診断から本番まで手がけ、その背後にあるシステム思考は次の課題にも応用できます。",
 
     "home.skills.eyebrow": "Technical DNA",
     "home.skills.title": "UIから推論パイプラインまで",

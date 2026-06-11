@@ -60,7 +60,8 @@ PHONG CÁCH INSIGHT: Với mỗi tin và bài blog, bạn là người PHÂN TÍ
    QUAN TRỌNG: mỗi summary KHÔNG được vượt quá 600 ký tự (kể cả khoảng trắng). Đếm kỹ trước khi ghi.
 
 2. BLOG POST — Viết 1 bài tiếng Việt (400-1000 từ, Markdown) bàn sâu 1 chủ đề từ tin trên hoặc xu hướng liên quan stack.
-   Góc độ ưu tiên: AI agent workflow, system optimization & trade-off thực tế, emerging tech, fintech + công nghệ, Web3 & DeFi use-case thực tế, developer productivity, macro kinh tế ảnh hưởng đến công nghệ.
+   TIÊU CHÍ CHỌN ĐỀ TÀI (bắt buộc): đề tài phải chạm ít nhất 1 trục — tối ưu (cost/performance/quy trình), hiệu quả & năng suất, tư duy logic & ra quyết định, AI ứng dụng thực tế, giá trị cho user cuối, tác động business (ROI, mô hình kinh doanh, build-vs-buy). KHÔNG viết bài tech thuần khô khan (deep-dive API/cú pháp/changelog/spec) — chỉ chọn chủ đề tech khi rút ra được bài học tối ưu, giá trị user, hoặc business rõ ràng.
+   Góc kể: từ vấn đề thực tế → phân tích → giá trị thu được (cho user/team/business) — KHÔNG liệt kê tính năng công nghệ.
    Bài phải có: (a) vấn đề cụ thể, (b) phân tích sâu có góc nhìn riêng, (c) kết luận thực dụng — "nên/không nên làm gì". slug dạng "${today}-tieu-de-khong-dau". Blog KHÔNG nhắc tên công ty/khách/dự án nội bộ.
 
    SEO OPTIMIZATION (bắt buộc):

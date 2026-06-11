@@ -38,7 +38,7 @@ function applyReducedMotionDefaults(style: CSSStyleDeclaration) {
   style.setProperty('--home-scroll-vel', '0');
   style.setProperty('--hero-depth', '0');
   style.setProperty('--stargate-proximity', '0');
-  for (let i = 0; i < 4; i++) style.setProperty(`--solve-charge-${i}`, '1');
+  for (let i = 0; i < 5; i++) style.setProperty(`--solve-charge-${i}`, '1');
 }
 
 export function initHomeScrollSync(): (() => void) | undefined {
