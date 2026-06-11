@@ -68,22 +68,7 @@
       "importance": 3
     }
   ],
-  "blog": {
-    "slug": "2026-06-06-gpt-5-5-bedrock-vs-minimax-m3-trade-off-cho-ai-agent",
-    "title": "GPT-5.5 trên Bedrock và MiniMax M3: trade-off thực tế khi chọn model cho AI agent production",
-    "excerpt": "Nhiều lựa chọn frontier model cùng lúc: closed qua hyperscaler với governance đầy đủ, và open-weight rẻ với context khổng lồ. Vấn đề là chọn sai sẽ tốn kém hoặc rủi ro pháp lý không ngờ khi agent chạy ở scale thực.",
-    "contentMarkdown": "## Vấn đề cụ thể\n\nBuilder AI agent hôm nay đứng trước menu model ngày càng dài: Claude, GPT-5.x series, Gemini, và giờ cả open-weight Trung Quốc như MiniMax M3 với 1M context cùng giá cực thấp. AWS vừa đưa GPT-5.5 và Codex (coding agent) lên Bedrock. Câu hỏi không còn là \"model nào mạnh nhất\" mà \"model nào đáng để chịu rủi ro và chi phí ở scale\".\n\nĐặc biệt với agentic workflow thực: hàng loạt tool call liên tiếp, long-horizon task (reproduce paper, optimize kernel 24h), xử lý repo lớn hoặc desktop action. Chi phí token, độ trễ và rủi ro tích lũy nhanh. Một lựa chọn giá rẻ nhưng pháp lý lỏng lẻo có thể biến thành thảm họa audit hoặc data leak sau này.\n\n## Phân tích sâu có góc nhìn riêng\n\n**Bedrock + OpenAI (GPT-5.5 / Codex):** \n- Data residency: prompt/output ở lại region AWS bạn chọn, không egress tùy tiện.\n- Governance tích hợp sẵn: IAM, CloudTrail, Bedrock guardrails, private connectivity tiềm năng.\n- Tích hợp tự nhiên với phần còn lại của stack (Lambda, ECS, EventBridge, Step Functions, observability).\n- Codex mang lại dev productivity ngay: CLI/IDE agent dùng GPT-5.5, inference routed qua Bedrock Responses API.\n\nNhược điểm: giá vẫn là frontier pricing. Agent loop nhiều (retry, reflection, nhiều tool), long context sẽ đắt nhanh.\n\n**MiniMax M3 (và tương tự open-weight frontier):**\n- Giá rẻ hơn 5-10x, 1M token context native qua Sparse Attention (không phải bolted-on), multimodal thực sự (image/video/desktop) từ pretrain.\n- Phù hợp high-volume agent, RAG repo lớn, hoặc sau này self-host khi weights ra.\n- Launch benchmark cho thấy cạnh tranh hoặc nhỉnh hơn một số closed model trên SWE-Bench Pro / Terminal-Bench / BrowseComp.\n\nNhược điểm thực:\n- Tất cả benchmark lúc launch là vendor-run trên infra của họ, baseline họ chọn, chưa có independent verification rộng (Artificial Analysis, LMSYS còn pending).\n- Open weights chưa ship tại thời điểm launch (dự kiến ~10 ngày sau).\n- Mọi prompt qua API của công ty Trung Quốc chịu National Intelligence Law 2017: công ty \"phải hỗ trợ, hỗ trợ và hợp tác\" với cơ quan tình báo, không cần yêu cầu trước và không có cơ chế từ chối dễ dàng. Code, contract, dữ liệu chiến lược của bạn có thể nằm trong DB họ.\n\nTrade-off cốt lõi: **giá + context dài + capability vs sovereignty + verifiability + legal surface**. Nhiều team nghĩ \"rẻ thì thử trước\", nhưng với agent production, một lần data incident hoặc regulatory issue có thể đắt hơn cả 10x token chi phí.\n\n## Kết luận thực dụng — nên và không nên\n\n**Nên làm:**\n- Phân loại workload theo mức độ nhạy cảm ngay từ đầu: code base khách hàng, IP nội bộ, PII, regulated data → ưu tiên Bedrock / Anthropic / Vertex trong region có compliance rõ. Non-sensitive bulk, internal tooling, experimentation → cân nhắc M3 (hoặc tương tự) sau khi weights + third-party bench ra.\n- Xây abstraction layer cho model routing, fallback, cost tracking, eval harness từ ngày đầu. Agent production không nên hard-code một provider.\n- Chạy private eval trên distribution task thật (SWE-bench con, internal issues, tool-use scenarios của bạn) thay vì tin launch number.\n- Tính Total Cost of Ownership đầy đủ: không chỉ $/M token mà retries, context waste, observability, legal review time, và switching cost sau này.\n\n**Không nên làm:**\n- Đẩy toàn bộ prompt (kể cả có data nhạy cảm hoặc mã nguồn chiến lược) sang model rẻ nhất chỉ vì benchmark launch đẹp.\n- Commit production vào open-weight mới ra mà chưa có plan self-host hoặc provider thay thế đáng tin cậy.\n- Bỏ qua data residency / legal jurisdiction khi bán agent cho enterprise hoặc fintech.\n\nModel tốt nhất không phải là model \"mạnh nhất trên paper\" lúc launch. Đó là model bạn kiểm soát được rủi ro ở quy mô thực tế của hệ thống, với chi phí và pháp lý minh bạch theo thời gian.",
-    "tags": [
-      "ai",
-      "llm",
-      "agent",
-      "aws",
-      "trade-off",
-      "optimization"
-    ],
-    "readingTimeMin": 8,
-    "coverImage": null
-  },
+  "blog": null,
   "financeNews": [
     {
       "title": "Bitcoin và Ether spot ETF chấm dứt chuỗi outflow kỷ lục 13 ngày với inflow nhỏ",

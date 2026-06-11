@@ -1,0 +1,111 @@
+{
+  "date": "2026-06-11",
+  "type": "essay",
+  "sourceTopic": "Xây portfolio tự cập nhật hàng ngày bằng Grok × Claude",
+  "blog": {
+    "slug": "2026-06-11-portfolio-grok-claude-agentic-pipeline",
+    "title": "Xây Portfolio Tự Cập Nhật Hàng Ngày bằng Grok × Claude",
+    "excerpt": "Pipeline tự động hóa toàn bộ content lifecycle: Grok research real-time → Claude validate schema + guardrail bảo mật → Astro render data-driven blocks → deploy + LinkedIn auto-post. Không phải demo — đây là evidence của hệ thống production với capability routing, security boundary, lazy archive, và mechanism GIF không dùng WebGL.",
+    "tags": ["Agentic Pipeline", "Grok", "Claude", "Astro", "CI/CD", "AI Engineering"],
+    "readingTimeMin": 8,
+    "coverImage": null,
+    "coverKeywords": ["agentic pipeline", "Grok Claude", "portfolio automation", "AI workflow"],
+    "tldr": [
+      "Capability routing: Grok đảm nhận research real-time (web_search + web_fetch), Claude đảm nhận validation + code execution — không dùng 1 model cho tất cả",
+      "LLM emit JSON data; Astro render SVG/HTML an toàn — schema contract là security boundary, ngăn XSS và đảm bảo design consistency",
+      "validate-content.mjs chặn build: sensitive terms, fake metrics, thiếu skill verbs đều fail trước deploy",
+      "Slim index 6.7KB thay 95KB glob; archive lazy-load qua <template> element — zero extra HTTP request",
+      "Mechanism GIF bằng satori+gifenc: 8 frames 1200×630px, traveling signals — không WebGL, không Lighthouse penalty"
+    ],
+    "contentMarkdown": "## Portfolio giỏi nhất là portfolio tự chứng minh năng lực\n\nHầu hết developer viết portfolio một lần — rồi 6 tháng sau nó stale. Content không phản ánh skill thật, không có bằng chứng về những gì họ đang làm ngay bây giờ.\n\nTôi chọn hướng khác: thay vì update tay, xây pipeline tự động hóa toàn bộ content lifecycle. Grok CLI research tin tức kỹ thuật và viết blog hàng ngày. Claude Code validate, structure, trigger build. Astro render static site. LinkedIn nhận post tự động. Pipeline chạy 3 phút, không manual intervention.\n\nNhưng \"pipeline tự động\" nghe đơn giản hơn thực tế rất nhiều. Khi LLM trở thành một bước trong production pipeline, các vấn đề cổ điển của systems engineering xuất hiện ngay: schema contract, security guardrail, idempotent validation, render separation. Không cái nào miễn phí.\n\n## Quyết định 1: Capability routing thay vì single-model\n\nMistake phổ biến nhất khi xây multi-agent pipeline: dùng một model cho tất cả vì tiện. Đây là lý do đúng để không làm vậy.\n\nGrok có **real-time web search** — đây là superpower mà Claude không có theo design. Grok research topic, tìm 3–5 nguồn thật (RFC, paper, official doc, benchmark), tổng hợp điểm phi hiển nhiên, đề xuất thesis có thể đúng/sai được. Claude có **tool use + code execution + smallest-correct-diff** — validate output, chạy scripts, đảm bảo mechanical consistency trên nhiều file.\n\nRouting matrix: uncertainty × realtime-need × context-volume × taste. Grok nhận việc Claude yếu (realtime grounding), Claude nhận việc Grok yếu (execution precision, verification). Không phải phân vai theo \"to nhỏ\" — phân vai theo superpower.\n\nMột điểm không obvious ngay: Grok và Claude dùng chung file `CLAUDE.md` ở root repo — đây là **shared brain**. Grok Build tự scan `CLAUDE.md` khi chạy trong repo. Khi tôi cập nhật routing rule, security guardrail, hay output format — cả hai AI nhận context đồng thời. Không phải duy trì 2 instruction file song song.\n\n## Quyết định 2: LLM emit data, site render HTML\n\nĐây là quyết định kiến trúc có tác động lớn nhất đến security và maintainability của toàn hệ thống.\n\nPattern thông thường: yêu cầu LLM viết HTML/Markdown có embedded HTML, paste thẳng vào template. Vấn đề:\n- **XSS risk** khi LLM embed `<script>` hay `onclick` handler\n- **Inconsistent styling** khi model đổi output format giữa các ngày\n- **Không thể animate** đúng cách nếu HTML không follow animation contract\n- **Không accessible** — LLM không biết design system ARIA patterns\n\nThay vào đó, tôi thiết kế **block schema**: LLM emit structured JSON, Astro component render thành HTML/SVG an toàn theo design system.\n\nVí dụ block `architecture`:\n```json\n{\n  \"type\": \"architecture\",\n  \"id\": \"pipeline-main\",\n  \"architecture\": {\n    \"components\": [{\"id\": \"grok\", \"label\": \"Grok CLI\", \"kind\": \"reasoner\"}],\n    \"connections\": [{\"from\": \"grok\", \"to\": \"validate\", \"label\": \"raw JSON\", \"type\": \"sync\"}]\n  }\n}\n```\n\nAstro component nhận block data, render SVG với proper ARIA labels, animate bằng CSS (không GSAP), consistent với design tokens. LLM không bao giờ được emit raw HTML. `content/schema.json` định nghĩa mọi field — AJV validate trước khi bất kỳ file nào được write.\n\nKết quả thực tế: khi tôi đổi animation style cho architecture diagram, tôi sửa Astro component — không cần touch bất kỳ content file nào. Separation of concerns thật sự.\n\n## Quyết định 3: Validate-before-build là security boundary cứng\n\n`validate-content.mjs` chạy **trước** `astro build`. Nếu fail → `exit 1` → build fail → không deploy. Đây là hard boundary, không phải warning.\n\nCụ thể những gì nó chặn:\n\n**SENSITIVE_TERMS scan**: Quét toàn bộ output LLM (blog title/body, expUpdate, blocks) cho tên công ty/khách/dự án nội bộ. Portfolio này public — LLM không được phép lộ context từ production codebase của tôi.\n\n**SKILL_VERBS check**: `expUpdate` là skill snapshot. Mỗi `highlights` entry phải dùng động từ kỹ năng — \"triển khai\", \"tối ưu\", \"tích hợp\". Nếu LLM viết kiểu \"worked on\" hay \"participated in\" thay vì mô tả năng lực → fail.\n\n**Metric pattern detection**: ≥2 số liệu cụ thể (ms, %, rps) trong cùng câu = nghi trước/sau của hệ thống thật → reject. Không bao giờ commit metrics internal vào public portfolio.\n\n**Slug uniqueness**: Duplicate slug giữa các ngày → build fail. Không có hidden page collision.\n\n**AJV schema validation**: Mọi field có bounds: `maxLength`, `minLength`, `enum`, `pattern`. Type error = không deploy.\n\nTại sao làm vậy thay vì trust Grok? Vì LLM hallucinate. Không phải Grok đặc biệt dễ hallucinate — mà vì **bất kỳ LLM nào cũng hallucinate đủ thường xuyên để cần hard guardrail**. Guardrail trong build pipeline bắt được điều mà prompt engineering không bao giờ đảm bảo được.\n\n## Quyết định 4: Slim index + template-based lazy archive\n\nLúc đầu news page load toàn bộ content bằng `import.meta.glob(\"content/news/*.json\")` — Astro eager-load tất cả file vào HTML. Ổn khi có 5–6 ngày. Vấn đề khi >30 ngày: 95KB+ HTML cho một listing page.\n\n**Slim index**: `content/news/index.json` — 6.7KB chứa slim metadata (slug, title, excerpt, tags, date, coverImage). Build step `gen-news-index.mjs` generate file này từ toàn bộ daily + essays. Blog listing load từ index, không load full content.\n\n**Template-based archive**: Những ngày cũ hơn 14 ngày được render vào `<template id=\"news-archive-tpl\">`. Browser không render template content vào DOM — nó chỉ được parse. JS clone template vào DOM khi user click \"Show older\". Không extra HTTP request, không layout shift.\n\nPattern này là browser-native API, không cần library. Template element tồn tại từ HTML5, work trên mọi browser hiện đại. Nhưng ít người dùng vì không biết nó tồn tại.\n\n## Quyết định 5: Mechanism GIF bằng satori+gifenc\n\nLinkedIn post có GIF animation nhận nhiều engagement hơn static image. Nhưng Three.js hay GSAP làm tụt Lighthouse score — đây là trade-off không acceptable cho portfolio.\n\nSolution: server-side GIF generation khi build.\n\n**satori**: Render JSX → SVG server-side (không cần browser, không cần headless Chrome). Hỗ trợ layout flexbox, text, path.\n\n**gifenc**: Encode raw pixel array → GIF binary. Palette quantization, frame delay configuration.\n\nPipeline: architecture block data → `buildArchitectureFrame()` render 8 SVG frames (signal dots lerp dọc edges theo `frameT`) → satori render mỗi frame → gifenc encode → `public/images/mechanism/<slug>.gif`.\n\nCanvas: 1200×630px (LinkedIn optimal). Last frame delay 1400ms (hold cho reader đọc). Edge type `async` = dashed line, `event` = dotted, `sync` = solid. Signal dot highlight source node khi khởi phát, target node khi đến nơi.\n\nKhông client-side JS, không external CDN, Lighthouse không bị ảnh hưởng.\n\n## Meta-point: portfolio là evidence, không phải claim\n\nPipeline chạy xong trong ~3 phút: Grok research (~90s) → validate (~2s) → gen-news-index (~0.5s) → Astro build (~45s) → deploy + LinkedIn (~20s).\n\nNhưng điểm quan trọng hơn performance: **portfolio này không phải nội dung về pipeline — nó là bằng chứng của pipeline tôi có thể xây**. Guardrail bảo mật là evidence. Data-driven blocks là evidence. Slim index + lazy archive là evidence. Mechanism GIF không cần WebGL là evidence.\n\n\"Show, don't tell\" không chỉ là nguyên tắc content — đó là nguyên tắc engineering. Người xem portfolio này không cần tôi tuyên bố có thể thiết kế production pipeline. Họ đang dùng nó.",
+    "blocks": [
+      {
+        "type": "architecture",
+        "id": "portfolio-pipeline",
+        "title": "Daily Content Pipeline",
+        "caption": "Grok research → Claude validate → Astro render → deploy + LinkedIn",
+        "architecture": {
+          "components": [
+            {"id": "cron", "label": "Trigger / npm run", "kind": "control"},
+            {"id": "grok", "label": "Grok CLI", "kind": "reasoner"},
+            {"id": "validate", "label": "validate-content.mjs", "kind": "control"},
+            {"id": "index", "label": "gen-news-index.mjs", "kind": "side-effect"},
+            {"id": "astro", "label": "Astro Build", "kind": "orchestrator"},
+            {"id": "deploy", "label": "Static Deploy (CDN)", "kind": "side-effect"},
+            {"id": "linkedin", "label": "LinkedIn API", "kind": "external"}
+          ],
+          "connections": [
+            {"from": "cron", "to": "grok", "label": "topic + date context", "type": "control"},
+            {"from": "grok", "to": "validate", "label": "raw JSON output", "type": "sync"},
+            {"from": "validate", "to": "index", "label": "validated content", "type": "sync"},
+            {"from": "index", "to": "astro", "label": "index.json 6.7KB", "type": "data"},
+            {"from": "astro", "to": "deploy", "label": "dist/ static files", "type": "sync"},
+            {"from": "validate", "to": "linkedin", "label": "linkedinPost text", "type": "async"}
+          ]
+        }
+      },
+      {
+        "type": "comparison",
+        "id": "capability-routing",
+        "title": "Capability Routing: Grok vs Claude",
+        "comparison": {
+          "left": {
+            "title": "Grok — Research",
+            "points": [
+              "web_search + web_fetch: real-time sources, current API docs, today's news",
+              "Counter-intuitive insight extraction from multiple independent sources",
+              "Thesis proposal: falsifiable claim, not generic description",
+              "First-principles analysis and anti-sycophancy pushback on weak ideas"
+            ]
+          },
+          "right": {
+            "title": "Claude — Execution",
+            "points": [
+              "AJV schema validation + security guardrail enforcement before any file write",
+              "Code execution: gen-news-index, validate-content, Astro build trigger",
+              "Smallest-correct-diff: edit only what needs to change across many files",
+              "Mechanical consistency: apply changes uniformly across the codebase"
+            ]
+          }
+        }
+      },
+      {
+        "type": "callout",
+        "id": "data-driven-boundary",
+        "variant": "insight",
+        "title": "LLM emit data, site renders HTML — never the reverse",
+        "body": "The schema contract is the security boundary. Grok writes JSON blocks; the Astro component renders safe SVG/HTML following the design system. When the animation style changes, you update the component — not every content file. XSS prevention, accessible ARIA, consistent animation: all enforced at render time, not prompt time."
+      },
+      {
+        "type": "step",
+        "id": "guardrails",
+        "title": "5 Guardrails in validate-content.mjs",
+        "step": {
+          "items": [
+            {"label": "SENSITIVE_TERMS scan", "body": "Rejects company/client names and internal project codenames across all LLM-generated fields — blog, expUpdate, every block label."},
+            {"label": "SKILL_VERBS check", "body": "expUpdate.highlights must use skill verbs (triển khai, tối ưu, tích hợp). Describes demonstrated capability, not job tasks."},
+            {"label": "Metric pattern detection", "body": "≥2 specific measurements (ms, %, rps, GB) in one sentence = suspected internal before/after data → build fail."},
+            {"label": "Slug uniqueness", "body": "Duplicate slug across daily files or essays → build fail. No hidden page collision or SEO conflict."},
+            {"label": "AJV schema validation", "body": "Every field validated: maxLength, minLength, enum, pattern, format:uri for sources. Type mismatch = no deploy."}
+          ]
+        }
+      },
+      {
+        "type": "flow",
+        "id": "pipeline-flow",
+        "title": "Pipeline Execution (~3 min end-to-end)",
+        "flow": {
+          "steps": [
+            {"label": "Grok research", "desc": "web_search + web_fetch: 3-5 real sources, thesis, counter-intuitive points (~90s)"},
+            {"label": "Validate", "desc": "AJV + SENSITIVE_TERMS + SKILL_VERBS + slug uniqueness — exit 1 on any violation (~2s)"},
+            {"label": "gen-news-index", "desc": "6.7KB slim metadata from all daily files + essays, sorted by date (~0.5s)"},
+            {"label": "Astro build", "desc": "Blocks → SVG/HTML, mechanism GIF from architecture block, template archive (~45s)"},
+            {"label": "Deploy + LinkedIn", "desc": "CDN push + LinkedIn API post from linkedinPost field — no manual copy-paste (~20s)"}
+          ]
+        }
+      }
+    ],
+    "linkedinPost": "Portfolio tốt nhất là portfolio tự chứng minh được năng lực xây hệ thống — không phải tuyên bố.\n\nTôi không update portfolio tay. Tôi xây pipeline:\n→ Grok CLI research real-time (web_search + web_fetch 3-5 nguồn thật)\n→ validate-content.mjs chặn hallucination TRƯỚC build: sensitive terms, fake metrics, thiếu skill verbs = exit 1\n→ LLM emit JSON block data; Astro render SVG an toàn theo design system — không bao giờ trust raw HTML từ model\n→ gen-news-index.mjs: 6.7KB slim index thay vì 95KB eager glob\n→ LinkedIn auto-post từ linkedinPost field sau mỗi build thành công\n\n3 quyết định kiến trúc không obvious:\n\n1. Capability routing: Grok làm research (real-time), Claude làm validation + code execution. Không phải 1 model cho tất cả — phân vai theo superpower.\n\n2. Validate-before-build = security boundary cứng. Prompt engineering không đảm bảo được điều mà build gate đảm bảo.\n\n3. Mechanism GIF bằng satori+gifenc server-side: 8 frames, 1200×630px, traveling signal dots — không WebGL, không Lighthouse penalty.\n\nFull breakdown + architecture diagram: doxuanloc.dev\n\n#AIEngineering #AgenticPipeline #Astro",
+    "mechanismGif": null
+  }
+}

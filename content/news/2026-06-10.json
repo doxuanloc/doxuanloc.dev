@@ -62,27 +62,7 @@
       "importance": 4
     }
   ],
-  "blog": {
-    "slug": "2026-06-10-agentic-workflow-step-functions-agentcore-governance",
-    "title": "Agentic Workflow Production với Step Functions + AgentCore: Governance Thực Tế Developer Phải Thiết Kế",
-    "excerpt": "Step Functions tích hợp AgentCore harness cho phép nhúng AI agent reasoning vào workflow production có approval và error handling. Phân tích governance, stateful shell, cost-per-outcome và khi nào agent step đáng giá thực tế.",
-    "contentMarkdown": "## Vấn đề cụ thể\n\nAgent prototype trên laptop chạy đẹp: loop, tool call, reflection. Nhưng đưa vào production workflow — long-running, side-effect (DB, email, payment, infra change), parallel branch, human approval — thì fail im lặng, burn tiền hoặc tạo incident.\n\nTuần này AWS công bố Step Functions native integration với AgentCore harness và Runtime hỗ trợ interactive shell session. Đây là tín hiệu rõ: agentic capability đang được nhúng vào orchestrator truyền thống thay vì để agent tự do chạy không giới hạn.\n\nCâu hỏi thực sự: **làm sao thiết kế governance cho agent step mà không làm workflow chậm, đắt hoặc mất kiểm soát?**\n\n## Step Functions + AgentCore Harness Giải Quyết Gì?\n\nHarness cho phép declare agent qua config (model, tool set, instruction, behavior). Step Functions gọi harness như một state: truyền input, nhận output/reasoning trace, có retry/backoff, parallel execution, human approval gate sẵn.\n\nLợi ích:\n- Visual workflow + agent reasoning trong cùng pipeline.\n- Error handling và compensation logic thống nhất.\n- Human gate cho high-risk action mà không cần custom UI riêng.\n\nNhưng harness không thay thế lớp governance. Nó chỉ cung cấp execution environment và observability hook.\n\n## Stateful Interactive Shell: Năng Lực Mới, Surface Mới\n\nInteractive shell (terminal) trong AgentCore Runtime cho agent giữ state (env, cwd, process) qua nhiều lệnh — giống REPL sandbox. Tối đa 10 session/concurrent.\n\nUse case tốt: agent devops chạy chuỗi lệnh chẩn đoán, sửa config tạm, test script trước khi commit.\n\nRủi ro thực:\n- Persistent state = persistent exploit nếu command allowlist lỏng.\n- Một session dài có thể tiêu budget hoặc gây side-effect tích lũy mà human không thấy ngay.\n- Log và trace phải capture đầy đủ lệnh + output, không chỉ LLM call.\n\nGóc nhìn: Stateful tool execution là bước tiến cần thiết cho agent thực sự 'làm việc', nhưng permission model và session budget phải là first-class citizen trong design, ngang bằng với tool allowlist.\n\n## Cost, Approval và Observability — Ba Trụ Cột\n\nAgent step trong workflow thường sinh 5-15 inference + tool calls. Không có cap per execution = budget bất ngờ.\n\nPattern thực tế:\n- Per-workflow budget cap + kill switch.\n- Tiered model inside agent (router phân loại bước → cheap model cho classify/summarize, frontier cho planning/critical).\n- Semantic cache cho retrieval/classify lặp trong cùng execution.\n- Approval gate cho mọi side-effect có write hoặc external call (dùng Step Functions Task Token hoặc callback).\n- Trace kết hợp: Step Functions execution ID + AgentCore reasoning trace + token spend per step → CloudWatch / X-Ray.\n\nKhông đo cost-per-outcome (thành công task / chi phí) thì không biết agent có đáng giá hay chỉ đốt tiền nhanh hơn Lambda thông thường.\n\n## Nên và Không Nên Khi Nào?\n\nNên dùng agent step khi:\n- Task cần reasoning + tool orchestration phức tạp (triage ticket, phân tích incident K8s, research multi-source).\n- Có human approval rõ cho high impact action.\n- Có eval dataset + regression test cho agent behavior.\n- Đã có budget cap và observability per outcome.\n\nKhông nên thay thế:\n- Workflow đơn giản, deterministic (transform data, fan-out/fan-in thuần).\n- Action có side-effect cao mà không có approval cứng hoặc dry-run mode.\n- Agent tự do access shell/production resource mà không có tight allowlist + timeout + budget.\n\n## Kết luận thực dụng\n\n- Bắt đầu với harness + Step Functions cho orchestration, không build custom agent loop từ đầu.\n- Thiết kế approval + budget + trace là phần của architecture, không phải sau khi prototype chạy.\n- Dùng model routing + cache bên trong agent step để giữ cost trong ngưỡng.\n- Đo lường: không chỉ latency hay token, mà cost-per-successful-outcome và MTTR giảm bao nhiêu so với baseline thủ công.\n\nAgentic workflow production không phải 'thêm AI vào pipeline'. Đó là bài toán hệ thống: orchestrator, governance boundary, cost control và observability phải được thiết kế đồng thời.",
-    "tags": [
-      "ai agent",
-      "aws bedrock",
-      "agentic workflow",
-      "step functions",
-      "governance",
-      "aws"
-    ],
-    "readingTimeMin": 7,
-    "coverImage": null,
-    "coverKeywords": [
-      "agentic workflow",
-      "step functions harness",
-      "production governance"
-    ]
-  },
+  "blog": null,
   "financeNews": [
     {
       "title": "JPM, BofA, Citi qua Clearing House sẽ ra mắt tokenized deposit network H1/2027",

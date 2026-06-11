@@ -1,0 +1,149 @@
+{
+  "slug": "2026-06-11-quic-0-rtt-replay-tax-production",
+  "title": "The Replay Tax: Why Production 0-RTT Rarely Justifies the Correctness Cost",
+  "excerpt": "Primary sources from RFC 9001, RFC 8446 and RFC 8470, plus deployment reality, show that the anti-replay surface is fundamentally incomplete for anything that mutates observable state—even 'safe' GETs.",
+  "contentMarkdown": "# The Replay Tax: Why Production 0-RTT Rarely Justifies the Correctness Cost\n\n0-RTT (early data) in TLS 1.3 and QUIC lets a client send application data in its very first flight using a previously obtained PSK and ticket. The latency win is real on paper: one fewer round trip than a standard 1-RTT QUIC handshake. The question for anyone running production systems is whether that win survives contact with replay semantics, distributed fleets, and real application side effects.\n\nThe thesis is simple and grounded in the specifications themselves: production 0-RTT is a net operational win *only* for read-only, side-effect-free resources that the application has explicitly hardened with Early-Data awareness and 425 handling. For anything that mutates state or produces observable side effects, the incomplete coverage of anti-replay mechanisms, the mandatory identical behavior across every fleet instance, and the surprising implementation pitfalls make enabling 0-RTT a source of correctness and operational problems that exceed the (often marginal) latency benefit.\n\n## The Mechanism: First Flight, Ticket Recovery, and the Server Decision Diamond\n\nA client that has a valid session ticket and remembered QUIC transport parameters re-derives the early traffic secret from the PSK. It then sends, in a single UDP datagram (or small set of coalesced packets), the ClientHello carrying the early_data extension together with 0-RTT-protected STREAM frames (and possibly CRYPTO frames) containing the first application bytes.\n\nThe server recovers the PSK state from the ticket, validates that the offered parameters are compatible with its current configuration (ALPN, cipher suite, QUIC transport parameters, ticket lifetime and skew), then performs an anti-replay check (either single-use ticket state or a ClientHello recording structure such as a bloom filter or time-window table).\n\nAt this point the server has three real outcomes:\n\n- Accept: install 0-RTT keys and deliver the early data to the application. For HTTP, any gateway or CDN that forwarded the data *must* insert the `Early-Data: 1` header (RFC 8470).\n- Reject at the TLS layer: do not process the early data, force a full handshake. The client *must* reset the state of every stream it optimistically opened.\n- Process the data but let the origin return 425 (Too Early). The client is then required to retry that specific request without early data.\n\nQUIC changes the failure model relative to TLS 1.3 over TCP. There is no EndOfEarlyData message. Early application data can be interleaved with Initial and Handshake CRYPTO frames inside the same datagrams. On rejection the client must tear down optimistic stream state. The server may see 0-RTT packets after 1-RTT packets due to reordering and must retain 0-RTT keys for a short window (recommended: 3× PTO) after receiving the first 1-RTT packet.\n\n<!-- block:arch-0rtt-path -->\n\nThe architecture block above renders the full decision path with the coalesced first flight, the three validation stages, the Early-Data:1 insertion point, and the two retry-without-early-data exit paths.\n\n## What the Specifications Actually Require (and Explicitly Warn)\n\nRFC 9001, Section 9.2 is blunt: \"0-RTT data can be replayed by an attacker, so 0-RTT is not suitable for carrying instructions that might initiate any action that could cause unwanted effects if replayed.\"\n\nRFC 8446, Section 2.3 contains the famous IMPORTANT NOTE for TLS 1.3 0-RTT: the data \"is not forward secret\" (derived solely from the offered PSK) and there are \"no guarantees of non-replay between connections.\" Section 8 and Appendix E.5 detail the three families of anti-replay defense—single-use tickets, ClientHello recording, and freshness checks—and their fundamental limits. Clock skew between client and server creates an acceptance window; a recording mechanism scoped to one zone or data center creates a cross-zone replay surface when anycast or multi-region fleets are involved.\n\nRFC 8470 makes the HTTP-layer contract explicit. The `Early-Data: 1` header is mandatory for intermediaries when they forward early data. The 425 status code exists precisely so the origin (not the CDN or gateway) can signal that a particular request is not safe to process from early data. Safety is resource-specific, not method-specific. A GET that merely increments an analytics counter or warms a cache key is not side-effect-free from the perspective of the systems that observe those effects. Clients that receive 425 on a request originally sent in early data MUST retry without early data.\n\nThe specifications do not claim that TLS-layer anti-replay solves the application problem. They state the opposite.\n\n## The Counter-Intuitive Core: \"Idempotent\" Does Not Mean Side-Effect-Free\n\nA GET with no query parameters that always returns the same bytes can still produce observable mutations under duplication:\n\n- Rate-limit and abuse counters increment on every replay.\n- Security, audit, and compliance logs record the event multiple times with the same apparent client identity.\n- Analytics and product metrics treat the request as authoritative; duplicated events distort funnels and billing.\n- Cache population and invalidation decisions change hit rates and origin load for later legitimate clients.\n- Any downstream system (recommendation, fraud, quota) that receives the request as an event will process it again.\n\nThese are not hypothetical. Cloudflare's own 2017 and 2019 posts on 0-RTT explicitly note that even \"innocuous\" GETs affect counters, logging, analytics, cache population, and billing. They chose not to enable the feature by default and restricted the surface they would answer over 0-RTT to GETs with no query parameters, plus an identifying header for origin correlation.\n\nAnti-replay cannot be solved purely at the TLS layer for these effects. The specs themselves say application-level replays \"cannot be guarded against on the TLS level.\"\n\n## Implementation Reality: Defaults That Break or Weaken the Feature\n\nEmpirical review across major stacks (OpenSSL, BoringSSL, NSS, NGINX, Chromium, Firefox) shows that production configurations frequently either destroy the latency benefit or leave the replay surface larger than operators assume.\n\n- OpenSSL's anti-replay implementation interacting with its internal session cache has been observed to label essentially all incoming 0-RTT as replay, negating the feature entirely.\n- BoringSSL ships without sufficient anti-replay machinery enabled for basic attacks in some configurations.\n- NSS implements bloom-filter ClientHello recording, but the protection is off by default and must be manually enabled with parameters before any early data is accepted.\n\nClock skew and zone-scoping problems are not theoretical. A client whose clock is slightly fast can have its first early-data attempt rejected, then succeed on retry after the server's window advances—exactly the window the anti-replay design was supposed to close. Any anycast or multi-region deployment that does not share single-use ticket state or recording state across every edge that can terminate the same ticket creates a replay surface between zones.\n\nQUIC adds operational surface: servers must be prepared to process (or at least buffer) early application data while the handshake is still in flight, and clients must correctly reset every optimistic stream when the server rejects 0-RTT. These are not free invariants to maintain across a large fleet.\n\n## The Latency Win Is Real but Highly Conditional\n\nThe measurable gain appears primarily on high-RTT paths: mobile networks, satellite, intercontinental routes. On low-latency links the fixed costs—fleet-wide configuration consistency for early-data acceptance, 425 retry logic in clients and intermediaries, monitoring for duplication artifacts, and the restricted set of resources you are willing to expose—frequently dominate.\n\nMany large operators that have run the numbers only allow 0-RTT for the absolute safest static entry points (cacheable, no analytics side effects, no downstream events) and only after explicit hardening. The rest of the site stays on a plain 1-RTT QUIC handshake. That is not cowardice; it is the correct reading of the specifications plus operational reality.\n\n## A Production Decision Framework\n\nBefore enabling 0-RTT for any resource, the owning team must be able to answer yes to every item:\n\n1. The resource is read-only from the perspective of every system that observes the request (origin, logs, analytics, caches, downstream services).\n2. Every origin instance (and every gateway that might terminate early data for it) will make the identical accept/reject decision for the same ticket and parameters.\n3. The application explicitly inspects the `Early-Data` header (or equivalent signal) and returns 425 for any request it is not willing to process under replay risk.\n4. Clients and intermediaries are known to retry correctly on 425 without early data.\n5. You have monitoring that would surface duplication artifacts within the first day of enabling.\n6. The latency distribution of your clients shows that the RTT reduction is material for the traffic that would actually use the path (not just the theoretical minimum).\n\nIf any item is \"we think so\" or \"the CDN will handle it,\" do not enable it for that resource.\n\n0-RTT is not a free performance toggle. It is a contract that the application must uphold across every replay window the protocol and the deployment leave open. The specifications are unusually clear about the limits. The implementations have shown how easy it is to get the contract wrong in practice. The production evidence is that the only safe surface is the one you have deliberately made tiny and hardened.\n\nWhen that surface matches your workload, the mechanism is powerful. When it does not—and for most dynamic or observable workloads it does not—the plain 1-RTT QUIC handshake remains the higher-correctness default.",
+  "tags": ["quic", "tls", "0-rtt", "http3", "security", "performance", "rfc"],
+  "readingTimeMin": 9,
+  "tldr": [
+    "0-RTT data is never forward-secret and carries no non-replay guarantee between connections; RFC 8446 §2.3 and RFC 9001 §9.2 state this directly.",
+    "Even a GET that returns identical bytes mutates rate-limit counters, audit logs, analytics events, cache population, and downstream billing on replay.",
+    "TLS-layer anti-replay (single-use tickets or CHLO recording) cannot protect application-visible effects; RFC 8470 requires the origin to decide per-resource and emit 425.",
+    "QUIC removes EndOfEarlyData, shares the packet-number space with 1-RTT, allows interleaving of early STREAM frames with handshake CRYPTO, and forces clients to reset optimistic streams on any rejection.",
+    "Major stacks have shipped with anti-replay either off-by-default, defeated by session caching, or too weak for basic attacks; clock skew and anycast create additional replay windows in real fleets.",
+    "The latency reduction is material mainly on high-RTT paths; on typical links the operational tax of fleet consistency, 425 handling, and restricted surface exceeds the gain for anything except the safest static assets."
+  ],
+  "blocks": [
+    {
+      "type": "architecture",
+      "id": "arch-0rtt-path",
+      "title": "0-RTT Acceptance and Replay Decision Path",
+      "caption": "Client first flight, server validation stages, Early-Data:1 propagation, and the two exit paths that force a non-early retry. QUIC-specific: no EndOfEarlyData, shared PN space, interleaved frames, and mandatory stream reset on reject.",
+      "architecture": {
+        "components": [
+          {
+            "id": "client",
+            "label": "Client (cached PSK + ticket + remembered QUIC transport params)",
+            "kind": "client"
+          },
+          {
+            "id": "firstflight",
+            "label": "First flight: ClientHello + 0-RTT-protected STREAM/CRYPTO (coalesced in initial UDP datagram(s))",
+            "kind": "packet"
+          },
+          {
+            "id": "server-recover",
+            "label": "Server: recover PSK state from ticket, validate ALPN/cipher/transport-params/ticket skew",
+            "kind": "server"
+          },
+          {
+            "id": "antireplay",
+            "label": "Anti-replay gate (single-use ticket state OR ClientHello recording: bloom / time window)",
+            "kind": "gate"
+          },
+          {
+            "id": "accept",
+            "label": "Accept: install 0-RTT keys, deliver data to app (Early-Data: 1 inserted by any intermediary)",
+            "kind": "success"
+          },
+          {
+            "id": "tls-reject",
+            "label": "TLS reject: do not process early data; client MUST reset all optimistic stream state and continue with full handshake",
+            "kind": "reject"
+          },
+          {
+            "id": "app-425",
+            "label": "Origin returns 425 (Too Early); client MUST retry the request without early data",
+            "kind": "reject"
+          },
+          {
+            "id": "origin",
+            "label": "Origin server (sole party that knows whether the resource tolerates replay)",
+            "kind": "server"
+          }
+        ],
+        "connections": [
+          {
+            "from": "client",
+            "to": "firstflight",
+            "label": "re-derives early secret, sends in first UDP flight",
+            "type": "sync"
+          },
+          {
+            "from": "firstflight",
+            "to": "server-recover",
+            "label": "ticket + early data arrive together",
+            "type": "sync"
+          },
+          {
+            "from": "server-recover",
+            "to": "antireplay",
+            "label": "after compatibility checks",
+            "type": "sync"
+          },
+          {
+            "from": "antireplay",
+            "to": "accept",
+            "label": "replay check passes + config compatible",
+            "type": "sync"
+          },
+          {
+            "from": "antireplay",
+            "to": "tls-reject",
+            "label": "replay detected or params mismatch",
+            "type": "sync"
+          },
+          {
+            "from": "accept",
+            "to": "origin",
+            "label": "early data delivered; Early-Data:1 propagated",
+            "type": "sync"
+          },
+          {
+            "from": "origin",
+            "to": "app-425",
+            "label": "origin decides this resource is not safe",
+            "type": "sync"
+          },
+          {
+            "from": "tls-reject",
+            "to": "client",
+            "label": "client resets streams and falls back to 1-RTT",
+            "type": "async"
+          },
+          {
+            "from": "app-425",
+            "to": "client",
+            "label": "client retries exact request without early data",
+            "type": "async"
+          }
+        ]
+      }
+    },
+    {
+      "type": "comparison",
+      "id": "comp-failure-models",
+      "title": "Failure Model Differences: QUIC 0-RTT vs TLS 1.3 over TCP",
+      "caption": "QUIC removes clean markers and sequencing guarantees that existed over TCP, changing what a server must be prepared to handle and what a client must clean up on rejection.",
+      "comparison": {
+        "headers": ["Aspect", "QUIC 0-RTT (RFC 9001)", "TLS 1.3 over TCP (RFC 8446)"],
+        "rows": [
+          ["EndOfEarlyData marker", "Removed entirely (Section 8.3)", "Present; cleanly terminates early data"],
+          ["Packet number space", "0-RTT and 1-RTT share the same space", "Separate record-layer sequencing"],
+          ["Interleaving with handshake", "Early STREAM frames can share datagrams with Initial/Handshake CRYPTO", "Record layer enforces stricter ordering"],
+          ["Client action on TLS reject", "MUST reset state of all optimistically opened streams", "Upper layer sees clean failure of early writes"],
+          ["Server key retention after 1-RTT seen", "May retain 0-RTT keys briefly (recommended 3× PTO) for reordered packets", "Early data ends before application data keys are active"],
+          ["Server buffering obligation", "Must be ready to process or buffer early app data while still reading Handshake CRYPTO", "Handshake completes before app data is accepted"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "id": "callout-fleet",
+      "severity": "warning",
+      "title": "The Fleet Consistency Requirement (RFC 8470 §6.2)",
+      "body": "If any server instance might initiate processing of a request before the TLS handshake completes, *all* server instances must make the identical decision for that request. Different instances returning different answers (one processes, one returns 425) turns a single replay into divergent observable effects. This is why origin servers, not CDNs or gateways, must ultimately own the policy, and why anycast or multi-region deployments without shared anti-replay state create structural replay surfaces."
+    }
+  ],
+  "linkedinPost": "Even a plain GET / that returns identical bytes can still increment rate-limit counters, duplicate audit events, warm caches that change later hit rates, and distort billing/analytics when replayed. 0-RTT makes that duplication trivial for an on-path attacker.\n\nThree things the specs and production deployments actually require:\n• QUIC drops EndOfEarlyData, shares the PN space with 1-RTT, and interleaves early STREAMs with handshake CRYPTO; clients must reset optimistic streams on any reject.\n• Anti-replay (tickets or CHLO recording) has clock-skew windows + fleet-consistency mandates that the TLS layer cannot discharge for application side effects; only the origin can decide per resource and must emit 425.\n• Library defaults in OpenSSL/BoringSSL/NSS have historically made 0-RTT either inert or unsafe; large operators enable it only for the smallest set of provably side-effect-free static entry points.\n\nFull mechanism diagram + primary source breakdown (RFC 9001 §9.2, RFC 8446 §2.3/8/E.5, RFC 8470): link in comments.\n\n#QUIC #0RTT #TLS13 #HTTP3"
+}
