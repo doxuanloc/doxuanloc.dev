@@ -17,6 +17,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const today = new Date().toISOString().slice(0, 10);
 const LINKEDIN_VERSION = "202507";
 const BLOG_BASE_URL = "https://doxuanloc.space/blog/";
+const REPOST = process.argv.includes("--repost"); // delete existing post + repost (e.g. after a card fix)
 
 // ── env ──────────────────────────────────────────────────────────────────────
 
@@ -271,6 +272,25 @@ async function postUgc(text, authorUrn, accessToken, imageAssetUrn = null) {
   return { ok: true, shareUrn };
 }
 
+async function deleteUgcPost(urn, accessToken) {
+  // Try the stored urn; share-urn and ugcPost-urn share the numeric id, so retry the alt form.
+  const variants = [urn];
+  if (urn.includes(":share:")) variants.push(urn.replace(":share:", ":ugcPost:"));
+  for (const u of variants) {
+    const res = await fetch(`https://api.linkedin.com/v2/ugcPosts/${encodeURIComponent(u)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-Restli-Protocol-Version": "2.0.0",
+        "LinkedIn-Version": LINKEDIN_VERSION,
+      },
+    });
+    if (res.ok || res.status === 204) return { ok: true, urn: u };
+    if (res.status !== 404) return { ok: false, status: res.status, body: await res.text() };
+  }
+  return { ok: false, status: 404 };
+}
+
 // ── main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -295,7 +315,7 @@ async function main() {
     return;
   }
 
-  if (data.linkedin?.posted) {
+  if (data.linkedin?.posted && !REPOST) {
     console.log(`LinkedIn: Already posted on ${data.linkedin.postedAt} — skipping.`);
     return;
   }
@@ -317,6 +337,14 @@ async function main() {
       console.error(`LinkedIn: failed to fetch person URN — ${err.message}`);
       return;
     }
+  }
+
+  if (REPOST && data.linkedin?.urn) {
+    console.log(`LinkedIn: --repost → deleting ${data.linkedin.urn}...`);
+    const del = await deleteUgcPost(data.linkedin.urn, accessToken);
+    if (del.ok) console.log(`LinkedIn: deleted ${del.urn}`);
+    else console.warn(`LinkedIn: delete failed (${del.status}) — sẽ đăng bài mới, bạn xóa bài cũ thủ công nếu cần.`);
+    data.linkedin = undefined;
   }
 
   // ── generate visuals ──────────────────────────────────────────────────────
