@@ -1,6 +1,7 @@
 // Loaders đọc dữ liệu từ /content (repo root). Grok ghi vào content/news/*.json mỗi ngày.
 import profileJson from '../../content/profile.json';
 import profileEnJson from '../../content/profile.en.json';
+import newsIndexJson from '../../content/news/index.json';
 import type { Lang } from '../i18n/ui';
 
 /** Profile theo ngôn ngữ. VI = nguồn gốc, JA fallback về EN. */
@@ -46,6 +47,18 @@ export interface BlogPost {
   blocks?: ContentBlock[];
 }
 
+/** Slim listing type — no contentMarkdown/blocks/tldr. Used for blog index + news listing. */
+export interface BlogListing {
+  date: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  tags: string[];
+  readingTimeMin?: number | null;
+  coverImage?: string | null;
+  coverKeywords?: string[];
+}
+
 export interface FinanceNewsItem {
   title: string;
   summary: string;
@@ -66,6 +79,11 @@ export interface DailyContent {
 }
 
 export const profile = profileJson as any;
+
+/** Slim blog listing from pre-built index — no contentMarkdown/blocks loaded. */
+export function getBlogListing(): BlogListing[] {
+  return (newsIndexJson as any).posts as BlogListing[];
+}
 
 // Vite glob: pattern bắt đầu bằng "/" tính từ project root.
 const dailyModules = import.meta.glob<DailyContent>('/content/news/*.json', { eager: true });

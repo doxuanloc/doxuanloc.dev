@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getAllPosts } from '../../lib/content';
+import { getBlogListing } from '../../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../../i18n/ui';
 import BlogCoverVisual from '../../components/BlogCoverVisual.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const posts = getAllPosts(lang);
+const posts = getBlogListing();
 ---
 <Base title={t('blog.title')} description={t('blog.title')}>
   <section class="blog-section">

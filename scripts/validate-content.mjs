@@ -169,7 +169,7 @@ if (!existsSync(newsDir)) {
   process.exit(0);
 }
 
-const files = readdirSync(newsDir).filter((f) => f.endsWith(".json"));
+const files = readdirSync(newsDir).filter((f) => f.endsWith(".json") && f !== "index.json");
 if (files.length === 0) {
   console.log("⚠️  content/news/ rỗng — bỏ qua.");
   process.exit(0);
