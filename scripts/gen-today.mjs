@@ -87,7 +87,7 @@ PHONG CÁCH INSIGHT: Với mỗi tin và bài blog, bạn là người PHÂN TÍ
    - "tldr": 3-5 bullet ngắn — ý chính để catch-up trong 10 giây (KHÔNG phải excerpt, KHÔNG lặp excerpt).
    - "blocks": 3-6 block DATA-DRIVEN minh họa nội dung bài (KHÔNG trang trí). CHỈ xuất DATA theo schema — TUYỆT ĐỐI KHÔNG viết HTML/SVG/JS thô. Loại block:
      • callout {variant:insight|warning|tradeoff|fact, title, body} — chốt 1 insight/trade-off quan trọng.
-     • chart {variant:bar|line, unit, data:[{label,value}]} — số liệu so sánh. Số PHẢI có thật/từ nguồn web_search, KHÔNG bịa (vi phạm guardrail bảo mật).
+     • chart {variant:bar|line, unit, data:[{label,value}]} — CHỈ dùng khi có ≥3 data point CÙNG đơn vị/trục (vd fee theo từng rail, adoption theo thời gian). <3 điểm hoặc khác đơn vị → dùng callout/comparison thay. Số PHẢI có thật/từ nguồn web_search, KHÔNG bịa (vi phạm guardrail bảo mật).
      • comparison {left:{title,points[]}, right:{title,points[]}} — before/after hoặc A vs B.
      • flow {steps:[{label,desc}]} — quy trình/kiến trúc 2-6 bước.
      • step {items:[{label,body}]} — các bước tiết lộ dần (block tương tác duy nhất).
