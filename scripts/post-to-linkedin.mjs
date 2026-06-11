@@ -364,7 +364,7 @@ async function main() {
   // GIF → animated card for LinkedIn (fallback to PNG)
   let imageAssetUrn = null;
   try {
-    console.log("LinkedIn: generating animated GIF card (3 frames)...");
+    console.log("LinkedIn: generating animated GIF card...");
     const gif = await generateCoverGif(data.blog);
     console.log(`LinkedIn: uploading GIF (${Math.round(gif.length / 1024)}KB)...`);
     imageAssetUrn = await uploadImageToLinkedIn(gif, "image/gif", accessToken, personUrn);

@@ -70,6 +70,13 @@ function truncate(text, max) {
   return text.length <= max ? text : text.slice(0, max - 1) + "…";
 }
 
+function truncateWords(text, max) {
+  if (!text || text.length <= max) return text ?? "";
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut) + "…";
+}
+
 // ── fonts ─────────────────────────────────────────────────────────────────────
 
 let _fonts = null;
@@ -265,6 +272,227 @@ function loadAvatar() {
   return `data:image/png;base64,${readFileSync(p).toString("base64")}`;
 }
 
+// ── animated insight card (light editorial infographic) ──────────────────────
+
+const LIGHT = {
+  bg: "#f4f6f8", canvas: "#ffffff",
+  text: "#13151a", textDim: "#4b5563", textMute: "#8b95a5",
+  line: "#e3e7ee",
+};
+
+const LIGHT_ACCENTS = [
+  { a1: "#1e40af", a2: "#0f766e" },
+  { a1: "#0f766e", a2: "#6d28d9" },
+  { a1: "#6d28d9", a2: "#1e40af" },
+  { a1: "#1e40af", a2: "#b45309" },
+];
+
+// Feed legibility caps — never trust LLM-emitted block density.
+const CAPS = { chartBars: 4, comparisonPoints: 3, flowSteps: 4 };
+
+const validBarData = chart =>
+  (chart?.data ?? []).filter(d => typeof d.value === "number" && isFinite(d.value) && d.value >= 0);
+
+/** Pick the most cover-worthy block: bar chart (≥3 pts) > comparison > flow. */
+export function pickCoverBlock(blog) {
+  const blocks = blog?.blocks ?? [];
+  const chart = blocks.find(b => b.type === "chart" && b.chart?.variant === "bar" && validBarData(b.chart).length >= 3);
+  if (chart) return {
+    type: "chart", title: chart.title,
+    chart: { ...chart.chart, data: validBarData(chart.chart).slice(0, CAPS.chartBars) },
+  };
+  const comp = blocks.find(b => b.type === "comparison" && b.comparison?.left?.points?.length >= 2 && b.comparison?.right?.points?.length >= 2);
+  if (comp) return {
+    type: "comparison", title: comp.title,
+    comparison: {
+      left:  { title: comp.comparison.left.title,  points: comp.comparison.left.points.slice(0, CAPS.comparisonPoints) },
+      right: { title: comp.comparison.right.title, points: comp.comparison.right.points.slice(0, CAPS.comparisonPoints) },
+    },
+  };
+  const flow = blocks.find(b => b.type === "flow" && (b.flow?.steps?.length ?? 0) >= 2);
+  if (flow) return {
+    type: "flow", title: flow.title,
+    flow: { steps: flow.flow.steps.slice(0, CAPS.flowSteps) },
+  };
+  return null;
+}
+
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+function buildChartDiagram(el, chart, accent, t) {
+  const max = Math.max(...chart.data.map(d => d.value), 1);
+  const AREA_H = 270;
+  return el("div", { display: "flex", flexDirection: "column", flex: 1 }, [
+    el("div", { display: "flex", flex: 1, alignItems: "flex-end", gap: 28, paddingTop: 8 },
+      chart.data.map((d, i) => {
+        const barH = Math.max(6, Math.round(AREA_H * (d.value / max) * t));
+        const color = i % 2 === 0 ? accent.a1 : accent.a2;
+        return el("div", { display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: 8 }, [
+          el("div", {
+            fontFamily: "JetBrains Mono", fontSize: 16, fontWeight: 500,
+            color: LIGHT.text, opacity: t >= 1 ? 1 : 0.25,
+          }, `${d.value}`),
+          el("div", { width: "100%", maxWidth: 96, height: barH, borderRadius: 6, background: color }),
+          el("div", {
+            fontSize: 13, fontWeight: 700, color: LIGHT.textDim, textAlign: "center",
+            width: "100%", lineHeight: 1.25,
+          }, truncateWords(d.label, 16)),
+        ]);
+      })),
+    chart.unit ? el("div", {
+      fontFamily: "JetBrains Mono", fontSize: 11, letterSpacing: "2px",
+      textTransform: "uppercase", color: LIGHT.textMute, marginTop: 14,
+    }, `UNIT: ${chart.unit}`) : null,
+  ].filter(Boolean));
+}
+
+function buildComparisonDiagram(el, comparison, accent, revealed) {
+  const col = (side, color) => el("div", {
+    display: "flex", flexDirection: "column", flex: 1, gap: 12,
+    padding: "20px 22px", borderRadius: 12,
+    border: `1.5px solid ${hex(color, 0.35)}`, background: hex(color, 0.05),
+  }, [
+    el("div", {
+      fontFamily: "Tektur", fontSize: 17, fontWeight: 600, color,
+      paddingBottom: 10, borderBottom: `1px solid ${hex(color, 0.25)}`,
+    }, truncate(side.title, 26)),
+    ...side.points.map((p, i) => el("div", {
+      display: "flex", gap: 10, opacity: i < revealed ? 1 : 0.08,
+    }, [
+      el("div", { width: 8, height: 8, borderRadius: 9999, background: color, marginTop: 7, flexShrink: 0 }),
+      el("div", { fontSize: 15, lineHeight: 1.4, color: LIGHT.text, flex: 1 }, truncate(p, 64)),
+    ])),
+  ]);
+  return el("div", { display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" },
+    el("div", { display: "flex", alignItems: "stretch", gap: 14 }, [
+      col(comparison.left, accent.a1),
+      el("div", { display: "flex", alignItems: "center" },
+        el("div", {
+          width: 42, height: 42, borderRadius: 9999, display: "flex",
+          alignItems: "center", justifyContent: "center",
+          fontFamily: "Tektur", fontSize: 14, fontWeight: 600, color: LIGHT.canvas,
+          background: LIGHT.text,
+        }, "VS")),
+      col(comparison.right, accent.a2),
+    ]));
+}
+
+function buildFlowDiagram(el, flow, accent, activeStep) {
+  return el("div", { display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: 6 },
+    flow.steps.map((s, i) => {
+      const active = i === activeStep;
+      const shown = i <= activeStep;
+      return el("div", { display: "flex", flexDirection: "column", opacity: shown ? 1 : 0.12 }, [
+        el("div", {
+          display: "flex", alignItems: "center", gap: 16,
+          padding: "12px 18px", borderRadius: 10,
+          border: `1.5px solid ${active ? accent.a1 : LIGHT.line}`,
+          background: active ? hex(accent.a1, 0.07) : LIGHT.canvas,
+        }, [
+          el("div", {
+            width: 34, height: 34, borderRadius: 9999, display: "flex",
+            alignItems: "center", justifyContent: "center", flexShrink: 0,
+            fontFamily: "Tektur", fontSize: 15, fontWeight: 600,
+            color: active ? LIGHT.canvas : accent.a1,
+            background: active ? accent.a1 : hex(accent.a1, 0.1),
+          }, String(i + 1)),
+          el("div", { display: "flex", flexDirection: "column", flex: 1 }, [
+            el("div", { fontSize: 17, fontWeight: 700, color: LIGHT.text }, truncate(s.label, 32)),
+            s.desc ? el("div", { fontSize: 13.5, color: LIGHT.textDim, lineHeight: 1.35 }, truncate(s.desc, 70)) : null,
+          ].filter(Boolean)),
+        ]),
+        i < flow.steps.length - 1
+          ? el("div", { display: "flex", justifyContent: "center", padding: "2px 0" },
+              el("div", { width: 2.5, height: 12, background: hex(accent.a2, 0.55), borderRadius: 2 }))
+          : null,
+      ].filter(Boolean));
+    }));
+}
+
+function buildInsightCardElement(blog, block, { avatarDataUri, accent, frame, frames }) {
+  const el = (tag, style, children, extras = {}) => ({
+    type: tag, props: { style, children, ...extras },
+  });
+
+  const t = easeOut((frame + 1) / frames);
+  const revealed = frame + 1; // comparison: bullets shown per side (≥1 from frame 0)
+  const title = truncateWords(blog.title ?? "", 100);
+  const excerpt = truncateWords(blog.excerpt ?? "", 95);
+  const readLabel = blog.readingTimeMin ? `${blog.readingTimeMin} MIN READ` : "";
+
+  let diagram;
+  if (block.type === "chart") diagram = buildChartDiagram(el, block.chart, accent, t);
+  else if (block.type === "comparison") diagram = buildComparisonDiagram(el, block.comparison, accent, revealed);
+  else diagram = buildFlowDiagram(el, block.flow, accent, Math.min(frame, block.flow.steps.length - 1));
+
+  return el("div", {
+    width: W, height: H, display: "flex", flexDirection: "column",
+    position: "relative", background: LIGHT.bg, fontFamily: "Be Vietnam Pro",
+  }, [
+    el("div", { position: "absolute", top: 24, left: 24, width: 18, height: 18,
+      borderTop: `2.5px solid ${accent.a1}`, borderLeft: `2.5px solid ${accent.a1}` }),
+    el("div", { position: "absolute", bottom: 24, right: 24, width: 18, height: 18,
+      borderBottom: `2.5px solid ${accent.a1}`, borderRight: `2.5px solid ${accent.a1}` }),
+
+    el("div", { display: "flex", flex: 1, padding: "48px 56px 24px" }, [
+      // left: editorial header
+      el("div", { display: "flex", flexDirection: "column", width: 380, paddingRight: 40, paddingTop: 12 }, [
+        el("div", {
+          fontFamily: "Tektur", fontSize: 12, fontWeight: 600,
+          letterSpacing: "3px", textTransform: "uppercase",
+          color: accent.a2, marginBottom: 18,
+        }, "BLOG · DAILY SIGNAL"),
+        el("div", {
+          fontSize: title.length > 72 ? 30 : 33, fontWeight: 700, lineHeight: 1.18,
+          color: LIGHT.text, letterSpacing: "-0.02em",
+        }, title),
+        el("div", {
+          width: 90, height: 3, marginTop: 18, marginBottom: 16,
+          background: `linear-gradient(90deg, ${accent.a1}, ${accent.a2})`,
+          borderRadius: 2,
+        }),
+        el("div", { fontSize: 16, lineHeight: 1.5, color: LIGHT.textDim }, excerpt),
+      ]),
+      // right: diagram canvas
+      el("div", {
+        display: "flex", flexDirection: "column", flex: 1,
+        background: LIGHT.canvas, borderRadius: 16,
+        border: `1px solid ${LIGHT.line}`, padding: "26px 30px",
+      }, [
+        block.title ? el("div", {
+          fontFamily: "Tektur", fontSize: 14, fontWeight: 600,
+          letterSpacing: "1.5px", textTransform: "uppercase",
+          color: LIGHT.textMute, marginBottom: 14,
+        }, truncate(block.title, 48)) : null,
+        diagram,
+      ].filter(Boolean)),
+    ]),
+
+    el("div", {
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      height: 62, padding: "0 56px",
+      borderTop: `1px solid ${LIGHT.line}`, background: LIGHT.canvas,
+    }, [
+      el("div", { display: "flex", alignItems: "center", gap: 12 }, [
+        avatarDataUri
+          ? { type: "img", props: { src: avatarDataUri, width: 32, height: 32,
+              style: { borderRadius: 9999, border: `2px solid ${hex(accent.a1, 0.6)}` } } }
+          : el("div", {
+              width: 32, height: 32, borderRadius: 9999, display: "flex",
+              alignItems: "center", justifyContent: "center",
+              fontFamily: "Tektur", fontWeight: 600, fontSize: 16, color: accent.a1,
+              border: `2px solid ${hex(accent.a1, 0.6)}`, background: LIGHT.bg,
+            }, "L"),
+        el("div", { fontFamily: "JetBrains Mono", fontSize: 13, fontWeight: 500, color: LIGHT.textDim },
+          "doxuanloc.space"),
+      ]),
+      readLabel ? el("div", {
+        fontFamily: "JetBrains Mono", fontSize: 13, color: LIGHT.textMute,
+      }, readLabel) : null,
+    ].filter(Boolean)),
+  ]);
+}
+
 // ── public API ────────────────────────────────────────────────────────────────
 
 /** Generate static PNG — used as blog cover image. Returns Buffer. */
@@ -276,8 +504,28 @@ export async function generateCoverPng(blog) {
   return png;
 }
 
-/** Generate animated GIF (3-frame orbital pulse) — used for LinkedIn post. Returns Buffer. */
+/** Generate animated GIF for LinkedIn: insight-card reveal when the post has a
+ *  cover-worthy block, orbital pulse otherwise. Returns Buffer. */
 export async function generateCoverGif(blog) {
+  const block = pickCoverBlock(blog);
+  if (!block) return generateOrbitalGif(blog);
+
+  const accent = LIGHT_ACCENTS[hashStr(blog.slug) % LIGHT_ACCENTS.length];
+  const avatarDataUri = loadAvatar();
+  const FRAMES = 4;
+  // reveal beats + long hold on the complete state so the diagram is readable
+  const DELAYS = [240, 220, 220, 1400];
+
+  const rendered = [];
+  for (let frame = 0; frame < FRAMES; frame++) {
+    const r = await rasterize(buildInsightCardElement(blog, block, { avatarDataUri, accent, frame, frames: FRAMES }));
+    rendered.push({ ...r, delay: DELAYS[frame] });
+  }
+  return encodeGif(rendered);
+}
+
+/** Fallback GIF (3-frame orbital pulse) for posts without a cover-worthy block. */
+async function generateOrbitalGif(blog) {
   const palette = pickPalette(blog.slug);
   const stars = genStars(blog.slug);
   const avatarDataUri = loadAvatar();
@@ -294,19 +542,7 @@ export async function generateCoverGif(blog) {
     const r = await renderFrame(blog, { avatarDataUri, palette, stars, glowFactor: f.glowFactor });
     rendered.push({ ...r, delay: f.delay });
   }
-
-  const { default: gifenc } = await import("gifenc");
-  const { GIFEncoder, quantize, applyPalette } = gifenc;
-
-  const gif = GIFEncoder();
-  for (const { pixels, width, height, delay } of rendered) {
-    const pal = quantize(pixels, 256, { format: "rgba4444", oneBitAlpha: false });
-    const idx = applyPalette(pixels, pal, "rgba4444");
-    gif.writeFrame(idx, width, height, { palette: pal, delay, repeat: 0 });
-  }
-  gif.finish();
-
-  return Buffer.from(gif.bytesView());
+  return encodeGif(rendered);
 }
 
 /** Save PNG as blog cover. Returns the public path (/images/blog/{slug}.png). */
@@ -342,7 +578,20 @@ if (process.argv.includes("--preview")) {
   writeFileSync(pngPath, png);
   console.log(`PNG → ${pngPath} (${Math.round(png.length / 1024)}KB)`);
 
-  console.log("Generating GIF (3 frames)...");
+  const block = pickCoverBlock(data.blog);
+  console.log(`Cover block: ${block ? block.type : "none → orbital fallback"}`);
+
+  if (block) {
+    const accent = LIGHT_ACCENTS[hashStr(data.blog.slug) % LIGHT_ACCENTS.length];
+    const avatarDataUri = loadAvatar();
+    for (let frame = 0; frame < 4; frame++) {
+      const { png: fpng } = await rasterize(buildInsightCardElement(data.blog, block, { avatarDataUri, accent, frame, frames: 4 }));
+      writeFileSync(join(tmpDir, `insight-frame-${frame}.png`), fpng);
+    }
+    console.log(`Frames → ${tmpDir}/insight-frame-{0..3}.png`);
+  }
+
+  console.log("Generating GIF...");
   const gif = await generateCoverGif(data.blog);
   const gifPath = join(tmpDir, "linkedin-card-preview.gif");
   writeFileSync(gifPath, gif);
