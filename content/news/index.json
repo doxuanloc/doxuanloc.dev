@@ -1,8 +1,31 @@
 {
-  "updatedAt": "2026-06-11",
-  "totalDays": 7,
+  "updatedAt": "2026-06-12",
+  "totalDays": 8,
   "totalEssays": 2,
   "posts": [
+    {
+      "date": "2026-06-12",
+      "slug": "2026-06-12-claude-fable-5-cost-routing-agent",
+      "title": "Claude Fable 5: Cost-Aware Routing Cho Agent Production — Trade-off Thực Tế Bạn Phải Biết",
+      "excerpt": "Claude Fable 5 mạnh agent dài hơi nhưng giá gấp đôi và burn nhanh. Phân tích routing + cache + cap để đạt ROI thực thay vì chi phí bất ngờ.",
+      "tags": [
+        "claude fable 5",
+        "ai agent",
+        "llm cost optimization",
+        "model routing",
+        "anthropic",
+        "production agent"
+      ],
+      "readingTimeMin": 7,
+      "coverImage": null,
+      "coverKeywords": [
+        "claude fable 5",
+        "agent cost",
+        "model routing",
+        "llm optimization"
+      ],
+      "isEssay": false
+    },
     {
       "date": "2026-06-11",
       "slug": "2026-06-11-portfolio-grok-claude-agentic-pipeline",
@@ -51,6 +74,18 @@
     }
   ],
   "newsIndex": [
+    {
+      "date": "2026-06-12",
+      "newsCount": 5,
+      "financeCount": 4,
+      "topTags": [
+        "ai agent",
+        "ai infra",
+        "coinbase",
+        "mcp",
+        "x402"
+      ]
+    },
     {
       "date": "2026-06-11",
       "newsCount": 6,
