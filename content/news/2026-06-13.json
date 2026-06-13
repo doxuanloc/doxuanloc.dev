@@ -1,0 +1,245 @@
+{
+  "date": "2026-06-13",
+  "generatedBy": "grok",
+  "version": 1,
+  "news": [
+    {
+      "title": "Moonshot AI phát hành Kimi K2.7 Code — open model chuyên long-horizon agentic coding",
+      "summary": "Kimi K2.7 Code (12/6) là open-weight coding specialist cho autonomous long-horizon software engineering và agentic workflows. API giá rẻ (~$0.95/M input, $4/M output), weights miễn phí trên HF. Được định vị như budget alternative cho Fable-class coding tasks. Góc nhìn: Specialist open models rẻ đang thu hẹp khoảng cách với closed frontier trên SWE agent thực — team nên benchmark K2 series cho coding-heavy agent trước khi mặc định trả 2-5× cho general frontier model.",
+      "source": "https://handyai.substack.com/p/model-drop-kimi-k27-code",
+      "tags": [
+        "kimi k2.7 code",
+        "moonshot",
+        "open source llm",
+        "ai agent",
+        "coding model",
+        "llm cost"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "NVIDIA RTX Spark: superchip ARM+Blackwell cho Windows AI PC local agent",
+      "summary": "Tại Computex 2026 NVIDIA công bố RTX Spark superchip (Grace ARM CPU + Blackwell RTX GPU 6144+ CUDA, NVLink-C2C, 1 petaflop FP4 AI, lên 128GB unified memory) để chạy local LLM và agent on-device trên Windows. Hợp tác Microsoft, OEM lớn (Dell, HP, ASUS, MSI, Lenovo) sẽ ship laptop/desktop thu. Góc nhìn: Hardware dedicated cho on-device AI agents và local inference (kết hợp open model như Diffusion/Kimi) đã sẵn sàng — developer cần chuẩn bị client-side agent với data sovereignty, offline capability và co-design ARM/CUDA thay vì chỉ nghĩ serverless/cloud.",
+      "source": "https://www.nvidia.com/en-us/geforce/news/computex-2026-nvidia-geforce-rtx-announcements/",
+      "tags": [
+        "rtx spark",
+        "nvidia",
+        "ai pc",
+        "local llm",
+        "on device ai",
+        "hardware"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "DiffusionGemma xác nhận 500-1000+ tokens/s local — NVIDIA NIM và dev benchmark thực tế",
+      "summary": "DiffusionGemma (Google DeepMind, Apache 2.0, 26B MoE) sau release được Simon Willison và NVIDIA xác nhận chạy 500+ t/s trên NIM miễn phí, lên 1000+ trên H100, 700+ trên RTX 5090. Day-0 hỗ trợ vLLM, Unsloth, HF, quantized <18GB VRAM. Tối ưu interactive local: code infill, editing, block gen song song. Experimental. Góc nhìn: Số liệu thực từ developer chứng minh non-autoregressive path đã deploy được cho latency-critical subtask — production cần A/B test quality trên workload cụ thể và luôn có hybrid fallback thay vì all-in local.",
+      "source": "https://simonwillison.net/2026/Jun/10/diffusiongemma/",
+      "tags": [
+        "diffusiongemma",
+        "local llm",
+        "llm inference",
+        "google",
+        "nvidia",
+        "ai agent"
+      ],
+      "importance": 5
+    },
+    {
+      "title": "Google ra mắt Gemini 3.5 Live Translate — speech-to-speech realtime giữ voice 70+ ngôn ngữ",
+      "summary": "Google DeepMind/Google phát hành Gemini 3.5 Live Translate: dịch nói-sang-nói gần realtime qua 70+ ngôn ngữ, giữ nguyên intonation, pacing và pitch của speaker. Rollout qua Gemini Live API cho developer, Google Meet enterprise, app Translate Android/iOS. Góc nhìn: Voice-first multimodal agent realtime đã chuyển từ demo sang production — mọi backend Node/SSE/Socket.io voice cần chuẩn bị audio streaming hai chiều, speaker consistency, diarization và end-to-end latency budget dưới 200ms nếu muốn integrate agent voice tự nhiên.",
+      "source": "https://dentro.de/ai/news/",
+      "tags": [
+        "gemini",
+        "live translate",
+        "voice agent",
+        "multimodal",
+        "google",
+        "realtime"
+      ],
+      "importance": 3
+    },
+    {
+      "title": "Neura Robotics huy động $1.4B đẩy mạnh physical AI / humanoid robot",
+      "summary": "Neura Robotics gọi $1.4B để phát triển physical AI — humanoid robot kết hợp AI agent có khả năng tương tác và thực thi trong thế giới thực. Góc nhìn: Vốn lớn đang song song chảy vào embodiment và software agents cho thấy 'agent' để tạo value bền vững cần interact world thật hoặc simulation cao cấp — builder pure software nên sớm cân nhắc hybrid simulation-to-real hoặc data flywheel từ physical environments.",
+      "source": "https://dentro.de/ai/news/",
+      "tags": [
+        "neura robotics",
+        "physical ai",
+        "robotics",
+        "ai agent",
+        "funding",
+        "embodiment"
+      ],
+      "importance": 3
+    }
+  ],
+  "blog": {
+    "slug": "2026-06-13-hybrid-local-diffusion-agent-cost",
+    "title": "DiffusionGemma Local + Hybrid Routing: Cắt 3-5× Chi Phí Cho 70% Subtask Agent Thực Tế",
+    "excerpt": "DiffusionGemma 700-1000 t/s local thay đổi kinh tế cho agent. Phân tích hybrid routing cắt 3-5× cost và latency cho developer production.",
+    "contentMarkdown": "## Tại sao phần lớn agent workflow không cần intelligence 'frontier' cho mọi bước?\n\nHầu hết agentic system production (code agent, research agent, workflow automation) gồm chuỗi subtask: planning, retrieval, tool call formatting, data prep, summarization, verification, editing. Chỉ 20-40% bước thực sự cần 'suy nghĩ sâu' hoặc creativity cao cấp của model Mythos/Fable-class.\n\nPhần còn lại là công việc có pattern, cần tốc độ và cấu trúc rõ: code infilling, markdown formatting, song song hóa sub-calls, extract structured data. Gọi frontier cho hết dẫn đến burn rate cao (như Fable 5 $10/$50/M + token consumption lớn) và latency không cần thiết.\n\n## DiffusionGemma và họ local fast model mang lại con số cụ thể gì?\n\nDiffusionGemma (Google DeepMind, open weights Apache 2.0, 26B MoE A4B active) dùng discrete diffusion: sinh block ~256 tokens song song thay vì token-by-token. Kết quả thực tế từ developer:\n\n- >1000 tokens/sec trên single H100\n- 700+ tokens/sec trên RTX 5090\n- 500+ tokens/sec xác nhận bởi Simon Willison qua NVIDIA NIM miễn phí\n- ~4× nhanh hơn autoregressive model cùng regime (low batch, single user)\n\nQuantized vừa 18GB VRAM, tích hợp sẵn vLLM/Unsloth/HF/Transformers, NVIDIA tối ưu day-0. Phù hợp nhất cho interactive local: inline editing trong IDE, parallel data prep, structured output nhanh.\n\n## Trade-off chất lượng và khi nào local 'đủ' / 'không đủ'\n\nTrade-off chính: experimental, quality trailing autoregressive cùng size trên output dài, complex reasoning, hoặc creative open-ended. Nó 'tự sửa' tốt trong block nhưng đôi khi thiếu coherence toàn cục so với Fable/Opus.\n\nĐủ dùng khi:\n- Task có cấu trúc cao (JSON, code patch nhỏ, report template)\n- Cần latency thấp hoặc throughput cao (real-time suggestion, batch sub-agent)\n- Dữ liệu nhạy cảm cần giữ local\n\nKhông đủ khi:\n- Long-horizon autonomous với ít guardrail (multi-file refactor lớn, incident root-cause phức tạp)\n- Cần 'taste' hoặc judgment kinh nghiệm cao\n- Output cuối cùng phải cực kỳ chính xác, ít room cho lỗi\n\n## Chi phí thực tế: local GPU vs cloud token billing\n\nCloud: chi phí biến đổi theo token, càng 'thông minh' càng nghĩ nhiều → sinh nhiều token → hóa đơn tăng phi tuyến. Một agent harness phức tạp dễ fan-out thành chục triệu tokens.\n\nLocal: capex GPU (hoặc rental) cố định, sau đó marginal cost ~0. Nhưng phải quản lý: VRAM fit, quantization, serving stack, update model, observability.\n\nVới DiffusionGemma + Kimi K2.7 Code (rẻ ~$1-4/M), 60-80% subtask có thể offload local hoặc specialist rẻ → tổng cost dễ giảm 3-5× so với all-frontier, đồng thời giảm p99 latency.\n\n## Pattern hybrid routing thực tế cho Node/AWS stack\n\nTriển khai đơn giản:\n\n1. Task decomposition + lightweight classifier (hoặc heuristic) phân loại: 'fast-local', 'specialist', 'frontier-reason'.\n2. Fast path: gọi DiffusionGemma local (hoặc self-host trên ECS/EC2 GPU spot) cho editing, prep, parallel subcalls.\n3. Specialist path: Kimi K2.7 Code hoặc tương đương cho coding-heavy.\n4. Escalate chỉ khi cần: Fable/Opus qua Bedrock với prompt cache 90%, hard USD cap per task, timeout.\n5. Merge + verification layer (unit test, schema check, human-in-loop cho critical).\n\nTrên AWS: dùng Lambda/ECS cho router, EKS/EC2 GPU cho local serving (hoặc Bedrock cho frontier), EventBridge/SQS cho orchestration. Giữ state trong DynamoDB với idempotency.\n\n## Nên/không nên làm gì ngay?\n\nNên:\n- Bắt đầu benchmark DiffusionGemma (qua NIM hoặc local) và Kimi K2.7 Code trên 2-3 subtask thực của agent hiện tại trong 1 tuần.\n- Xây classifier/router đơn giản + spending cap trước khi scale agent.\n- Đo lường: token saved, p95 latency, quality delta (pass rate, human review) trên workload thật.\n\nKhông nên:\n- All-in local cho mọi thứ ngay từ đầu (chất lượng frontier vẫn dẫn trên hard tasks).\n- Bỏ qua eval và observability khi introduce local path.\n- Quên rằng hardware local cũng có 'cost' (depreciation, power, ops).\n\nKết luận: hybrid không phải trend — là cách duy nhất để agent production vừa thông minh khi cần, vừa bền vững về chi phí và latency. Bắt đầu từ subtask rõ ràng nhất, đo trước khi mở rộng.",
+    "tags": [
+      "diffusiongemma",
+      "local llm",
+      "hybrid llm routing",
+      "ai agent",
+      "llm cost optimization",
+      "inference speed",
+      "open source llm"
+    ],
+    "readingTimeMin": 8,
+    "coverKeywords": [
+      "diffusiongemma",
+      "local llm",
+      "hybrid agent",
+      "cost optimization",
+      "ai inference"
+    ],
+    "linkedinPost": "Hầu hết engineer vẫn route hết sang frontier LLM cho mọi sub-step agent — trong khi 60-80% workflow chỉ cần tốc độ + cấu trúc, không cần 'thông minh nhất'.\n\nDiffusionGemma (Google open) vừa xác nhận 500-1000+ tokens/sec local trên RTX 5090/H100 (4× AR cùng regime), quantized vừa 18GB, tích hợp vLLM/Unsloth sẵn. Kết hợp Kimi K2.7 Code rẻ và hardware RTX Spark mới, math đã thay đổi.\n\n→ 700-1000 t/s đủ cho code infill, parallel prep, structured output realtime — thay vì chờ network + reasoning đắt.\n→ Cost structure đảo: cloud biến đổi + burn cao với long reasoning; local fixed sau capex, marginal ~0 cho hot path.\n→ Hybrid routing (classify → local fast/specialist → escalate frontier chỉ khi cần) đã chứng minh giảm 3-5× tổng chi phí mà vẫn giữ outcome chất lượng cao.\n\nChi tiết: https://doxuanloc.space/blog/2026-06-13-hybrid-local-diffusion-agent-cost/\n\n#LocalLLM #DiffusionGemma #AIAgent #LLMOptimization #HybridAI",
+    "tldr": [
+      "DiffusionGemma đạt 1000+ t/s H100, 700+ RTX 5090, 4× nhanh AR — xác nhận bởi dev và NVIDIA NIM.",
+      "60-80% subtask agent thực (prep, edit, structured, parallel) không cần frontier intelligence.",
+      "Local thay đổi kinh tế: fixed hardware cost thay vì variable token burn cao với reasoning sâu.",
+      "Hybrid routing + specialist rẻ (Kimi K2.7) + cap/task timeout là pattern giảm 3-5× cost thực tế.",
+      "Bắt đầu benchmark 1-2 subtask local trong tuần, đo quality + latency + token saved trước khi scale."
+    ],
+    "blocks": [
+      {
+        "type": "callout",
+        "id": "speed-fact",
+        "variant": "fact",
+        "title": "Tốc độ thực tế từ developer",
+        "body": "DiffusionGemma đạt >1000 tokens/sec trên H100, 700+ trên RTX 5090, 500+ qua NVIDIA NIM miễn phí (xác nhận Simon Willison). 4× nhanh hơn autoregressive cùng regime, quantized <18GB VRAM, day-0 Unsloth/vLLM/HF."
+      },
+      {
+        "type": "chart",
+        "id": "tokens-per-sec",
+        "caption": "Tokens/sec reported (low batch, interactive regime) — DiffusionGemma vs ước tính AR tương đương",
+        "chart": {
+          "variant": "bar",
+          "unit": "t/s",
+          "data": [
+            {
+              "label": "Diffusion H100",
+              "value": 1000
+            },
+            {
+              "label": "Diffusion RTX5090",
+              "value": 700
+            },
+            {
+              "label": "Diffusion DGX Spark",
+              "value": 150
+            }
+          ]
+        }
+      },
+      {
+        "type": "comparison",
+        "id": "local-vs-cloud",
+        "caption": "Local fast (Diffusion/Kimi) vs Cloud Frontier — khi nào chọn đường nào",
+        "comparison": {
+          "left": {
+            "title": "Local Fast (Diffusion/Kimi)",
+            "points": [
+              "Latency đầu token <20-50ms (không network)",
+              "Chi phí fixed sau capex/GPU rental",
+              "Privacy & data sovereignty cao",
+              "Quality đủ cho structured/edit/parallel",
+              "Giới hạn bởi VRAM và experimental quality"
+            ]
+          },
+          "right": {
+            "title": "Cloud Frontier (Fable/Opus)",
+            "points": [
+              "Chất lượng dẫn đầu long-horizon, complex",
+              "Chi phí biến đổi, burn nhanh với reasoning",
+              "Dễ scale, không quản lý infra",
+              "Network latency + egress cost",
+              "Dễ predict outcome, ít eval nội bộ"
+            ]
+          }
+        }
+      },
+      {
+        "type": "flow",
+        "id": "hybrid-routing",
+        "caption": "Quy trình routing hybrid cho agent production",
+        "flow": {
+          "steps": [
+            {
+              "label": "Decompose",
+              "desc": "Phân rã task thành sub-steps + estimate độ phức tạp"
+            },
+            {
+              "label": "Route local",
+              "desc": "Fast path: Diffusion/Kimi local cho prep, edit, parallel"
+            },
+            {
+              "label": "Escalate",
+              "desc": "Chỉ gọi frontier (Bedrock) khi cần depth hoặc judgment cao"
+            },
+            {
+              "label": "Verify & merge",
+              "desc": "Test, schema, human-in-loop cho critical step"
+            }
+          ]
+        }
+      },
+      {
+        "type": "callout",
+        "id": "quality-warning",
+        "variant": "tradeoff",
+        "title": "Chất lượng là trade-off có chủ đích",
+        "body": "DiffusionGemma experimental, trailing AR trên output dài/complex/creative. Dùng cho tốc độ và subtask có cấu trúc; giữ frontier cho final reasoning hoặc high-stakes decision. Luôn có fallback và verification layer."
+      }
+    ]
+  },
+  "financeNews": [
+    {
+      "title": "SpaceX IPO debut: +19%, đóng cửa ~$161, valuation $2.1T — Musk thành trillionaire đầu tiên",
+      "summary": "SpaceX (SPCX) niêm yết Nasdaq 12/6 sau IPO kỷ lục $75B ở $135/share. Cổ phiếu mở $150, đóng cửa ~$161 (+19%), market cap vượt $2.1T với volume giao dịch cao (gần kỷ lục FB 2012). Elon Musk chính thức trở thành world's first trillionaire. Góc nhìn: Thanh khoản khổng lồ từ IPO space/AI-adjacent sẽ tác động supply chain compute, energy, talent và infra dài hạn — engineer/builder cần theo dõi signal cost và capacity từ capital influx này để timing build-vs-buy và đầu tư infra.",
+      "source": "https://www.cnbc.com/2026/06/12/spacex-ipo-spcx-live-updates.html",
+      "tags": [
+        "spacex",
+        "ipo",
+        "musk",
+        "valuation",
+        "startup",
+        "market"
+      ],
+      "importance": 5,
+      "category": "vc-startup"
+    },
+    {
+      "title": "Chứng khoán Mỹ tăng sau SpaceX debut, AI capex và valuation vẫn là tâm điểm lo ngại",
+      "summary": "Dow, S&P 500, Nasdaq đóng cửa tăng sau thành công SpaceX IPO. Dù vậy, phân tích tiếp tục cảnh báo capex AI dự kiến tăng 78% năm 2026 có thể không match earnings growth thực, rủi ro bubble cho big-tech. Góc nhìn: Builder và investor tech cần chuẩn bị scenario 'hype cools' — tập trung vào ROI rõ ràng, cost discipline, revenue thực từ AI thay vì chỉ dựa vào infra spend narrative.",
+      "source": "https://www.investopedia.com/stock-market-today-dow-jones-s-and-p-500-06122026-11996464",
+      "tags": [
+        "stock market",
+        "ai capex",
+        "valuation",
+        "tech stocks",
+        "macro"
+      ],
+      "importance": 4,
+      "category": "market"
+    },
+    {
+      "title": "Bitcoin dao động ~$63k sau dip dưới $60k, institutional ETF vẫn thống lĩnh dòng tiền",
+      "summary": "BTC hồi phục và giữ quanh $63,600 sau khi chạm dưới $60,000 lần đầu từ cuối 2024. Dù YTD giảm mạnh, BlackRock IBIT và Fidelity FBTC tiếp tục hút hầu hết inflow institutional. Góc nhìn: Crypto exposure cho builder/investor đang institutionalize rõ rệt — nhưng volatility cao đồng nghĩa capital allocation cho AI/crypto projects cần stress-test macro và funding runway dài hơn, không dựa vào narrative ngắn hạn.",
+      "source": "https://www.cnbc.com/2026/06/05/bitcoin-dismal-week-price-below-all-time-high-crypto-investors.html",
+      "tags": [
+        "bitcoin",
+        "crypto",
+        "etf",
+        "market",
+        "institutional"
+      ],
+      "importance": 3,
+      "category": "crypto"
+    }
+  ],
+  "expUpdate": null
+}

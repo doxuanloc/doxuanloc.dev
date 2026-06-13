@@ -162,7 +162,8 @@
         "title": "Hybrid là thực tế, không phải lý thuyết",
         "body": "Kết hợp Fable cho core reasoning + DiffusionGemma/Kimi local swarm cho parallel subtask hoặc data prep cho phép vừa giữ chất lượng vừa kiểm soát chi phí và latency."
       }
-    ]
+    ],
+    "coverImage": "/images/blog/2026-06-12-claude-fable-5-cost-routing-agent.png"
   },
   "financeNews": [
     {
@@ -236,5 +237,12 @@
       "Tối ưu token efficiency qua prompt caching, task decomposition, spending caps và verification steps cho agent workflows production.",
       "Xây dựng orchestration patterns cho long-horizon agents với guardrails, compensation logic và observability trên cloud và local runtimes."
     ]
+  },
+  "linkedin": {
+    "posted": true,
+    "postedAt": "2026-06-12T01:37:01.072Z",
+    "urn": "urn:li:share:7471012650932543488",
+    "hasImage": true,
+    "imageAssetUrn": "urn:li:digitalmediaAsset:D5622AQFkluDs0WM4SQ"
   }
 }

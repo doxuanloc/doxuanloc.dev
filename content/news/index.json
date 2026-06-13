@@ -1,8 +1,33 @@
 {
-  "updatedAt": "2026-06-12",
-  "totalDays": 8,
+  "updatedAt": "2026-06-13",
+  "totalDays": 9,
   "totalEssays": 2,
   "posts": [
+    {
+      "date": "2026-06-13",
+      "slug": "2026-06-13-hybrid-local-diffusion-agent-cost",
+      "title": "DiffusionGemma Local + Hybrid Routing: Cắt 3-5× Chi Phí Cho 70% Subtask Agent Thực Tế",
+      "excerpt": "DiffusionGemma 700-1000 t/s local thay đổi kinh tế cho agent. Phân tích hybrid routing cắt 3-5× cost và latency cho developer production.",
+      "tags": [
+        "diffusiongemma",
+        "local llm",
+        "hybrid llm routing",
+        "ai agent",
+        "llm cost optimization",
+        "inference speed",
+        "open source llm"
+      ],
+      "readingTimeMin": 8,
+      "coverImage": null,
+      "coverKeywords": [
+        "diffusiongemma",
+        "local llm",
+        "hybrid agent",
+        "cost optimization",
+        "ai inference"
+      ],
+      "isEssay": false
+    },
     {
       "date": "2026-06-12",
       "slug": "2026-06-12-claude-fable-5-cost-routing-agent",
@@ -17,7 +42,7 @@
         "production agent"
       ],
       "readingTimeMin": 7,
-      "coverImage": null,
+      "coverImage": "/images/blog/2026-06-12-claude-fable-5-cost-routing-agent.png",
       "coverKeywords": [
         "claude fable 5",
         "agent cost",
@@ -74,6 +99,18 @@
     }
   ],
   "newsIndex": [
+    {
+      "date": "2026-06-13",
+      "newsCount": 5,
+      "financeCount": 3,
+      "topTags": [
+        "ai agent",
+        "nvidia",
+        "local llm",
+        "google",
+        "valuation"
+      ]
+    },
     {
       "date": "2026-06-12",
       "newsCount": 5,
