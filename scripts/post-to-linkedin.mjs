@@ -108,10 +108,14 @@ function buildPostText(blog) {
   const { title, excerpt, contentMarkdown, tags, slug, linkedinPost } = blog;
   const url = `${BLOG_BASE_URL}${slug}/`;
 
-  // Use Grok-generated post if available — inject canonical URL
+  // Use Grok-generated post if available.
+  // Strip blog URL from body — LinkedIn suppresses reach ~25-50% for external links in text.
+  // URL is posted separately as first comment after publishing.
   if (linkedinPost && linkedinPost.trim().length > 100) {
     const post = linkedinPost
-      .replace(/https?:\/\/doxuanloc\.space\/blog\/[^\s)]*/g, url) // normalize URL
+      .replace(/Chi tiết:[^\n]*/g, "")            // remove "Chi tiết: <url>" line
+      .replace(/https?:\/\/doxuanloc\.space\/blog\/[^\s)]*/g, "") // any remaining blog URL
+      .replace(/\n{3,}/g, "\n\n")                 // collapse excess blank lines
       .trim();
     return post.length > 2800 ? post.slice(0, 2797) + "..." : post;
   }
@@ -272,6 +276,27 @@ async function postUgc(text, authorUrn, accessToken, imageAssetUrn = null) {
   return { ok: true, shareUrn };
 }
 
+async function postFirstComment(postUrn, commentText, authorUrn, accessToken) {
+  const res = await fetch(
+    `https://api.linkedin.com/v2/socialActions/${encodeURIComponent(postUrn)}/comments`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "X-Restli-Protocol-Version": "2.0.0",
+        "LinkedIn-Version": LINKEDIN_VERSION,
+      },
+      body: JSON.stringify({
+        actor: authorUrn,
+        message: { text: commentText },
+      }),
+    },
+  );
+  if (!res.ok) return { ok: false, status: res.status, body: await res.text() };
+  return { ok: true };
+}
+
 async function deleteUgcPost(urn, accessToken) {
   // Try the stored urn; share-urn and ugcPost-urn share the numeric id, so retry the alt form.
   const variants = [urn];
@@ -413,6 +438,23 @@ async function main() {
   writeDailyJson(today, data);
 
   console.log(`LinkedIn: ✓ posted${result.shareUrn ? ` — ${result.shareUrn}` : ""}`);
+
+  // Post URL as first comment — LinkedIn suppresses reach for external links in body.
+  if (result.shareUrn) {
+    const blogUrl = `${BLOG_BASE_URL}${data.blog.slug}/`;
+    try {
+      const commentResult = await postFirstComment(
+        result.shareUrn,
+        `Chi tiết: ${blogUrl}`,
+        personUrn,
+        accessToken,
+      );
+      if (commentResult.ok) console.log(`LinkedIn: ✓ first comment posted — ${blogUrl}`);
+      else console.warn(`LinkedIn: first comment failed (${commentResult.status}) — post link manually.`);
+    } catch (err) {
+      console.warn(`LinkedIn: first comment error — ${err.message}`);
+    }
+  }
 }
 
 main().catch(err => {
