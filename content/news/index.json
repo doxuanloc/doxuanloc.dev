@@ -1,8 +1,32 @@
 {
-  "updatedAt": "2026-06-13",
-  "totalDays": 9,
+  "updatedAt": "2026-06-14",
+  "totalDays": 10,
   "totalEssays": 2,
   "posts": [
+    {
+      "date": "2026-06-14",
+      "slug": "2026-06-14-governed-background-agents-production",
+      "title": "Background Agent Production: Governance Và Trade-off Cost, Risk Thực Tế Bạn Phải Biết",
+      "excerpt": "OpenAI mua Ona cho governed background agents, Gemini Spark ra mắt 24/7 proactive agent. Phân tích governance layer, persistence, steerability và khi nào autonomous agents tạo ROI thay vì chi phí bất ngờ.",
+      "tags": [
+        "ai agent governance",
+        "background agent",
+        "persistent agent",
+        "gemini spark",
+        "openai ona",
+        "agent production",
+        "llm cost"
+      ],
+      "readingTimeMin": 7,
+      "coverImage": "/images/blog/2026-06-14-governed-background-agents-production.png",
+      "coverKeywords": [
+        "background agent",
+        "agent governance",
+        "persistent ai",
+        "production agent"
+      ],
+      "isEssay": false
+    },
     {
       "date": "2026-06-13",
       "slug": "2026-06-13-hybrid-local-diffusion-agent-cost",
@@ -99,6 +123,18 @@
     }
   ],
   "newsIndex": [
+    {
+      "date": "2026-06-14",
+      "newsCount": 5,
+      "financeCount": 4,
+      "topTags": [
+        "ai agent",
+        "fintech",
+        "funding",
+        "background agent",
+        "apple"
+      ]
+    },
     {
       "date": "2026-06-13",
       "newsCount": 5,
