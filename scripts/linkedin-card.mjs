@@ -272,23 +272,16 @@ function loadAvatar() {
   return `data:image/png;base64,${readFileSync(p).toString("base64")}`;
 }
 
-// ── animated insight card (light editorial infographic) ──────────────────────
+// ── Story GIF — dark, narrative, one message per frame ───────────────────────
 
-const LIGHT = {
-  bg: "#f4f6f8", canvas: "#ffffff",
-  text: "#13151a", textDim: "#4b5563", textMute: "#8b95a5",
-  line: "#e3e7ee",
-};
-
-const LIGHT_ACCENTS = [
-  { a1: "#1e40af", a2: "#0f766e" },
-  { a1: "#0f766e", a2: "#6d28d9" },
-  { a1: "#6d28d9", a2: "#1e40af" },
-  { a1: "#1e40af", a2: "#b45309" },
+const STORY_ACCENTS = [
+  { a1: "#5b8cff", a2: "#36d6c3" },
+  { a1: "#36d6c3", a2: "#b58cff" },
+  { a1: "#b58cff", a2: "#5b8cff" },
+  { a1: "#5b8cff", a2: "#f0b232" },
 ];
 
-// Feed legibility caps — never trust LLM-emitted block density.
-const CAPS = { chartBars: 4, comparisonPoints: 3, flowSteps: 4 };
+const CAPS = { chartBars: 5, comparisonPoints: 4, flowSteps: 5 };
 
 const validBarData = chart =>
   (chart?.data ?? []).filter(d => typeof d.value === "number" && isFinite(d.value) && d.value >= 0);
@@ -298,12 +291,12 @@ export function pickCoverBlock(blog) {
   const blocks = blog?.blocks ?? [];
   const chart = blocks.find(b => b.type === "chart" && b.chart?.variant === "bar" && validBarData(b.chart).length >= 3);
   if (chart) return {
-    type: "chart", title: chart.title,
+    type: "chart", title: chart.title ?? "",
     chart: { ...chart.chart, data: validBarData(chart.chart).slice(0, CAPS.chartBars) },
   };
   const comp = blocks.find(b => b.type === "comparison" && b.comparison?.left?.points?.length >= 2 && b.comparison?.right?.points?.length >= 2);
   if (comp) return {
-    type: "comparison", title: comp.title,
+    type: "comparison", title: comp.title ?? "",
     comparison: {
       left:  { title: comp.comparison.left.title,  points: comp.comparison.left.points.slice(0, CAPS.comparisonPoints) },
       right: { title: comp.comparison.right.title, points: comp.comparison.right.points.slice(0, CAPS.comparisonPoints) },
@@ -311,186 +304,300 @@ export function pickCoverBlock(blog) {
   };
   const flow = blocks.find(b => b.type === "flow" && (b.flow?.steps?.length ?? 0) >= 2);
   if (flow) return {
-    type: "flow", title: flow.title,
+    type: "flow", title: flow.title ?? "",
     flow: { steps: flow.flow.steps.slice(0, CAPS.flowSteps) },
   };
   return null;
 }
 
-const easeOut = t => 1 - Math.pow(1 - t, 3);
+// Shared element builder for story frames
+function sel(tag, style, children, extras = {}) {
+  return { type: tag, props: { style, children, ...extras } };
+}
 
-function buildChartDiagram(el, chart, accent, t) {
-  const max = Math.max(...chart.data.map(d => d.value), 1);
-  const AREA_H = 270;
-  return el("div", { display: "flex", flexDirection: "column", flex: 1 }, [
-    el("div", { display: "flex", flex: 1, alignItems: "flex-end", gap: 28, paddingTop: 8 },
-      chart.data.map((d, i) => {
-        const barH = Math.max(6, Math.round(AREA_H * (d.value / max) * t));
-        const color = i % 2 === 0 ? accent.a1 : accent.a2;
-        return el("div", { display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: 8 }, [
-          el("div", {
-            fontFamily: "JetBrains Mono", fontSize: 16, fontWeight: 500,
-            color: LIGHT.text, opacity: t >= 1 ? 1 : 0.25,
-          }, `${d.value}`),
-          el("div", { width: "100%", maxWidth: 96, height: barH, borderRadius: 6, background: color }),
-          el("div", {
-            fontSize: 13, fontWeight: 700, color: LIGHT.textDim, textAlign: "center",
-            width: "100%", lineHeight: 1.25,
-          }, truncateWords(d.label, 16)),
-        ]);
-      })),
-    chart.unit ? el("div", {
-      fontFamily: "JetBrains Mono", fontSize: 11, letterSpacing: "2px",
-      textTransform: "uppercase", color: LIGHT.textMute, marginTop: 14,
-    }, `UNIT: ${chart.unit}`) : null,
+// Shared footer strip: avatar + domain + right label
+function storyFooter(accent, avatarDataUri, rightLabel = "") {
+  return sel("div", {
+    height: 60, padding: "0 72px", display: "flex",
+    alignItems: "center", justifyContent: "space-between",
+    borderTop: `1px solid ${hex(CARD.bgSoft, 0.9)}`,
+  }, [
+    sel("div", { display: "flex", alignItems: "center", gap: 12 }, [
+      avatarDataUri
+        ? { type: "img", props: { src: avatarDataUri, width: 30, height: 30,
+            style: { borderRadius: 9999, border: `2px solid ${hex(accent.a1, 0.55)}` } } }
+        : sel("div", {
+            width: 30, height: 30, borderRadius: 9999, display: "flex",
+            alignItems: "center", justifyContent: "center",
+            fontFamily: "Tektur", fontWeight: 700, fontSize: 15, color: accent.a1,
+            border: `2px solid ${hex(accent.a1, 0.55)}`, background: CARD.bgSoft,
+          }, "L"),
+      sel("div", {
+        fontFamily: "JetBrains Mono", fontSize: 13, fontWeight: 500, color: CARD.textMute,
+      }, "doxuanloc.space"),
+    ]),
+    rightLabel ? sel("div", {
+      fontFamily: "Tektur", fontSize: 11, letterSpacing: "2.5px",
+      textTransform: "uppercase", color: hex(accent.a2, 0.55),
+    }, rightLabel) : null,
   ].filter(Boolean));
 }
 
-function buildComparisonDiagram(el, comparison, accent, revealed) {
-  const col = (side, color) => el("div", {
-    display: "flex", flexDirection: "column", flex: 1, gap: 12,
-    padding: "20px 22px", borderRadius: 12,
-    border: `1.5px solid ${hex(color, 0.35)}`, background: hex(color, 0.05),
+// Progress bar strip at bottom of content area
+function storyProgress(accent, progress) {
+  return sel("div", { height: 4, display: "flex", alignItems: "stretch", background: hex(CARD.bgSoft, 0.8) }, [
+    sel("div", {
+      height: 4,
+      width: `${Math.round(progress * 100)}%`,
+      background: `linear-gradient(90deg, ${accent.a1}, ${accent.a2})`,
+      borderRadius: 2,
+    }),
+  ]);
+}
+
+// Shared outer wrapper (dark bg, content + progress + footer)
+function storyCard(accent, avatarDataUri, progress, rightLabel, contentEl) {
+  return sel("div", {
+    width: W, height: H, display: "flex", flexDirection: "column",
+    position: "relative",
+    background: CARD.bg, fontFamily: "Be Vietnam Pro", overflow: "hidden",
   }, [
-    el("div", {
-      fontFamily: "Tektur", fontSize: 17, fontWeight: 600, color,
-      paddingBottom: 10, borderBottom: `1px solid ${hex(color, 0.25)}`,
-    }, truncate(side.title, 26)),
-    ...side.points.map((p, i) => el("div", {
-      display: "flex", gap: 10, opacity: i < revealed ? 1 : 0.08,
-    }, [
-      el("div", { width: 8, height: 8, borderRadius: 9999, background: color, marginTop: 7, flexShrink: 0 }),
-      el("div", { fontSize: 15, lineHeight: 1.4, color: LIGHT.text, flex: 1 }, truncate(p, 64)),
+    // nebula wash top-right
+    sel("div", { position: "absolute", inset: 0,
+      background: `radial-gradient(ellipse 55% 45% at 90% 0%, ${hex(accent.a1, 0.10)}, transparent 65%)` }),
+    // HUD bracket TL
+    sel("div", { position: "absolute", top: 24, left: 24, width: 20, height: 20,
+      borderTop: `2px solid ${hex(accent.a1, 0.55)}`,
+      borderLeft: `2px solid ${hex(accent.a1, 0.55)}` }),
+    // HUD bracket BR
+    sel("div", { position: "absolute", bottom: 68, right: 24, width: 20, height: 20,
+      borderBottom: `2px solid ${hex(accent.a2, 0.4)}`,
+      borderRight: `2px solid ${hex(accent.a2, 0.4)}` }),
+    // content
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, position: "relative" }, [contentEl]),
+    storyProgress(accent, progress),
+    storyFooter(accent, avatarDataUri, rightLabel),
+  ]);
+}
+
+// Frame 1: Title — large, clean, brand entry
+function buildTitleFrame(blog, progress, accent, avatarDataUri) {
+  const title = truncate(blog.title ?? "", 88);
+  const readLabel = blog.readingTimeMin ? `${blog.readingTimeMin} MIN READ` : "DAILY INSIGHT";
+  return storyCard(accent, avatarDataUri, progress, readLabel,
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "68px 80px 40px", justifyContent: "flex-end" }, [
+      sel("div", {
+        fontFamily: "Tektur", fontSize: 12, fontWeight: 600,
+        letterSpacing: "3.5px", textTransform: "uppercase",
+        color: accent.a2, marginBottom: 26,
+      }, "BLOG · AI ENGINEER"),
+      sel("div", {
+        fontSize: title.length > 70 ? 46 : 52, fontWeight: 700,
+        lineHeight: 1.13, color: CARD.text,
+        letterSpacing: "-0.025em", maxWidth: 960,
+      }, title),
+      sel("div", {
+        width: 100, height: 3, marginTop: 28,
+        background: `linear-gradient(90deg, ${accent.a1}, ${accent.a2}, ${accent.a1}33)`,
+        borderRadius: 2,
+      }),
+    ])
+  );
+}
+
+// Frame N: Insight — ghost number + single key point large
+function buildInsightFrame(blog, insightIndex, progress, accent, avatarDataUri) {
+  const tldr = blog.tldr ?? [];
+  const point = tldr[insightIndex] ?? "";
+  const num = String(insightIndex + 1).padStart(2, "0");
+  const totalInsights = Math.min(tldr.length, 4);
+  const rightLabel = `${insightIndex + 1} / ${totalInsights}`;
+
+  return storyCard(accent, avatarDataUri, progress, rightLabel,
+    sel("div", { display: "flex", flexDirection: "column", flex: 1,
+      padding: "48px 80px 36px", position: "relative" }, [
+      // ghost number
+      sel("div", {
+        position: "absolute", top: 28, left: 64,
+        fontFamily: "Tektur", fontSize: 180, fontWeight: 700, lineHeight: 1,
+        color: hex(accent.a1, 0.09),
+      }, num),
+      // accent number label
+      sel("div", {
+        fontFamily: "Tektur", fontSize: 13, fontWeight: 600,
+        letterSpacing: "3px", color: accent.a1, marginBottom: 28,
+        textTransform: "uppercase",
+      }, `INSIGHT ${num}`),
+      // point text
+      sel("div", {
+        fontSize: point.length > 80 ? 33 : point.length > 60 ? 37 : 42,
+        fontWeight: 700, lineHeight: 1.38, color: CARD.text,
+        letterSpacing: "-0.015em", maxWidth: 980, flex: 1,
+        display: "flex", alignItems: "center",
+      }, point),
+    ])
+  );
+}
+
+// Visual frame: full-canvas dark-theme block (chart / comparison / flow)
+function buildVisualChartFrame(blog, block, progress, accent, avatarDataUri) {
+  const data = block.chart.data;
+  const max = Math.max(...data.map(d => d.value), 1);
+  const AREA_H = 330;
+
+  return storyCard(accent, avatarDataUri, progress, "DATA",
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "48px 72px 28px" }, [
+      block.title ? sel("div", {
+        fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
+        textTransform: "uppercase", color: accent.a2, marginBottom: 32,
+      }, truncate(block.title, 60)) : null,
+      sel("div", { display: "flex", flex: 1, alignItems: "flex-end", gap: 24 },
+        data.map((d, i) => {
+          const barH = Math.max(12, Math.round(AREA_H * (d.value / max)));
+          const color = i % 2 === 0 ? accent.a1 : accent.a2;
+          return sel("div", { display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: 10 }, [
+            sel("div", {
+              fontFamily: "JetBrains Mono", fontSize: 18, fontWeight: 500, color: CARD.text,
+            }, `${d.value}`),
+            sel("div", {
+              width: "100%", maxWidth: 120, height: barH, borderRadius: 8,
+              background: `linear-gradient(to top, ${hex(color, 0.9)}, ${hex(color, 0.55)})`,
+              boxShadow: `0 0 24px ${hex(color, 0.3)}`,
+            }),
+            sel("div", {
+              fontSize: 14, fontWeight: 600, color: CARD.textDim,
+              textAlign: "center", width: "100%", lineHeight: 1.3,
+            }, truncateWords(d.label, 18)),
+          ]);
+        })),
+      block.chart.unit ? sel("div", {
+        fontFamily: "JetBrains Mono", fontSize: 12, letterSpacing: "2px",
+        textTransform: "uppercase", color: CARD.textMute, marginTop: 18,
+      }, `UNIT: ${block.chart.unit}`) : null,
+    ].filter(Boolean))
+  );
+}
+
+function buildVisualComparisonFrame(blog, block, progress, accent, avatarDataUri) {
+  const col = (side, color) => sel("div", {
+    display: "flex", flexDirection: "column", flex: 1, gap: 14,
+    padding: "22px 26px", borderRadius: 14,
+    border: `1.5px solid ${hex(color, 0.40)}`,
+    background: hex(color, 0.07),
+  }, [
+    sel("div", {
+      fontFamily: "Tektur", fontSize: 18, fontWeight: 600, color,
+      paddingBottom: 12, borderBottom: `1px solid ${hex(color, 0.28)}`,
+      lineHeight: 1.2,
+    }, truncate(side.title, 28)),
+    ...side.points.map(p => sel("div", { display: "flex", gap: 12, alignItems: "flex-start" }, [
+      sel("div", {
+        width: 8, height: 8, borderRadius: 9999, background: color,
+        marginTop: 8, flexShrink: 0,
+        boxShadow: `0 0 8px ${hex(color, 0.6)}`,
+      }),
+      sel("div", {
+        fontSize: 15, lineHeight: 1.45, color: CARD.textDim, flex: 1,
+      }, truncate(p, 72)),
     ])),
   ]);
-  return el("div", { display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" },
-    el("div", { display: "flex", alignItems: "stretch", gap: 14 }, [
-      col(comparison.left, accent.a1),
-      el("div", { display: "flex", alignItems: "center" },
-        el("div", {
-          width: 42, height: 42, borderRadius: 9999, display: "flex",
-          alignItems: "center", justifyContent: "center",
-          fontFamily: "Tektur", fontSize: 14, fontWeight: 600, color: LIGHT.canvas,
-          background: LIGHT.text,
-        }, "VS")),
-      col(comparison.right, accent.a2),
-    ]));
+
+  return storyCard(accent, avatarDataUri, progress, "COMPARE",
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "44px 60px 28px" }, [
+      block.title ? sel("div", {
+        fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
+        textTransform: "uppercase", color: accent.a2, marginBottom: 28,
+      }, truncate(block.title, 60)) : null,
+      sel("div", { display: "flex", flex: 1, alignItems: "stretch", gap: 20 }, [
+        col(block.comparison.left, accent.a1),
+        sel("div", { display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px" },
+          sel("div", {
+            width: 40, height: 40, borderRadius: 9999, display: "flex",
+            alignItems: "center", justifyContent: "center",
+            fontFamily: "Tektur", fontSize: 13, fontWeight: 600,
+            color: CARD.text, background: CARD.bgSoft,
+            border: `1px solid ${hex(accent.a1, 0.2)}`,
+          }, "VS")),
+        col(block.comparison.right, accent.a2),
+      ]),
+    ].filter(Boolean))
+  );
 }
 
-function buildFlowDiagram(el, flow, accent, activeStep) {
-  return el("div", { display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: 6 },
-    flow.steps.map((s, i) => {
-      const active = i === activeStep;
-      const shown = i <= activeStep;
-      return el("div", { display: "flex", flexDirection: "column", opacity: shown ? 1 : 0.12 }, [
-        el("div", {
-          display: "flex", alignItems: "center", gap: 16,
-          padding: "12px 18px", borderRadius: 10,
-          border: `1.5px solid ${active ? accent.a1 : LIGHT.line}`,
-          background: active ? hex(accent.a1, 0.07) : LIGHT.canvas,
-        }, [
-          el("div", {
-            width: 34, height: 34, borderRadius: 9999, display: "flex",
-            alignItems: "center", justifyContent: "center", flexShrink: 0,
-            fontFamily: "Tektur", fontSize: 15, fontWeight: 600,
-            color: active ? LIGHT.canvas : accent.a1,
-            background: active ? accent.a1 : hex(accent.a1, 0.1),
-          }, String(i + 1)),
-          el("div", { display: "flex", flexDirection: "column", flex: 1 }, [
-            el("div", { fontSize: 17, fontWeight: 700, color: LIGHT.text }, truncate(s.label, 32)),
-            s.desc ? el("div", { fontSize: 13.5, color: LIGHT.textDim, lineHeight: 1.35 }, truncate(s.desc, 70)) : null,
-          ].filter(Boolean)),
-        ]),
-        i < flow.steps.length - 1
-          ? el("div", { display: "flex", justifyContent: "center", padding: "2px 0" },
-              el("div", { width: 2.5, height: 12, background: hex(accent.a2, 0.55), borderRadius: 2 }))
-          : null,
-      ].filter(Boolean));
-    }));
+function buildVisualFlowFrame(blog, block, progress, accent, avatarDataUri) {
+  return storyCard(accent, avatarDataUri, progress, "FLOW",
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "44px 72px 28px", justifyContent: "center", gap: 0 }, [
+      block.title ? sel("div", {
+        fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
+        textTransform: "uppercase", color: accent.a2, marginBottom: 28,
+      }, truncate(block.title, 60)) : null,
+      ...block.flow.steps.flatMap((s, i) => {
+        const isLast = i === block.flow.steps.length - 1;
+        return [
+          sel("div", {
+            display: "flex", alignItems: "center", gap: 20,
+            padding: "14px 20px", borderRadius: 12,
+            border: `1.5px solid ${hex(accent.a1, 0.25)}`,
+            background: hex(accent.a1, 0.06),
+          }, [
+            sel("div", {
+              width: 38, height: 38, borderRadius: 9999, display: "flex",
+              alignItems: "center", justifyContent: "center", flexShrink: 0,
+              fontFamily: "Tektur", fontSize: 16, fontWeight: 700,
+              color: CARD.bg, background: accent.a1,
+              boxShadow: `0 0 16px ${hex(accent.a1, 0.45)}`,
+            }, String(i + 1)),
+            sel("div", { display: "flex", flexDirection: "column", flex: 1 }, [
+              sel("div", { fontSize: 18, fontWeight: 700, color: CARD.text, lineHeight: 1.25 }, truncate(s.label, 36)),
+              s.desc ? sel("div", { fontSize: 14, color: CARD.textDim, lineHeight: 1.35, marginTop: 3 }, truncate(s.desc, 72)) : null,
+            ].filter(Boolean)),
+          ]),
+          !isLast ? sel("div", { display: "flex", justifyContent: "flex-start", paddingLeft: 38, paddingTop: 4, paddingBottom: 4 },
+            sel("div", { width: 2, height: 14, background: hex(accent.a2, 0.5), borderRadius: 2 })) : null,
+        ].filter(Boolean);
+      }),
+    ].filter(Boolean))
+  );
 }
 
-function buildInsightCardElement(blog, block, { avatarDataUri, accent, frame, frames }) {
-  const el = (tag, style, children, extras = {}) => ({
-    type: tag, props: { style, children, ...extras },
-  });
+function buildVisualFrame(blog, block, progress, accent, avatarDataUri) {
+  if (block.type === "chart") return buildVisualChartFrame(blog, block, progress, accent, avatarDataUri);
+  if (block.type === "comparison") return buildVisualComparisonFrame(blog, block, progress, accent, avatarDataUri);
+  return buildVisualFlowFrame(blog, block, progress, accent, avatarDataUri);
+}
 
-  const t = easeOut((frame + 1) / frames);
-  const revealed = frame + 1; // comparison: bullets shown per side (≥1 from frame 0)
-  const title = truncateWords(blog.title ?? "", 100);
-  const excerpt = truncateWords(blog.excerpt ?? "", 95);
+// Outro frame: final insight as pull-quote + CTA
+function buildOutroFrame(blog, progress, accent, avatarDataUri) {
+  const tldr = blog.tldr ?? [];
+  const pullQuote = truncateWords(tldr[tldr.length - 1] ?? blog.excerpt ?? "", 120);
   const readLabel = blog.readingTimeMin ? `${blog.readingTimeMin} MIN READ` : "";
 
-  let diagram;
-  if (block.type === "chart") diagram = buildChartDiagram(el, block.chart, accent, t);
-  else if (block.type === "comparison") diagram = buildComparisonDiagram(el, block.comparison, accent, revealed);
-  else diagram = buildFlowDiagram(el, block.flow, accent, Math.min(frame, block.flow.steps.length - 1));
-
-  return el("div", {
-    width: W, height: H, display: "flex", flexDirection: "column",
-    position: "relative", background: LIGHT.bg, fontFamily: "Be Vietnam Pro",
-  }, [
-    el("div", { position: "absolute", top: 24, left: 24, width: 18, height: 18,
-      borderTop: `2.5px solid ${accent.a1}`, borderLeft: `2.5px solid ${accent.a1}` }),
-    el("div", { position: "absolute", bottom: 24, right: 24, width: 18, height: 18,
-      borderBottom: `2.5px solid ${accent.a1}`, borderRight: `2.5px solid ${accent.a1}` }),
-
-    el("div", { display: "flex", flex: 1, padding: "48px 56px 24px" }, [
-      // left: editorial header
-      el("div", { display: "flex", flexDirection: "column", width: 380, paddingRight: 40, paddingTop: 12 }, [
-        el("div", {
-          fontFamily: "Tektur", fontSize: 12, fontWeight: 600,
-          letterSpacing: "3px", textTransform: "uppercase",
-          color: accent.a2, marginBottom: 18,
-        }, "BLOG · DAILY SIGNAL"),
-        el("div", {
-          fontSize: title.length > 72 ? 30 : 33, fontWeight: 700, lineHeight: 1.18,
-          color: LIGHT.text, letterSpacing: "-0.02em",
-        }, title),
-        el("div", {
-          width: 90, height: 3, marginTop: 18, marginBottom: 16,
-          background: `linear-gradient(90deg, ${accent.a1}, ${accent.a2})`,
-          borderRadius: 2,
-        }),
-        el("div", { fontSize: 16, lineHeight: 1.5, color: LIGHT.textDim }, excerpt),
+  return storyCard(accent, avatarDataUri, progress, readLabel,
+    sel("div", { display: "flex", flexDirection: "column", flex: 1,
+      padding: "56px 80px 36px", justifyContent: "space-between" }, [
+      // pull quote
+      sel("div", { display: "flex", flexDirection: "column", gap: 20, flex: 1, justifyContent: "center" }, [
+        sel("div", { width: 4, height: 40, borderRadius: 2,
+          background: `linear-gradient(to bottom, ${accent.a1}, ${accent.a2})` }),
+        sel("div", {
+          fontSize: pullQuote.length > 100 ? 28 : 33,
+          fontWeight: 400, lineHeight: 1.55,
+          color: CARD.textDim, maxWidth: 900,
+        }, `"${pullQuote}"`),
       ]),
-      // right: diagram canvas
-      el("div", {
-        display: "flex", flexDirection: "column", flex: 1,
-        background: LIGHT.canvas, borderRadius: 16,
-        border: `1px solid ${LIGHT.line}`, padding: "26px 30px",
-      }, [
-        block.title ? el("div", {
-          fontFamily: "Tektur", fontSize: 14, fontWeight: 600,
-          letterSpacing: "1.5px", textTransform: "uppercase",
-          color: LIGHT.textMute, marginBottom: 14,
-        }, truncate(block.title, 48)) : null,
-        diagram,
-      ].filter(Boolean)),
-    ]),
-
-    el("div", {
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      height: 62, padding: "0 56px",
-      borderTop: `1px solid ${LIGHT.line}`, background: LIGHT.canvas,
-    }, [
-      el("div", { display: "flex", alignItems: "center", gap: 12 }, [
-        avatarDataUri
-          ? { type: "img", props: { src: avatarDataUri, width: 32, height: 32,
-              style: { borderRadius: 9999, border: `2px solid ${hex(accent.a1, 0.6)}` } } }
-          : el("div", {
-              width: 32, height: 32, borderRadius: 9999, display: "flex",
-              alignItems: "center", justifyContent: "center",
-              fontFamily: "Tektur", fontWeight: 600, fontSize: 16, color: accent.a1,
-              border: `2px solid ${hex(accent.a1, 0.6)}`, background: LIGHT.bg,
-            }, "L"),
-        el("div", { fontFamily: "JetBrains Mono", fontSize: 13, fontWeight: 500, color: LIGHT.textDim },
-          "doxuanloc.space"),
+      // CTA row
+      sel("div", { display: "flex", alignItems: "center", gap: 20, marginTop: 32 }, [
+        sel("div", {
+          fontFamily: "Tektur", fontSize: 20, fontWeight: 600,
+          color: accent.a1, letterSpacing: "-0.01em",
+        }, "// Đọc phân tích đầy đủ"),
+        sel("div", { width: 1, height: 20, background: hex(accent.a1, 0.25) }),
+        sel("div", {
+          fontFamily: "JetBrains Mono", fontSize: 14, color: CARD.textMute,
+        }, `doxuanloc.space/blog/${blog.slug}/`),
       ]),
-      readLabel ? el("div", {
-        fontFamily: "JetBrains Mono", fontSize: 13, color: LIGHT.textMute,
-      }, readLabel) : null,
-    ].filter(Boolean)),
-  ]);
+    ])
+  );
 }
 
 // ── public API ────────────────────────────────────────────────────────────────
@@ -504,22 +611,38 @@ export async function generateCoverPng(blog) {
   return png;
 }
 
-/** Generate animated GIF for LinkedIn: insight-card reveal when the post has a
- *  cover-worthy block, orbital pulse otherwise. Returns Buffer. */
+/** Generate animated GIF for LinkedIn: dark story-format narrative animation.
+ *  Title → key insights (numbered) → visual block → outro pull-quote.
+ *  ~5-7 seconds total, one clear message per frame. */
 export async function generateCoverGif(blog) {
   const block = pickCoverBlock(blog);
-  if (!block) return generateOrbitalGif(blog);
-
-  const accent = LIGHT_ACCENTS[hashStr(blog.slug) % LIGHT_ACCENTS.length];
+  const accent = STORY_ACCENTS[hashStr(blog.slug) % STORY_ACCENTS.length];
   const avatarDataUri = loadAvatar();
-  const FRAMES = 4;
-  // reveal beats + long hold on the complete state so the diagram is readable
-  const DELAYS = [240, 220, 220, 1400];
+  const tldr = (blog.tldr ?? []).slice(0, 4);
 
+  // Build ordered spec list: title + insights interleaved with visual block + outro
+  const specs = [
+    { type: "title",   delay: 600 },
+    ...tldr.slice(0, 2).map((_, i) => ({ type: "insight", i, delay: 700 })),
+    ...(block ? [{ type: "visual", delay: 1100 }] : []),
+    ...tldr.slice(2, 4).map((_, i) => ({ type: "insight", i: i + 2, delay: 700 })),
+    { type: "outro",   delay: 1600 },
+  ];
+
+  const total = specs.length;
   const rendered = [];
-  for (let frame = 0; frame < FRAMES; frame++) {
-    const r = await rasterize(buildInsightCardElement(blog, block, { avatarDataUri, accent, frame, frames: FRAMES }));
-    rendered.push({ ...r, delay: DELAYS[frame] });
+
+  for (let fi = 0; fi < total; fi++) {
+    const spec = specs[fi];
+    const progress = (fi + 1) / total;
+    let element;
+    if (spec.type === "title")   element = buildTitleFrame(blog, progress, accent, avatarDataUri);
+    else if (spec.type === "insight") element = buildInsightFrame(blog, spec.i, progress, accent, avatarDataUri);
+    else if (spec.type === "visual")  element = buildVisualFrame(blog, block, progress, accent, avatarDataUri);
+    else                         element = buildOutroFrame(blog, progress, accent, avatarDataUri);
+
+    const r = await rasterize(element);
+    rendered.push({ ...r, delay: spec.delay });
   }
   return encodeGif(rendered);
 }
@@ -582,13 +705,19 @@ if (process.argv.includes("--preview")) {
   console.log(`Cover block: ${block ? block.type : "none → orbital fallback"}`);
 
   if (block) {
-    const accent = LIGHT_ACCENTS[hashStr(data.blog.slug) % LIGHT_ACCENTS.length];
+    const accent = STORY_ACCENTS[hashStr(data.blog.slug) % STORY_ACCENTS.length];
     const avatarDataUri = loadAvatar();
-    for (let frame = 0; frame < 4; frame++) {
-      const { png: fpng } = await rasterize(buildInsightCardElement(data.blog, block, { avatarDataUri, accent, frame, frames: 4 }));
-      writeFileSync(join(tmpDir, `insight-frame-${frame}.png`), fpng);
+    const previewFrames = [
+      buildTitleFrame(data.blog, 0.2, accent, avatarDataUri),
+      buildInsightFrame(data.blog, 0, 0.4, accent, avatarDataUri),
+      buildVisualFrame(data.blog, block, 0.7, accent, avatarDataUri),
+      buildOutroFrame(data.blog, 1.0, accent, avatarDataUri),
+    ];
+    for (let i = 0; i < previewFrames.length; i++) {
+      const { png: fpng } = await rasterize(previewFrames[i]);
+      writeFileSync(join(tmpDir, `story-frame-${i}.png`), fpng);
     }
-    console.log(`Frames → ${tmpDir}/insight-frame-{0..3}.png`);
+    console.log(`Story frames → ${tmpDir}/story-frame-{0..3}.png`);
   }
 
   console.log("Generating GIF...");
