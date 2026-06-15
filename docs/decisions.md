@@ -230,3 +230,27 @@
 - CSS first-sentence styling (Grok) bị loại vì fragile với cấu trúc câu VI/EN khác nhau → structure ở data level.
 
 **References**: `docs/solve-section-redesign-spec.md`, raw takes trong session 2026-06-11 (Grok background task), `src/pages/index.astro` (.solve-ledger), `content/profile.json` + `content/profile.en.json` (solves schema v2).
+
+---
+
+## 2026-06-15 — LinkedIn GIF: chuyển từ slide-deck sang diagram progressive build
+
+**Quyết định**: Viết lại `generateCoverGif` (scripts/linkedin-card.mjs) từ kiểu carousel 6-7 slide (title → insight → insight → 1 frame diagram tĩnh → outro) sang **single-canvas diagram dựng dần**: 1 block (flow/comparison/chart) là nhân vật chính, reveal từng phần qua các frame, hold trạng thái đầy đủ ~2.4s, rồi loop về frame đầu (rebuild jump-cut).
+
+**Lý do** (feedback user thật): GIF cũ "như bấm next slide PowerPoint", frame đổi nhanh đọc không kịp, không phải animation. User muốn GIF thể hiện flow/diagram động + xem được dạng short autoplay muted trên LinkedIn.
+
+**Mode**: parallel độc lập (doctrine portfolio cho high-taste UI). Grok + Claude mỗi bên 1 take. User tie-break 2 điểm:
+- **Loop**: Rebuild + jump-cut (take Claude) thắng Seamless pulse (take Grok) — user muốn xem lại cả quá trình dựng, không phải đèn chạy quanh diagram tĩnh.
+- **Flow layout**: Stack dọc (đọc rõ, chứa desc) thắng pipeline ngang — ưu tiên đọc kịp hơn hook nhanh.
+
+**Hội tụ Grok ↔ Claude**: diagram-first (bỏ text slide), `pickGifBlock` riêng đảo ưu tiên vs PNG (flow > comparison > chart), tách "animation frame" nhanh vs "read frame" hold lâu.
+
+**Khác biệt Claude vs Grok đã loại**:
+- Connector "vẽ 50%/100%" (Grok, 2-3 frame/step) → bỏ, dồn budget vào hold lâu hơn (mobile feed không thấy connector half-draw).
+- Seamless F0≈F-last (Grok) → bỏ vì biến build thành pulse, mất ý nghĩa "dựng flow".
+
+**Trade-off**: flow 5-step = 7 frame, ~178KB (Grok ước 130-170KB, sát). Render ~2s/frame × 14 (preview+gif) ≈ 29s (Grok lo 45-60s — quá cao). File dưới ngưỡng LinkedIn an toàn.
+
+**Falsifiable**: sai nếu LinkedIn nén GIF >178KB gây banding (đã flat-color hết gradient để phòng), hoặc nếu mobile feed render step desc 13px không đọc được → cần tăng font/giảm step.
+
+**References**: `scripts/linkedin-card.mjs` (pickGifBlock, buildGifPlan, buildFlowDiagram/Comparison/Chart, generateCoverGif), Grok take verbatim trong session 2026-06-15, post `urn:li:share:...` (repost hôm nay).

@@ -396,226 +396,207 @@ function storyCard(accent, avatarDataUri, progress, rightLabel, contentEl) {
   ]);
 }
 
-// Frame 1: Title — large, clean, brand entry
-function buildTitleFrame(blog, progress, accent, avatarDataUri) {
-  const title = truncate(blog.title ?? "", 88);
-  const readLabel = blog.readingTimeMin ? `${blog.readingTimeMin} MIN READ` : "DAILY INSIGHT";
-  return storyCard(accent, avatarDataUri, progress, readLabel,
-    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "68px 80px 40px", justifyContent: "flex-end" }, [
+// Strip leading "1. " / "2) " step number — number is rendered as a circle.
+const stripStepNum = s => (s ?? "").replace(/^\s*\d+\s*[.)]\s*/, "");
+
+// Compact header (kicker + title hook) — persists across all diagram frames
+// so context survives the loop's jump-cut restart.
+function diagramHeader(blog, accent, kicker) {
+  const title = truncateWords(blog.title ?? "", 64);
+  return sel("div", { display: "flex", flexDirection: "column", marginBottom: 18 }, [
+    sel("div", {
+      fontFamily: "Tektur", fontSize: 12, fontWeight: 600,
+      letterSpacing: "3px", textTransform: "uppercase",
+      color: accent.a2, marginBottom: 10,
+    }, kicker),
+    sel("div", {
+      fontSize: title.length > 52 ? 25 : 29, fontWeight: 700,
+      lineHeight: 1.2, color: CARD.text, letterSpacing: "-0.02em", maxWidth: 1040,
+    }, title),
+  ]);
+}
+
+// ── animated diagram builders (one frame per animState) ──────────────────────
+// animState carries which parts are revealed; the GIF plan steps it forward.
+
+// FLOW — vertical step stack; reveals one step per frame, active step glows.
+function buildFlowDiagram(blog, block, anim, progress, accent, avatarDataUri) {
+  const steps = block.flow.steps;
+  const N = steps.length;
+
+  const stepEl = (s, i) => {
+    const shown = i < anim.visible;
+    const active = (i + 1) === anim.active;
+    return sel("div", {
+      display: "flex", alignItems: "center", gap: 16, opacity: shown ? 1 : 0.13,
+      padding: "11px 20px", borderRadius: 12,
+      border: `1.5px solid ${hex(accent.a1, active ? 0.6 : 0.2)}`,
+      background: hex(accent.a1, active ? 0.13 : 0.05),
+    }, [
       sel("div", {
-        fontFamily: "Tektur", fontSize: 12, fontWeight: 600,
-        letterSpacing: "3.5px", textTransform: "uppercase",
-        color: accent.a2, marginBottom: 26,
-      }, "BLOG · AI ENGINEER"),
-      sel("div", {
-        fontSize: title.length > 70 ? 46 : 52, fontWeight: 700,
-        lineHeight: 1.13, color: CARD.text,
-        letterSpacing: "-0.025em", maxWidth: 960,
-      }, title),
-      sel("div", {
-        width: 100, height: 3, marginTop: 28,
-        background: accent.a1,
-        borderRadius: 2,
-      }),
+        width: 38, height: 38, borderRadius: 9999, display: "flex",
+        alignItems: "center", justifyContent: "center", flexShrink: 0,
+        fontFamily: "Tektur", fontSize: 16, fontWeight: 700,
+        color: active ? CARD.bg : accent.a1,
+        background: active ? accent.a1 : CARD.bgSoft,
+        border: `1.5px solid ${hex(accent.a1, 0.5)}`,
+        boxShadow: active ? `0 0 20px ${hex(accent.a1, 0.55)}` : "none",
+      }, String(i + 1)),
+      sel("div", { display: "flex", flexDirection: "column", flex: 1 }, [
+        sel("div", { fontSize: 18, fontWeight: 700, color: CARD.text, lineHeight: 1.2 },
+          truncate(stripStepNum(s.label), 38)),
+        s.desc ? sel("div", { fontSize: 13, color: CARD.textDim, lineHeight: 1.3, marginTop: 2 },
+          truncate(s.desc, 66)) : null,
+      ].filter(Boolean)),
+    ]);
+  };
+
+  return storyCard(accent, avatarDataUri, progress, `FLOW · ${Math.min(anim.visible, N)}/${N}`,
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "34px 72px 20px" }, [
+      diagramHeader(blog, accent, "WORKFLOW"),
+      sel("div", { display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: 9 },
+        steps.map((s, i) => stepEl(s, i))),
     ])
   );
 }
 
-// Frame N: Insight — ghost number + single key point large
-function buildInsightFrame(blog, insightIndex, progress, accent, avatarDataUri) {
-  const tldr = blog.tldr ?? [];
-  const point = tldr[insightIndex] ?? "";
-  const num = String(insightIndex + 1).padStart(2, "0");
-  const totalInsights = Math.min(tldr.length, 4);
-  const rightLabel = `${insightIndex + 1} / ${totalInsights}`;
+// COMPARISON — two columns; points reveal alternately, winner column highlights.
+function buildComparisonDiagram(blog, block, anim, progress, accent, avatarDataUri) {
+  const { left, right } = block.comparison;
 
-  return storyCard(accent, avatarDataUri, progress, rightLabel,
-    sel("div", { display: "flex", flexDirection: "column", flex: 1,
-      padding: "48px 80px 36px", position: "relative" }, [
-      // ghost number
-      sel("div", {
-        position: "absolute", top: 28, left: 64,
-        fontFamily: "Tektur", fontSize: 180, fontWeight: 700, lineHeight: 1,
-        color: hex(accent.a1, 0.09),
-      }, num),
-      // accent number label
-      sel("div", {
-        fontFamily: "Tektur", fontSize: 13, fontWeight: 600,
-        letterSpacing: "3px", color: accent.a1, marginBottom: 28,
-        textTransform: "uppercase",
-      }, `INSIGHT ${num}`),
-      // point text
-      sel("div", {
-        fontSize: point.length > 80 ? 33 : point.length > 60 ? 37 : 42,
-        fontWeight: 700, lineHeight: 1.38, color: CARD.text,
-        letterSpacing: "-0.015em", maxWidth: 980, flex: 1,
-        display: "flex", alignItems: "center",
-      }, point),
+  const col = (side, color, count, highlighted) => sel("div", {
+    display: "flex", flexDirection: "column", flex: 1, gap: 11,
+    padding: "18px 22px", borderRadius: 14,
+    border: `1.5px solid ${hex(color, highlighted ? 0.62 : 0.3)}`,
+    background: hex(color, highlighted ? 0.14 : 0.06),
+  }, [
+    sel("div", {
+      fontFamily: "Tektur", fontSize: 18, fontWeight: 600, color,
+      paddingBottom: 10, borderBottom: `1px solid ${hex(color, 0.28)}`, lineHeight: 1.2,
+    }, truncate(side.title, 26)),
+    ...side.points.map((p, i) => sel("div", {
+      display: "flex", gap: 11, alignItems: "flex-start", opacity: i < count ? 1 : 0.12,
+    }, [
+      sel("div", { width: 7, height: 7, borderRadius: 9999, background: color, marginTop: 8, flexShrink: 0 }),
+      sel("div", { fontSize: 14, lineHeight: 1.4, color: CARD.textDim, flex: 1 }, truncate(p, 58)),
+    ])),
+  ]);
+
+  return storyCard(accent, avatarDataUri, progress, "TRADE-OFF",
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "30px 56px 20px" }, [
+      diagramHeader(blog, accent, "COMPARE"),
+      sel("div", { display: "flex", flex: 1, alignItems: "stretch", gap: 18 }, [
+        col(left, accent.a1, anim.leftCount, anim.highlight === "left"),
+        sel("div", { display: "flex", alignItems: "center", justifyContent: "center", padding: "0 2px" },
+          sel("div", {
+            width: 38, height: 38, borderRadius: 9999, display: "flex",
+            alignItems: "center", justifyContent: "center",
+            fontFamily: "Tektur", fontSize: 12, fontWeight: 600,
+            color: CARD.text, background: CARD.bgSoft, border: `1px solid ${hex(accent.a1, 0.25)}`,
+          }, "VS")),
+        col(right, accent.a2, anim.rightCount, anim.highlight === "right"),
+      ]),
     ])
   );
 }
 
-// Visual frame: full-canvas dark-theme block (chart / comparison / flow)
-function buildVisualChartFrame(blog, block, progress, accent, avatarDataUri) {
+// CHART — bars grow up fraction-by-fraction; value label appears when full.
+function buildChartDiagram(blog, block, anim, progress, accent, avatarDataUri) {
   const data = block.chart.data;
   const max = Math.max(...data.map(d => d.value), 1);
-  const AREA_H = 330;
+  const AREA_H = 290;
+  const colW = Math.min(190, Math.floor((W - 220) / Math.max(data.length, 3)));
 
-  // Fixed column width so 2-bar charts don't stretch across full width
-  const colW = Math.min(200, Math.floor((W - 200) / Math.max(data.length, 3)));
-
-  return storyCard(accent, avatarDataUri, progress, "DATA",
-    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "48px 72px 28px" }, [
-      block.title ? sel("div", {
-        fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
-        textTransform: "uppercase", color: accent.a2, marginBottom: 32,
-      }, truncate(block.title, 60)) : null,
-      sel("div", { display: "flex", flex: 1, alignItems: "flex-end", gap: 32, justifyContent: "center" },
+  return storyCard(accent, avatarDataUri, progress, block.chart.unit ? `DATA · ${block.chart.unit}` : "DATA",
+    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "32px 72px 22px" }, [
+      diagramHeader(blog, accent, "DATA"),
+      sel("div", { display: "flex", flex: 1, alignItems: "flex-end", justifyContent: "center", gap: 34 },
         data.map((d, i) => {
-          const barH = Math.max(12, Math.round(AREA_H * (d.value / max)));
+          const fill = anim.barFill[i] ?? 0;
+          const barH = Math.max(4, Math.round(AREA_H * (d.value / max) * fill));
           const color = i % 2 === 0 ? accent.a1 : accent.a2;
+          const full = fill >= 1;
           return sel("div", { display: "flex", flexDirection: "column", alignItems: "center", width: colW, gap: 10 }, [
             sel("div", {
-              fontFamily: "JetBrains Mono", fontSize: 22, fontWeight: 500, color: CARD.text,
+              fontFamily: "JetBrains Mono", fontSize: 22, fontWeight: 500,
+              color: full ? CARD.text : "transparent",
             }, `${d.value}`),
-            sel("div", {
-              width: Math.round(colW * 0.65), height: barH, borderRadius: 8,
-              background: color,
-            }),
+            sel("div", { width: Math.round(colW * 0.62), height: barH, borderRadius: 8, background: color }),
             sel("div", {
               fontSize: 13, fontWeight: 600, color: CARD.textDim,
               textAlign: "center", width: "100%", lineHeight: 1.3,
             }, truncateWords(d.label, 20)),
           ]);
         })),
-      block.chart.unit ? sel("div", {
-        fontFamily: "JetBrains Mono", fontSize: 12, letterSpacing: "2px",
-        textTransform: "uppercase", color: CARD.textMute, marginTop: 18,
-      }, `UNIT: ${block.chart.unit}`) : null,
-    ].filter(Boolean))
-  );
-}
-
-function buildVisualComparisonFrame(blog, block, progress, accent, avatarDataUri) {
-  const col = (side, color) => sel("div", {
-    display: "flex", flexDirection: "column", flex: 1, gap: 14,
-    padding: "22px 26px", borderRadius: 14,
-    border: `1.5px solid ${hex(color, 0.40)}`,
-    background: hex(color, 0.07),
-  }, [
-    sel("div", {
-      fontFamily: "Tektur", fontSize: 18, fontWeight: 600, color,
-      paddingBottom: 12, borderBottom: `1px solid ${hex(color, 0.28)}`,
-      lineHeight: 1.2,
-    }, truncate(side.title, 28)),
-    ...side.points.map(p => sel("div", { display: "flex", gap: 12, alignItems: "flex-start" }, [
-      sel("div", {
-        width: 8, height: 8, borderRadius: 9999, background: color,
-        marginTop: 8, flexShrink: 0,
-        boxShadow: `0 0 8px ${hex(color, 0.6)}`,
-      }),
-      sel("div", {
-        fontSize: 15, lineHeight: 1.45, color: CARD.textDim, flex: 1,
-      }, truncate(p, 72)),
-    ])),
-  ]);
-
-  return storyCard(accent, avatarDataUri, progress, "COMPARE",
-    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "44px 60px 28px" }, [
-      block.title ? sel("div", {
-        fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
-        textTransform: "uppercase", color: accent.a2, marginBottom: 28,
-      }, truncate(block.title, 60)) : null,
-      sel("div", { display: "flex", flex: 1, alignItems: "stretch", gap: 20 }, [
-        col(block.comparison.left, accent.a1),
-        sel("div", { display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px" },
-          sel("div", {
-            width: 40, height: 40, borderRadius: 9999, display: "flex",
-            alignItems: "center", justifyContent: "center",
-            fontFamily: "Tektur", fontSize: 13, fontWeight: 600,
-            color: CARD.text, background: CARD.bgSoft,
-            border: `1px solid ${hex(accent.a1, 0.2)}`,
-          }, "VS")),
-        col(block.comparison.right, accent.a2),
-      ]),
-    ].filter(Boolean))
-  );
-}
-
-function buildVisualFlowFrame(blog, block, progress, accent, avatarDataUri) {
-  return storyCard(accent, avatarDataUri, progress, "FLOW",
-    sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "44px 72px 28px", justifyContent: "center", gap: 0 }, [
-      block.title ? sel("div", {
-        fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
-        textTransform: "uppercase", color: accent.a2, marginBottom: 28,
-      }, truncate(block.title, 60)) : null,
-      ...block.flow.steps.flatMap((s, i) => {
-        const isLast = i === block.flow.steps.length - 1;
-        return [
-          sel("div", {
-            display: "flex", alignItems: "center", gap: 20,
-            padding: "14px 20px", borderRadius: 12,
-            border: `1.5px solid ${hex(accent.a1, 0.25)}`,
-            background: hex(accent.a1, 0.06),
-          }, [
-            sel("div", {
-              width: 38, height: 38, borderRadius: 9999, display: "flex",
-              alignItems: "center", justifyContent: "center", flexShrink: 0,
-              fontFamily: "Tektur", fontSize: 16, fontWeight: 700,
-              color: CARD.bg, background: accent.a1,
-              boxShadow: `0 0 16px ${hex(accent.a1, 0.45)}`,
-            }, String(i + 1)),
-            sel("div", { display: "flex", flexDirection: "column", flex: 1 }, [
-              sel("div", { fontSize: 18, fontWeight: 700, color: CARD.text, lineHeight: 1.25 }, truncate(s.label, 36)),
-              s.desc ? sel("div", { fontSize: 14, color: CARD.textDim, lineHeight: 1.35, marginTop: 3 }, truncate(s.desc, 72)) : null,
-            ].filter(Boolean)),
-          ]),
-          !isLast ? sel("div", { display: "flex", justifyContent: "flex-start", paddingLeft: 38, paddingTop: 4, paddingBottom: 4 },
-            sel("div", { width: 2, height: 14, background: hex(accent.a2, 0.5), borderRadius: 2 })) : null,
-        ].filter(Boolean);
-      }),
-    ].filter(Boolean))
-  );
-}
-
-function buildVisualFrame(blog, block, progress, accent, avatarDataUri) {
-  if (block.type === "chart") return buildVisualChartFrame(blog, block, progress, accent, avatarDataUri);
-  if (block.type === "comparison") return buildVisualComparisonFrame(blog, block, progress, accent, avatarDataUri);
-  return buildVisualFlowFrame(blog, block, progress, accent, avatarDataUri);
-}
-
-// Outro frame: final insight as pull-quote + CTA
-function buildOutroFrame(blog, progress, accent, avatarDataUri) {
-  const tldr = blog.tldr ?? [];
-  const pullQuote = truncateWords(tldr[tldr.length - 1] ?? blog.excerpt ?? "", 120);
-  const readLabel = blog.readingTimeMin ? `${blog.readingTimeMin} MIN READ` : "";
-
-  return storyCard(accent, avatarDataUri, progress, readLabel,
-    sel("div", { display: "flex", flexDirection: "column", flex: 1,
-      padding: "56px 80px 36px", justifyContent: "space-between" }, [
-      // pull quote
-      sel("div", { display: "flex", flexDirection: "column", gap: 20, flex: 1, justifyContent: "center" }, [
-        sel("div", { width: 4, height: 40, borderRadius: 2,
-          background: accent.a1 }),
-        sel("div", {
-          fontSize: pullQuote.length > 100 ? 28 : 33,
-          fontWeight: 400, lineHeight: 1.55,
-          color: CARD.textDim, maxWidth: 900,
-        }, `"${pullQuote}"`),
-      ]),
-      // CTA row
-      sel("div", { display: "flex", alignItems: "center", gap: 20, marginTop: 32 }, [
-        sel("div", {
-          fontFamily: "Tektur", fontSize: 20, fontWeight: 600,
-          color: accent.a1, letterSpacing: "-0.01em",
-        }, "// Đọc phân tích đầy đủ"),
-        sel("div", { width: 1, height: 20, background: hex(accent.a1, 0.25) }),
-        sel("div", {
-          fontFamily: "JetBrains Mono", fontSize: 14, color: CARD.textMute,
-        }, `doxuanloc.space/blog/${blog.slug}/`),
-      ]),
     ])
   );
+}
+
+function buildDiagramFrame(blog, block, anim, progress, accent, avatarDataUri) {
+  if (block.type === "flow")       return buildFlowDiagram(blog, block, anim, progress, accent, avatarDataUri);
+  if (block.type === "comparison") return buildComparisonDiagram(blog, block, anim, progress, accent, avatarDataUri);
+  return buildChartDiagram(blog, block, anim, progress, accent, avatarDataUri);
+}
+
+// Pick the block to ANIMATE in the GIF. Priority differs from PNG cover:
+// flow/comparison tell a story when built progressively; a 2-bar chart doesn't.
+export function pickGifBlock(blog) {
+  const blocks = blog?.blocks ?? [];
+  const flow = blocks.find(b => b.type === "flow" && flowSteps(b).length >= 3);
+  if (flow) return { type: "flow", flow: { steps: flowSteps(flow).slice(0, CAPS.flowSteps) } };
+  const comp = blocks.find(b => {
+    const { left, right } = compSides(b);
+    return b.type === "comparison" && left?.points?.length >= 2 && right?.points?.length >= 2;
+  });
+  if (comp) {
+    const { left, right } = compSides(comp);
+    return { type: "comparison", comparison: {
+      left:  { title: left.title,  points: left.points.slice(0, CAPS.comparisonPoints) },
+      right: { title: right.title, points: right.points.slice(0, CAPS.comparisonPoints) },
+    } };
+  }
+  const chart = blocks.find(b => b.type === "chart" && b.chart?.variant === "bar" && validBarData(b.chart).length >= 2);
+  if (chart) return { type: "chart", chart: { ...chart.chart, data: validBarData(chart.chart).slice(0, CAPS.chartBars) } };
+  return null;
+}
+
+// Build the frame plan (animState + delay each). Build frames are fast (feel
+// animated); the final state is held ~2.4s so viewers can read; then the GIF
+// loops back to the near-empty first frame (intentional rebuild jump-cut).
+const HOLD = 1500, HOLD2 = 1350;
+function buildGifPlan(block) {
+  if (block.type === "flow") {
+    const N = block.flow.steps.length;
+    const specs = [];
+    for (let i = 1; i <= N; i++) specs.push({ state: { visible: i, active: i }, delay: 520 });
+    specs.push({ state: { visible: N, active: 0 }, delay: HOLD });
+    specs.push({ state: { visible: N, active: 0 }, delay: HOLD2 });
+    return specs;
+  }
+  if (block.type === "comparison") {
+    const L = block.comparison.left.points.length;
+    const R = block.comparison.right.points.length;
+    const specs = [{ state: { leftCount: 0, rightCount: 0, highlight: null }, delay: 480 }];
+    let lc = 0, rc = 0;
+    for (let i = 0; i < Math.max(L, R); i++) {
+      if (i < L) { lc++; specs.push({ state: { leftCount: lc, rightCount: rc, highlight: null }, delay: 440 }); }
+      if (i < R) { rc++; specs.push({ state: { leftCount: lc, rightCount: rc, highlight: null }, delay: 440 }); }
+    }
+    specs.push({ state: { leftCount: L, rightCount: R, highlight: "right" }, delay: HOLD });
+    specs.push({ state: { leftCount: L, rightCount: R, highlight: "right" }, delay: HOLD2 });
+    return specs;
+  }
+  // chart — grow each bar 0 → 55% → 100%
+  const N = block.chart.data.length;
+  const fills = new Array(N).fill(0);
+  const specs = [{ state: { barFill: [...fills] }, delay: 360 }];
+  for (let b = 0; b < N; b++) {
+    fills[b] = 0.55; specs.push({ state: { barFill: [...fills] }, delay: 320 });
+    fills[b] = 1;    specs.push({ state: { barFill: [...fills] }, delay: 400 });
+  }
+  specs.push({ state: { barFill: fills.map(() => 1) }, delay: HOLD });
+  specs.push({ state: { barFill: fills.map(() => 1) }, delay: HOLD2 });
+  return specs;
 }
 
 // ── public API ────────────────────────────────────────────────────────────────
@@ -629,38 +610,26 @@ export async function generateCoverPng(blog) {
   return png;
 }
 
-/** Generate animated GIF for LinkedIn: dark story-format narrative animation.
- *  Title → key insights (numbered) → visual block → outro pull-quote.
- *  ~5-7 seconds total, one clear message per frame. */
+/** Generate animated GIF for LinkedIn: a single diagram that builds up
+ *  progressively (flow steps / comparison points / chart bars), holds the
+ *  complete state ~2.4s, then loops back to the start (rebuild jump-cut).
+ *  Diagram-first, minimal text — readable when autoplayed muted in-feed.
+ *  Falls back to the orbital pulse when no diagrammable block exists. */
 export async function generateCoverGif(blog) {
-  const block = pickCoverBlock(blog);
+  const block = pickGifBlock(blog);
+  if (!block) return generateOrbitalGif(blog);
+
   const accent = STORY_ACCENTS[hashStr(blog.slug) % STORY_ACCENTS.length];
   const avatarDataUri = loadAvatar();
-  const tldr = (blog.tldr ?? []).slice(0, 4);
-
-  // Build ordered spec list: title + insights interleaved with visual block + outro
-  const specs = [
-    { type: "title",   delay: 600 },
-    ...tldr.slice(0, 2).map((_, i) => ({ type: "insight", i, delay: 700 })),
-    ...(block ? [{ type: "visual", delay: 1100 }] : []),
-    ...tldr.slice(2, 4).map((_, i) => ({ type: "insight", i: i + 2, delay: 700 })),
-    { type: "outro",   delay: 1600 },
-  ];
-
+  const specs = buildGifPlan(block);
   const total = specs.length;
   const rendered = [];
 
   for (let fi = 0; fi < total; fi++) {
-    const spec = specs[fi];
     const progress = (fi + 1) / total;
-    let element;
-    if (spec.type === "title")   element = buildTitleFrame(blog, progress, accent, avatarDataUri);
-    else if (spec.type === "insight") element = buildInsightFrame(blog, spec.i, progress, accent, avatarDataUri);
-    else if (spec.type === "visual")  element = buildVisualFrame(blog, block, progress, accent, avatarDataUri);
-    else                         element = buildOutroFrame(blog, progress, accent, avatarDataUri);
-
+    const element = buildDiagramFrame(blog, block, specs[fi].state, progress, accent, avatarDataUri);
     const r = await rasterize(element);
-    rendered.push({ ...r, delay: spec.delay });
+    rendered.push({ ...r, delay: specs[fi].delay });
   }
   return encodeGif(rendered);
 }
@@ -719,23 +688,20 @@ if (process.argv.includes("--preview")) {
   writeFileSync(pngPath, png);
   console.log(`PNG → ${pngPath} (${Math.round(png.length / 1024)}KB)`);
 
-  const block = pickCoverBlock(data.blog);
-  console.log(`Cover block: ${block ? block.type : "none → orbital fallback"}`);
+  const gifBlock = pickGifBlock(data.blog);
+  console.log(`GIF block: ${gifBlock ? gifBlock.type : "none → orbital fallback"}`);
 
-  if (block) {
+  if (gifBlock) {
     const accent = STORY_ACCENTS[hashStr(data.blog.slug) % STORY_ACCENTS.length];
     const avatarDataUri = loadAvatar();
-    const previewFrames = [
-      buildTitleFrame(data.blog, 0.2, accent, avatarDataUri),
-      buildInsightFrame(data.blog, 0, 0.4, accent, avatarDataUri),
-      buildVisualFrame(data.blog, block, 0.7, accent, avatarDataUri),
-      buildOutroFrame(data.blog, 1.0, accent, avatarDataUri),
-    ];
-    for (let i = 0; i < previewFrames.length; i++) {
-      const { png: fpng } = await rasterize(previewFrames[i]);
-      writeFileSync(join(tmpDir, `story-frame-${i}.png`), fpng);
+    const specs = buildGifPlan(gifBlock);
+    console.log(`Plan: ${specs.length} frames`);
+    for (let i = 0; i < specs.length; i++) {
+      const el = buildDiagramFrame(data.blog, gifBlock, specs[i].state, (i + 1) / specs.length, accent, avatarDataUri);
+      const { png: fpng } = await rasterize(el);
+      writeFileSync(join(tmpDir, `story-frame-${String(i).padStart(2, "0")}.png`), fpng);
     }
-    console.log(`Story frames → ${tmpDir}/story-frame-{0..3}.png`);
+    console.log(`Story frames → ${tmpDir}/story-frame-{00..${String(specs.length - 1).padStart(2, "0")}}.png`);
   }
 
   console.log("Generating GIF...");
