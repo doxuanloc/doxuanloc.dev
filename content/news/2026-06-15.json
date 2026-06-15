@@ -1,0 +1,257 @@
+{
+  "date": "2026-06-15",
+  "generatedBy": "Grok 4.3",
+  "version": 1,
+  "news": [
+    {
+      "title": "Avataar ra mắt Varya — video AI 27x rẻ hơn, chưng cất từ Wan 2.2, tối ưu cultural context Ấn Độ",
+      "summary": "Avataar AI (hỗ trợ India AI Mission) phát hành Varya 14B tham số: distilled từ Wan 2.2, tạo clip 5s 720p chỉ 45s trên H200 (vs 1230s), giá ~$0.005/giây (~20-27x rẻ hơn Veo/Kling). Nhận diện lễ hội, ẩm thực, trang phục Ấn Độ. Sắp open-weight + training data trên AIKosh. Góc nhìn: Distillation + dữ liệu địa phương chứng minh con đường thực tế cho adoption quy mô ở thị trường mới nổi — không cần foundation khổng lồ, mà cost/performance + cultural fit quyết định. Open-weight mở fork/custom cho dev.",
+      "source": "https://techcrunch.com/2026/06/11/cheaper-faster-and-culturally-aware-avataars-video-ai-is-built-for-indias-scale/",
+      "tags": [
+        "ai model",
+        "video generation",
+        "distillation",
+        "cost optimization",
+        "open weight",
+        "india ai"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "Cresta ra mắt Conductor — developer-first engine xây production AI agent bằng natural language, giảm ~50% thời gian",
+      "summary": "Conductor cung cấp workflow natural-language cho blueprint, implement (prompt + code), test (grounded real customer conversations + calibrated eval), deploy và optimize liên tục. Sử dụng conversation insights, SOPs, knowledge base để grounding. Custom functions từ 1 tuần xuống 1-2 ngày. Code là first-class, phân biệt rõ deterministic logic vs LLM. Góc nhìn: Agent 'thông minh' vẫn fail production vì thiếu business context sâu và eval thực tế. Giải pháp là đưa observability + production signal vào vòng đời dev ngay từ đầu, không chỉ prompt builder. Iteration sau launch mới tạo giá trị bền.",
+      "source": "https://cresta.com/blog/cresta-conductor-the-agent-for-ai-agent-development",
+      "tags": [
+        "ai agent",
+        "production ai",
+        "developer tools",
+        "agent evaluation",
+        "customer experience",
+        "grounded agents"
+      ],
+      "importance": 5
+    },
+    {
+      "title": "Jeff Bezos đồng sáng lập Prometheus huy động $12B (val $41B) để xây 'artificial general engineer' cho thế giới vật lý",
+      "summary": "Prometheus (Bezos + Vik Bajaj) gọi thêm $12B từ JPMorgan, Goldman, BlackRock... tổng sau round ~$18B+. Xây 'artificial general engineer' tự động hóa thiết kế/sản xuất hệ thống phức tạp (jet engine, drug compounds). 150 nhân sự, vốn lớn dành compute. Góc nhìn: Vốn khổng lồ đổ vào physical AI vì moat thực (hardware, data thực tế, integration) khó copy hơn pure software. Builder/engineer nên xem đây là tín hiệu: tương lai thuộc về những người kết hợp AI reasoning với execution vật lý, không chỉ chat/code gen.",
+      "source": "https://techcrunch.com/2026/06/11/jeff-bezoss-prometheus-raises-12b-to-build-an-artificial-general-engineer-for-the-physical-world/",
+      "tags": [
+        "physical ai",
+        "bezos",
+        "prometheus",
+        "vc funding",
+        "ai engineering",
+        "robotics"
+      ],
+      "importance": 5
+    },
+    {
+      "title": "Sandstone gọi vốn $30M Series A cho AI workflow automation dành riêng in-house legal teams SMB",
+      "summary": "Sandstone (sau $10M seed 6 tháng trước) nhắm in-house legal của SMB: triage intake (Slack/email/Jira), custom workflow drafting/review/analysis. Lightspeed dẫn dắt, Sequoia và nhiều nhà đầu tư quay lại. Khác biệt với Harvey/Legora (private practice) và frontier generalist. Góc nhìn: Vertical AI cho domain-specific workflows (legal ops) có moat rõ từ data + process hiểu biết, dễ bán hơn general agent. Developer vertical cần đầu tư sâu vào domain modeling thay vì chỉ wrap LLM.",
+      "source": "https://techcrunch.com/2026/06/09/sandstone-raises-30m-to-bring-ai-to-in-house-legal-teams/",
+      "tags": [
+        "vertical ai",
+        "legal tech",
+        "workflow automation",
+        "sandstone",
+        "in-house legal",
+        "smb ai"
+      ],
+      "importance": 3
+    },
+    {
+      "title": "Google cắt giá AI Plus xuống $4.99/tháng, tăng gấp đôi storage lên 400GB — đẩy mạnh cuộc chiến subscription AI",
+      "summary": "Google AI Plus (trước $7.99) giảm còn $4.99, storage 200GB → 400GB. Vị trí rõ là plan budget cho cá nhân/học sinh, cạnh tranh ChatGPT Plus ($20). AI Pro $19.99, Ultra từ $99.99. Góc nhìn: Giá consumer AI đang commoditize nhanh. Builder/enterprise cần chuẩn bị cho user expectation 'AI rẻ hoặc miễn phí' — giá trị chuyển từ access model sang orchestration, grounding, integration và outcome measurable. Raw inference margin sẽ bị ép mạnh.",
+      "source": "https://techcrunch.com/2026/06/09/google-just-fired-a-warning-shot-in-the-ai-subscription-price-wars/",
+      "tags": [
+        "google ai",
+        "gemini",
+        "ai subscription",
+        "pricing war",
+        "ai commoditization",
+        "consumer ai"
+      ],
+      "importance": 4
+    }
+  ],
+  "blog": {
+    "slug": "2026-06-15-xay-ai-agent-production-dang-tin-cay-grounding-va-trade-off",
+    "title": "Xây AI Agent Production Đáng Tin Cậy: Grounding, Prompt-vs-Code Và Eval Loop Thực Tế",
+    "excerpt": "Agent hay fail production. Phân tích grounding + prompt-vs-code và eval từ signal thực để ship agent giá trị thay vì nợ kỹ thuật.",
+    "contentMarkdown": "## Tại Sao Agent 'Thông Minh' Vẫn Thường Fail Trong Production?\n\nDemo agent trả lời mạch lạc, giải quyết happy path nhanh. Nhưng khi khách hàng thật đề cập credit $200 từ chuyến trước, muốn đổi ngày bay, hỏi thêm túi hành lý thứ hai — agent dễ mất context, áp dụng sai rule, hoặc tạo booking không tồn tại. Hậu quả: mất tiền, khiếu nại, hoặc human phải nhảy vào cứu.\n\nVấn đề không nằm ở model. Mà ở thiếu business context sâu (SOP, escalation rule, hệ thống thật), thiếu cơ chế phân định rõ deterministic logic (code) với flexible reasoning (LLM), và eval chỉ dựa benchmark chung thay vì outcome thực tế của công ty đó.\n\n## Grounding Bằng Dữ Liệu Thực Và Business Context — Bắt Buộc Hay Nice-to-Have?\n\nAgent tốt bắt đầu từ việc \"hiểu công ty này vận hành ra sao\". Conversation history thật, topic discovery, knowledge base, SOP, API contract, và definition của \"kết quả tốt\" phải được đưa vào blueprint trước khi sinh code/prompt.\n\nKhông grounding → agent tạo hành vi trông hợp lý nhưng sai với policy nội bộ hoặc flow thực. Nhiều team bỏ qua bước này vì \"model mạnh sẽ tự hiểu\". Thực tế cho thấy: càng mạnh model, càng cần context chính xác để không hallucinate theo kiểu tự tin.\n\n## Prompt-vs-Code: Quyết Định Nào Ảnh Hưởng Đến Độ Tin Cậy Và Chi Phí?\n\nPrompt linh hoạt, nhanh thay đổi, nhưng khó lock behavior nhất quán. Code cho control, validation, side-effect rõ ràng, nhưng dễ trở thành IVR nếu lạm dụng.\n\nProduction-grade agent thường hybrid: LLM quyết định intent/route + giải thích, code thực thi action có side-effect (update DB, gọi payment, gửi email). Conductor và các nền tảng tương tự giúp team phân tích \"phần nào nên là code\" dựa accumulated deployment pattern.\n\nTrade-off: prompt nhanh cho MVP, nhưng production cần đầu tư boundary rõ và test harness cho phần deterministic.\n\n## Eval Loop Từ Production Signal — Benchmark Chung Đủ Không?\n\nSWE-Bench hay GPQA không nói lên agent của bạn xử lý khách hàng hủy chuyến bay + credit như thế nào. Cần test case do business context sinh ra, evaluator calibrated trên outcome thực (resolution rate, CSAT, escalation rate), và root-cause analysis khi fail (blueprint? prompt? tool? code? knowledge?).\n\nSau launch, mọi tương tác production trở thành signal cho iteration: trace decision, đề xuất fix, hot-reload và re-eval ngay. Không có loop này, agent \"cải thiện\" chỉ là ảo tưởng.\n\n## Nên Làm Gì Khi Xây Agent Production?\n\n- Bắt đầu bằng ingest + blueprint có review, không nhảy thẳng sinh agent.\n- Xác định rõ layer: LLM cho reasoning, code cho consequence-bearing action.\n- Xây eval từ data thật + metric business, không chỉ pass/fail chung.\n- Thiết kế feedback loop sau launch ngay từ ngày 1 (observability, RCA, pattern reuse).\n- Chọn specialist/fast model cho subtask, frontier chỉ khi cần judgment phức tạp — routing là chìa khóa cost control.\n\nKết luận thực dụng: model mới ra hàng tuần không giải quyết vấn đề production. Giải pháp nằm ở quy trình, context grounding và vòng lặp cải tiến liên tục. Team nào đầu tư vào 3 thứ này sẽ ship agent có ROI thực, thay vì nợ kỹ thuật và chi phí bất ngờ.",
+    "tags": [
+      "ai agent",
+      "production ai",
+      "agent evaluation",
+      "grounded agents",
+      "prompt vs code",
+      "ai agent testing",
+      "developer productivity",
+      "llm optimization"
+    ],
+    "readingTimeMin": 8,
+    "coverKeywords": [
+      "ai agent production",
+      "grounded agents",
+      "agent evaluation"
+    ],
+    "linkedinPost": "Hầu hết engineer vẫn deploy agent sau vài prompt test rồi ngạc nhiên khi nó fail với khách hàng thật có edge case phức tạp.\n\nVấn đề không phải model. Mà là thiếu grounding business context, không phân định prompt vs code, và eval chỉ benchmark chung.\n\n→ Agent production cần blueprint review + ingest SOP, convos thật trước khi sinh code/prompt.\n→ Code là lớp lock cho action có side-effect; LLM giữ ở reasoning/routing.\n→ Eval loop sau launch (trace, RCA, hot-reload) mới tạo cải tiến thực và ROI.\n\nChi tiết: https://doxuanloc.space/blog/2026-06-15-xay-ai-agent-production-dang-tin-cay-grounding-va-trade-off/\n\n#AIAgent #ProductionAI #AgentEvaluation #GroundedAgents",
+    "tldr": [
+      "Demo agent đẹp nhưng production fail vì thiếu business context thực (SOP, conversation history, escalation rule).",
+      "Grounding trước blueprint — không nhảy thẳng sinh prompt/code — giảm rework đắt đỏ sau này.",
+      "Prompt linh hoạt nhưng code cần cho action có consequence; hybrid rõ ràng là pattern production-grade.",
+      "Eval phải từ production signal + metric business, không chỉ benchmark chung (SWE-Bench không cứu được customer flow phức tạp).",
+      "Vòng lặp sau launch (trace, RCA, hot-reload, re-eval) mới tạo cải tiến thực và ROI bền vững."
+    ],
+    "blocks": [
+      {
+        "type": "callout",
+        "id": "tradeoff-grounding",
+        "variant": "tradeoff",
+        "title": "Grounding là trade-off thời gian ban đầu để đổi lấy độ tin cậy dài hạn",
+        "body": "Bỏ qua ingest context thực để 'ship nhanh' thường dẫn đến 3-5× thời gian fix sau launch. Blueprint + review 1-2 ngày có thể tiết kiệm hàng tuần rework và rủi ro production."
+      },
+      {
+        "type": "comparison",
+        "id": "demo-vs-prod",
+        "comparison": {
+          "left": {
+            "title": "Demo Agent",
+            "points": [
+              "Happy path, prompt ngắn gọn",
+              "Eval trên benchmark chung (SWE-Bench/GPQA)",
+              "Không có side-effect thật",
+              "User trong loop, dễ rollback bằng chat"
+            ]
+          },
+          "right": {
+            "title": "Production Agent",
+            "points": [
+              "Edge case + business rule phức tạp",
+              "Eval calibrated trên outcome công ty (resolution, escalation, CSAT)",
+              "Action có consequence (DB, payment, email)",
+              "Detached execution, cần policy + audit + steer"
+            ]
+          }
+        }
+      },
+      {
+        "type": "flow",
+        "id": "grounded-agent-lifecycle",
+        "flow": {
+          "steps": [
+            {
+              "label": "1. Ingest Context",
+              "desc": "Customer convos, SOPs, KB, API contract, success definition"
+            },
+            {
+              "label": "2. Blueprint + Review",
+              "desc": "Goals, scope, flows, test cases, knowledge refs — có human approve"
+            },
+            {
+              "label": "3. Hybrid Implement",
+              "desc": "LLM cho reasoning/route, code cho deterministic action + validation"
+            },
+            {
+              "label": "4. Production Eval",
+              "desc": "Test case từ business data + calibrated LLM evaluator"
+            },
+            {
+              "label": "5. Deploy + Continuous Loop",
+              "desc": "Trace, RCA fail, recommend fix, hot-reload, feed signal back"
+            }
+          ]
+        }
+      },
+      {
+        "type": "chart",
+        "id": "dev-time-reduction",
+        "caption": "Thời gian hoàn thành custom functions/workflow logic (nguồn: deployment pattern thực tế từ enterprise agent platforms)",
+        "chart": {
+          "variant": "bar",
+          "unit": "ngày",
+          "data": [
+            {
+              "label": "Quy trình cũ",
+              "value": 7
+            },
+            {
+              "label": "Grounded + hybrid",
+              "value": 2
+            }
+          ]
+        }
+      }
+    ],
+    "mechanismGif": null,
+    "coverImage": "/images/blog/2026-06-15-xay-ai-agent-production-dang-tin-cay-grounding-va-trade-off.png"
+  },
+  "financeNews": [
+    {
+      "title": "Figure Technology Solutions mua Kiavi $717M để mở rộng tokenized real estate lending và capital marketplace",
+      "summary": "Figure (blockchain-native capital marketplace) ký thỏa thuận mua Kiavi (AI-powered residential transition lender, top RTL) giá $717M. Thêm >$7B annual first-lien volume. JV với Sixth Street mua balance sheet, Figure lấy tech + operating platform. Mục tiêu đưa lending investor-property lên tokenized rails. Góc nhìn: M&A này minh họa hội tụ thực tế giữa AI decisioning, traditional lending và blockchain settlement. Builder fintech cần hiểu full stack (origination AI + on-chain funding + compliance) mới capture value thay vì chỉ làm một lớp.",
+      "source": "https://www.fintechfutures.com/m-a/figure-to-acquire-kiavi-for-717m",
+      "tags": [
+        "figure",
+        "kiavi",
+        "tokenized assets",
+        "real estate lending",
+        "blockchain",
+        "fintech m&a"
+      ],
+      "importance": 4,
+      "category": "fintech"
+    },
+    {
+      "title": "Capsa AI gọi $18M Series A xây AI operating system cho private capital, tập trung institutional knowledge",
+      "summary": "Capsa AI (London/NY) huy động $18M (co-led TX Ventures, Pivot; tổng ~$20M) để phát triển AI OS cho PE/ private capital: capture & compound institutional knowledge, data management, deal workflow, agentic indexing. Mở rộng US, scale engineering. Góc nhìn: Vertical AI cho industry data-heavy (PE) nhận vốn mạnh vì moat nằm ở proprietary data + workflow hiểu biết, không chỉ model chung. Developer vertical cần đầu tư indexing/retrieval chuyên biệt và agent orchestration theo domain.",
+      "source": "https://www.fintechfutures.com/venture-capital-funding/capsa-ai-scores-18m-in-series-a-funding",
+      "tags": [
+        "capsa ai",
+        "private capital",
+        "pe tech",
+        "ai operating system",
+        "knowledge management",
+        "vc funding"
+      ],
+      "importance": 3,
+      "category": "vc-startup"
+    },
+    {
+      "title": "Prometheus (Bezos) huy động $12B ở valuation $41B — một trong những bet lớn nhất vào physical AI và 'artificial general engineer'",
+      "summary": "Prometheus (đồng sáng lập Jeff Bezos + Vik Bajaj) gọi thêm $12B từ JPMorgan, Goldman Sachs, BlackRock và các nhà đầu tư khác, nâng valuation post-money ~$41B. Tập trung tự động hóa thiết kế và sản xuất hệ thống vật lý phức tạp (aerospace, automotive, drug). Vốn lớn dành compute. Góc nhìn: Nhà đầu tư lớn đang chấp nhận valuation khủng cho physical AI vì moat (hardware integration, real-world data, regulatory) bền vững hơn pure software. Builder nên đọc tín hiệu: capital flow đang dịch chuyển sang AI + execution thực tế.",
+      "source": "https://techcrunch.com/2026/06/11/jeff-bezoss-prometheus-raises-12b-to-build-an-artificial-general-engineer-for-the-physical-world/",
+      "tags": [
+        "prometheus",
+        "bezos",
+        "physical ai",
+        "vc funding",
+        "valuation",
+        "ai investment"
+      ],
+      "importance": 5,
+      "category": "vc-startup"
+    }
+  ],
+  "expUpdate": {
+    "summary": "Tập trung năng lực thiết kế hệ thống agentic đáng tin cậy production, tối ưu chi phí inference/deployment trên AWS/cloud, và áp dụng vertical AI với grounding + hybrid logic.",
+    "skills": [
+      "Production AI agent design & evaluation",
+      "AWS serverless & agentic event-driven arch",
+      "LLM cost optimization & model routing",
+      "Grounded hybrid retrieval + deterministic LLM"
+    ],
+    "highlights": [
+      "Thiết kế kiến trúc agentic kết hợp code deterministic và LLM reasoning để đạt độ tin cậy production với chi phí và rủi ro kiểm soát được.",
+      "Tối ưu quy trình phát triển và đánh giá agent bằng cách tận dụng production signals, business context thực và vòng lặp cải tiến liên tục sau launch.",
+      "Áp dụng distillation, routing, specialist models và lựa chọn runtime để cân bằng performance, cost và domain fit cho giải pháp AI thực tế."
+    ]
+  },
+  "linkedin": {
+    "posted": true,
+    "postedAt": "2026-06-15T05:11:36.008Z",
+    "urn": "urn:li:share:7472153815387987968",
+    "hasImage": true,
+    "imageAssetUrn": "urn:li:digitalmediaAsset:D5622AQGG6JQqUg9n9w"
+  }
+}

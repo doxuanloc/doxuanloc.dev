@@ -258,8 +258,8 @@ async function encodeGif(frames) {
   const { GIFEncoder, quantize, applyPalette } = gifenc;
   const gif = GIFEncoder();
   for (const { pixels, width, height, delay } of frames) {
-    const pal = quantize(pixels, 256, { format: "rgba4444", oneBitAlpha: false });
-    const idx = applyPalette(pixels, pal, "rgba4444");
+    const pal = quantize(pixels, 256);
+    const idx = applyPalette(pixels, pal);
     gif.writeFrame(idx, width, height, { palette: pal, delay, repeat: 0 });
   }
   gif.finish();
@@ -286,26 +286,42 @@ const CAPS = { chartBars: 5, comparisonPoints: 4, flowSteps: 5 };
 const validBarData = chart =>
   (chart?.data ?? []).filter(d => typeof d.value === "number" && isFinite(d.value) && d.value >= 0);
 
-/** Pick the most cover-worthy block: bar chart (≥3 pts) > comparison > flow. */
+// Normalize blocks that Grok sometimes generates with flat schema (b.left/right/steps)
+// vs nested schema (b.comparison.left, b.flow.steps). Accept both.
+function compSides(b) {
+  const c = b.comparison ?? b; // nested: b.comparison.left; flat: b.left
+  return { left: c.left, right: c.right };
+}
+function flowSteps(b) {
+  return b.flow?.steps ?? b.steps ?? []; // nested: b.flow.steps; flat: b.steps
+}
+
+/** Pick the most cover-worthy block: bar chart (≥2 pts) > comparison > flow. */
 export function pickCoverBlock(blog) {
   const blocks = blog?.blocks ?? [];
-  const chart = blocks.find(b => b.type === "chart" && b.chart?.variant === "bar" && validBarData(b.chart).length >= 3);
+  const chart = blocks.find(b => b.type === "chart" && b.chart?.variant === "bar" && validBarData(b.chart).length >= 2);
   if (chart) return {
-    type: "chart", title: chart.title ?? "",
+    type: "chart", title: chart.title ?? chart.caption ?? "",
     chart: { ...chart.chart, data: validBarData(chart.chart).slice(0, CAPS.chartBars) },
   };
-  const comp = blocks.find(b => b.type === "comparison" && b.comparison?.left?.points?.length >= 2 && b.comparison?.right?.points?.length >= 2);
-  if (comp) return {
-    type: "comparison", title: comp.title ?? "",
-    comparison: {
-      left:  { title: comp.comparison.left.title,  points: comp.comparison.left.points.slice(0, CAPS.comparisonPoints) },
-      right: { title: comp.comparison.right.title, points: comp.comparison.right.points.slice(0, CAPS.comparisonPoints) },
-    },
-  };
-  const flow = blocks.find(b => b.type === "flow" && (b.flow?.steps?.length ?? 0) >= 2);
+  const comp = blocks.find(b => {
+    const { left, right } = compSides(b);
+    return b.type === "comparison" && left?.points?.length >= 2 && right?.points?.length >= 2;
+  });
+  if (comp) {
+    const { left, right } = compSides(comp);
+    return {
+      type: "comparison", title: comp.title ?? comp.caption ?? "",
+      comparison: {
+        left:  { title: left.title,  points: left.points.slice(0, CAPS.comparisonPoints) },
+        right: { title: right.title, points: right.points.slice(0, CAPS.comparisonPoints) },
+      },
+    };
+  }
+  const flow = blocks.find(b => b.type === "flow" && flowSteps(b).length >= 2);
   if (flow) return {
-    type: "flow", title: flow.title ?? "",
-    flow: { steps: flow.flow.steps.slice(0, CAPS.flowSteps) },
+    type: "flow", title: flow.title ?? flow.caption ?? "",
+    flow: { steps: flowSteps(flow).slice(0, CAPS.flowSteps) },
   };
   return null;
 }
@@ -343,13 +359,13 @@ function storyFooter(accent, avatarDataUri, rightLabel = "") {
   ].filter(Boolean));
 }
 
-// Progress bar strip at bottom of content area
+// Progress bar strip at bottom of content area — solid color (no gradient: GIF 256-color)
 function storyProgress(accent, progress) {
   return sel("div", { height: 4, display: "flex", alignItems: "stretch", background: hex(CARD.bgSoft, 0.8) }, [
     sel("div", {
       height: 4,
       width: `${Math.round(progress * 100)}%`,
-      background: `linear-gradient(90deg, ${accent.a1}, ${accent.a2})`,
+      background: accent.a1,
       borderRadius: 2,
     }),
   ]);
@@ -398,7 +414,7 @@ function buildTitleFrame(blog, progress, accent, avatarDataUri) {
       }, title),
       sel("div", {
         width: 100, height: 3, marginTop: 28,
-        background: `linear-gradient(90deg, ${accent.a1}, ${accent.a2}, ${accent.a1}33)`,
+        background: accent.a1,
         borderRadius: 2,
       }),
     ])
@@ -445,29 +461,31 @@ function buildVisualChartFrame(blog, block, progress, accent, avatarDataUri) {
   const max = Math.max(...data.map(d => d.value), 1);
   const AREA_H = 330;
 
+  // Fixed column width so 2-bar charts don't stretch across full width
+  const colW = Math.min(200, Math.floor((W - 200) / Math.max(data.length, 3)));
+
   return storyCard(accent, avatarDataUri, progress, "DATA",
     sel("div", { display: "flex", flexDirection: "column", flex: 1, padding: "48px 72px 28px" }, [
       block.title ? sel("div", {
         fontFamily: "Tektur", fontSize: 13, letterSpacing: "2.5px",
         textTransform: "uppercase", color: accent.a2, marginBottom: 32,
       }, truncate(block.title, 60)) : null,
-      sel("div", { display: "flex", flex: 1, alignItems: "flex-end", gap: 24 },
+      sel("div", { display: "flex", flex: 1, alignItems: "flex-end", gap: 32, justifyContent: "center" },
         data.map((d, i) => {
           const barH = Math.max(12, Math.round(AREA_H * (d.value / max)));
           const color = i % 2 === 0 ? accent.a1 : accent.a2;
-          return sel("div", { display: "flex", flexDirection: "column", alignItems: "center", flex: 1, gap: 10 }, [
+          return sel("div", { display: "flex", flexDirection: "column", alignItems: "center", width: colW, gap: 10 }, [
             sel("div", {
-              fontFamily: "JetBrains Mono", fontSize: 18, fontWeight: 500, color: CARD.text,
+              fontFamily: "JetBrains Mono", fontSize: 22, fontWeight: 500, color: CARD.text,
             }, `${d.value}`),
             sel("div", {
-              width: "100%", maxWidth: 120, height: barH, borderRadius: 8,
-              background: `linear-gradient(to top, ${hex(color, 0.9)}, ${hex(color, 0.55)})`,
-              boxShadow: `0 0 24px ${hex(color, 0.3)}`,
+              width: Math.round(colW * 0.65), height: barH, borderRadius: 8,
+              background: color,
             }),
             sel("div", {
-              fontSize: 14, fontWeight: 600, color: CARD.textDim,
+              fontSize: 13, fontWeight: 600, color: CARD.textDim,
               textAlign: "center", width: "100%", lineHeight: 1.3,
-            }, truncateWords(d.label, 18)),
+            }, truncateWords(d.label, 20)),
           ]);
         })),
       block.chart.unit ? sel("div", {
@@ -578,7 +596,7 @@ function buildOutroFrame(blog, progress, accent, avatarDataUri) {
       // pull quote
       sel("div", { display: "flex", flexDirection: "column", gap: 20, flex: 1, justifyContent: "center" }, [
         sel("div", { width: 4, height: 40, borderRadius: 2,
-          background: `linear-gradient(to bottom, ${accent.a1}, ${accent.a2})` }),
+          background: accent.a1 }),
         sel("div", {
           fontSize: pullQuote.length > 100 ? 28 : 33,
           fontWeight: 400, lineHeight: 1.55,

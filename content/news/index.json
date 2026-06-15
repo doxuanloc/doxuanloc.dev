@@ -1,8 +1,32 @@
 {
-  "updatedAt": "2026-06-14",
-  "totalDays": 10,
+  "updatedAt": "2026-06-15",
+  "totalDays": 11,
   "totalEssays": 2,
   "posts": [
+    {
+      "date": "2026-06-15",
+      "slug": "2026-06-15-xay-ai-agent-production-dang-tin-cay-grounding-va-trade-off",
+      "title": "Xây AI Agent Production Đáng Tin Cậy: Grounding, Prompt-vs-Code Và Eval Loop Thực Tế",
+      "excerpt": "Agent hay fail production. Phân tích grounding + prompt-vs-code và eval từ signal thực để ship agent giá trị thay vì nợ kỹ thuật.",
+      "tags": [
+        "ai agent",
+        "production ai",
+        "agent evaluation",
+        "grounded agents",
+        "prompt vs code",
+        "ai agent testing",
+        "developer productivity",
+        "llm optimization"
+      ],
+      "readingTimeMin": 8,
+      "coverImage": null,
+      "coverKeywords": [
+        "ai agent production",
+        "grounded agents",
+        "agent evaluation"
+      ],
+      "isEssay": false
+    },
     {
       "date": "2026-06-14",
       "slug": "2026-06-14-governed-background-agents-production",
@@ -123,6 +147,18 @@
     }
   ],
   "newsIndex": [
+    {
+      "date": "2026-06-15",
+      "newsCount": 5,
+      "financeCount": 3,
+      "topTags": [
+        "vc funding",
+        "physical ai",
+        "bezos",
+        "prometheus",
+        "ai model"
+      ]
+    },
     {
       "date": "2026-06-14",
       "newsCount": 5,
