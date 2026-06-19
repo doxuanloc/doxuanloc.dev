@@ -1,8 +1,58 @@
 {
-  "updatedAt": "2026-06-15",
-  "totalDays": 11,
+  "updatedAt": "2026-06-19",
+  "totalDays": 13,
   "totalEssays": 2,
   "posts": [
+    {
+      "date": "2026-06-19",
+      "slug": "2026-06-19-tu-host-open-source-llm-cho-ai-agent-trade-off",
+      "title": "Tự Host Open-Source LLM Cho AI Agent: Trade-off Chi Phí, Kiểm Soát và Độ Tin Cậy",
+      "excerpt": "GLM-5.2, DeepSeek-V4, MiniMax-M3 giờ cạnh tranh agentic. Khi nào tự host tiết kiệm hơn API và những chi phí ẩn hay bị bỏ qua khi xây production agent.",
+      "tags": [
+        "ai agent",
+        "open source llm",
+        "self host llm",
+        "llm optimization",
+        "aws bedrock",
+        "agentic ai",
+        "cost optimization"
+      ],
+      "readingTimeMin": 7,
+      "coverImage": null,
+      "coverKeywords": [
+        "ai",
+        "agent",
+        "llm",
+        "optimization",
+        "aws"
+      ],
+      "isEssay": false
+    },
+    {
+      "date": "2026-06-18",
+      "slug": "2026-06-18-aws-devops-agent-ai-code-review-tradeoff",
+      "title": "AWS DevOps Agent: Review Code Sinh Bởi AI Trước Release – Trade-off Thực Tế",
+      "excerpt": "AWS DevOps Agent thêm review và test tự động cho code sinh bởi AI. Phân tích giá trị và trade-off áp dụng vào pipeline release thực tế.",
+      "tags": [
+        "ai code review",
+        "devops agent",
+        "aws",
+        "ai-agent",
+        "release management",
+        "productivity",
+        "code quality"
+      ],
+      "readingTimeMin": 8,
+      "coverImage": null,
+      "coverKeywords": [
+        "ai",
+        "devops",
+        "aws",
+        "code-review",
+        "agent"
+      ],
+      "isEssay": false
+    },
     {
       "date": "2026-06-15",
       "slug": "2026-06-15-xay-ai-agent-production-dang-tin-cay-grounding-va-trade-off",
@@ -19,7 +69,7 @@
         "llm optimization"
       ],
       "readingTimeMin": 8,
-      "coverImage": null,
+      "coverImage": "/images/blog/2026-06-15-xay-ai-agent-production-dang-tin-cay-grounding-va-trade-off.png",
       "coverKeywords": [
         "ai agent production",
         "grounded agents",
@@ -147,6 +197,30 @@
     }
   ],
   "newsIndex": [
+    {
+      "date": "2026-06-19",
+      "newsCount": 5,
+      "financeCount": 3,
+      "topTags": [
+        "open-source",
+        "llm",
+        "agentic",
+        "coding",
+        "inference"
+      ]
+    },
+    {
+      "date": "2026-06-18",
+      "newsCount": 5,
+      "financeCount": 4,
+      "topTags": [
+        "fintech",
+        "funding",
+        "local-ai",
+        "nvidia",
+        "ai"
+      ]
+    },
     {
       "date": "2026-06-15",
       "newsCount": 5,
