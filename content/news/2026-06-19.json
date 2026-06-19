@@ -111,69 +111,75 @@
       {
         "type": "comparison",
         "id": "selfhost-vs-managed",
-        "left": {
-          "title": "Tự host open-source",
-          "points": [
-            "Full control data & model",
-            "Chi phí cố định (infra) thay vì per-token",
-            "Cần ops, eval, update liên tục"
-          ]
-        },
-        "right": {
-          "title": "Managed API (Claude/Bedrock)",
-          "points": [
-            "Dễ scale, ít maintenance",
-            "Chi phí biến đổi theo usage",
-            "Ít control, vendor lock và data policy"
-          ]
+        "comparison": {
+          "left": {
+            "title": "Tự host open-source",
+            "points": [
+              "Full control data & model",
+              "Chi phí cố định (infra) thay vì per-token",
+              "Cần ops, eval, update liên tục"
+            ]
+          },
+          "right": {
+            "title": "Managed API (Claude/Bedrock)",
+            "points": [
+              "Dễ scale, ít maintenance",
+              "Chi phí biến đổi theo usage",
+              "Ít control, vendor lock và data policy"
+            ]
+          }
         }
       },
       {
         "type": "chart",
         "id": "long-ctx-efficiency",
         "caption": "Gains reported cho long-context inference ở một số OSS frontier 2026 (so với thế hệ trước)",
-        "variant": "bar",
-        "unit": "x",
-        "data": [
-          {
-            "label": "MiniMax decode",
-            "value": 15
-          },
-          {
-            "label": "MiniMax prefill",
-            "value": 9
-          },
-          {
-            "label": "GLM IndexShare compute",
-            "value": 2.9
-          }
-        ]
+        "chart": {
+          "variant": "bar",
+          "unit": "x",
+          "data": [
+            {
+              "label": "MiniMax decode",
+              "value": 15
+            },
+            {
+              "label": "MiniMax prefill",
+              "value": 9
+            },
+            {
+              "label": "GLM IndexShare compute",
+              "value": 2.9
+            }
+          ]
+        }
       },
       {
         "type": "flow",
         "id": "decision-flow",
-        "steps": [
-          {
-            "label": "1. Định nghĩa",
-            "desc": "Use case, volume, latency, compliance, privacy req"
-          },
-          {
-            "label": "2. Prototype",
-            "desc": "Dùng managed + grounding, đo end-to-end cost & error"
-          },
-          {
-            "label": "3. TCO estimate",
-            "desc": "Tính infra + eng time + risk cho self-host"
-          },
-          {
-            "label": "4. Pilot",
-            "desc": "Self-host subset traffic với eval harness đầy đủ"
-          },
-          {
-            "label": "5. Decide",
-            "desc": "Migrate dần nếu TCO + reliability vượt trội"
-          }
-        ]
+        "flow": {
+          "steps": [
+            {
+              "label": "1. Định nghĩa",
+              "desc": "Use case, volume, latency, compliance, privacy req"
+            },
+            {
+              "label": "2. Prototype",
+              "desc": "Dùng managed + grounding, đo end-to-end cost & error"
+            },
+            {
+              "label": "3. TCO estimate",
+              "desc": "Tính infra + eng time + risk cho self-host"
+            },
+            {
+              "label": "4. Pilot",
+              "desc": "Self-host subset traffic với eval harness đầy đủ"
+            },
+            {
+              "label": "5. Decide",
+              "desc": "Migrate dần nếu TCO + reliability vượt trội"
+            }
+          ]
+        }
       },
       {
         "type": "callout",
@@ -231,8 +237,8 @@
     "skills": [
       "Agentic workflow design & tool-use",
       "LLM inference optimization and cost control",
-      "AWS Bedrock, Lambda, EventBridge, SQS agent architectures",
-      "Grounding, RAG and reliability patterns for production"
+      "AWS Bedrock & SQS agentic architectures",
+      "Grounding & RAG for production agents"
     ],
     "highlights": [
       "Thiết kế multi-step AI agent với tool use, memory management và grounding để tăng độ tin cậy trong workflow phức tạp.",

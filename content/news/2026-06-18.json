@@ -68,48 +68,52 @@
       {
         "type": "comparison",
         "id": "manual-vs-agent",
-        "left": {
-          "title": "Review thủ công truyền thống",
-          "points": [
-            "Dựa vào reviewer có kinh nghiệm",
-            "Dễ bỏ sót khi mệt hoặc volume cao",
-            "Không scale theo tốc độ AI code gen"
-          ]
-        },
-        "right": {
-          "title": "Với DevOps Agent hỗ trợ",
-          "points": [
-            "Check chuẩn + dependency tự động",
-            "Test plan sinh động cho thay đổi cụ thể",
-            "Cần human vẫn giữ gate quyết định cuối"
-          ]
+        "comparison": {
+          "left": {
+            "title": "Review thủ công truyền thống",
+            "points": [
+              "Dựa vào reviewer có kinh nghiệm",
+              "Dễ bỏ sót khi mệt hoặc volume cao",
+              "Không scale theo tốc độ AI code gen"
+            ]
+          },
+          "right": {
+            "title": "Với DevOps Agent hỗ trợ",
+            "points": [
+              "Check chuẩn + dependency tự động",
+              "Test plan sinh động cho thay đổi cụ thể",
+              "Cần human vẫn giữ gate quyết định cuối"
+            ]
+          }
         }
       },
       {
         "type": "flow",
         "id": "review-flow",
-        "steps": [
-          {
-            "label": "Trigger",
-            "desc": "PR hoặc chat/IDE yêu cầu review"
-          },
-          {
-            "label": "Analyze",
-            "desc": "Agent đọc code + dependency graph + chuẩn"
-          },
-          {
-            "label": "Test",
-            "desc": "Sinh + chạy test trong env giống prod"
-          },
-          {
-            "label": "Report",
-            "desc": "BLOCK / Caution / Safe + evidence chi tiết"
-          },
-          {
-            "label": "Human gate",
-            "desc": "Engineer quyết định merge/release"
-          }
-        ]
+        "flow": {
+          "steps": [
+            {
+              "label": "Trigger",
+              "desc": "PR hoặc chat/IDE yêu cầu review"
+            },
+            {
+              "label": "Analyze",
+              "desc": "Agent đọc code + dependency graph + chuẩn"
+            },
+            {
+              "label": "Test",
+              "desc": "Sinh + chạy test trong env giống prod"
+            },
+            {
+              "label": "Report",
+              "desc": "BLOCK / Caution / Safe + evidence chi tiết"
+            },
+            {
+              "label": "Human gate",
+              "desc": "Engineer quyết định merge/release"
+            }
+          ]
+        }
       },
       {
         "type": "callout",
