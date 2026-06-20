@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import SiteBackground from '../components/SiteBackground.astro';
 import { getProfile } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
   title?: string;
@@ -18,8 +19,12 @@ interface Props {
   articleMeta?: { publishedTime?: string; tags?: string[] };
   /** Nền động global (constellation). Tắt ở trang có nền riêng (vd /journey starfield). */
   animatedBg?: boolean;
+  /** Thêm <meta name="robots" content="noindex"> — dùng cho trang locale chưa có bản dịch thật. */
+  noindex?: boolean;
+  /** Locale có nội dung thật. Nếu set, chỉ emit hreflang cho các locale này. Mặc định: all. */
+  availableLocales?: Lang[];
 }
-const { title, description, image, schema, ogType = 'website', articleMeta, animatedBg = true } = Astro.props;
+const { title, description, image, schema, ogType = 'website', articleMeta, animatedBg = true, noindex = false, availableLocales } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const profile = getProfile(lang);
@@ -68,11 +73,6 @@ const websiteLd = {
   '@type': 'WebSite',
   name: id.nameEn,
   url: `${siteOrigin}/`,
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: { '@type': 'EntryPoint', urlTemplate: `${siteOrigin}/blog?q={search_term_string}` },
-    'query-input': 'required name=search_term_string',
-  },
 };
 const jsonLdBlocks = [personLd, websiteLd, ...(Array.isArray(schema) ? schema : schema ? [schema] : [])];
 
@@ -102,6 +102,7 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     <meta name="description" content={desc} />
     <meta name="author" content={profile.identity.nameEn} />
     <meta name="theme-color" content="#0b0907" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     {basePath === '/' && (
       <link rel="preload" as="image" href="/images/hero-astronaut.webp" fetchpriority="high" />
     )}
@@ -109,10 +110,10 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Tektur:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={altEn} />
-    <link rel="alternate" hreflang="vi" href={altVi} />
-    <link rel="alternate" hreflang="ja" href={altJa} />
-    <link rel="alternate" hreflang="x-default" href={altEn} />
+    {(!availableLocales || availableLocales.includes('en')) && <link rel="alternate" hreflang="en" href={altEn} />}
+    {(!availableLocales || availableLocales.includes('vi')) && <link rel="alternate" hreflang="vi" href={altVi} />}
+    {(!availableLocales || availableLocales.includes('ja')) && <link rel="alternate" hreflang="ja" href={altJa} />}
+    <link rel="alternate" hreflang="x-default" href={availableLocales?.includes('vi') && !availableLocales?.includes('en') ? altVi : altEn} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
     <meta property="og:type" content={ogType} />
@@ -124,8 +125,8 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     ))}
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="720" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content={profile.identity.nameEn} />
     <meta property="og:locale" content={ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />

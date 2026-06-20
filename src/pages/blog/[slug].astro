@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getAllPosts, getAllSlugs, getPostBySlug, getProfile } from '../../lib/content';
+import { getAllPosts, getAllSlugs, getPostBySlug, getPostNativeLocales, getProfile } from '../../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../../i18n/ui';
 import BlogCoverVisual from '../../components/BlogCoverVisual.astro';
 import ContentBlocks from '../../components/blog/ContentBlocks.astro';
@@ -21,20 +21,30 @@ const sections = (rawSections.length ? rawSections : [md]).map((s) => marked.par
 const blocks = post.blocks ?? [];
 
 const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
-const postUrl = `${siteOrigin}/blog/${post.slug}/`;
+// Locale-aware URL — matches canonical (no trailing slash)
+const postPath = localizedPath(`/blog/${post.slug}`, lang);
+const postUrl = `${siteOrigin}${postPath}`;
 const postImage = post.coverImage
   ? (post.coverImage.startsWith('http') ? post.coverImage : `${siteOrigin}${post.coverImage}`)
   : `${siteOrigin}/images/hero-astronaut.webp`;
+
+// Locales that have real translated content (not VI fallback)
+const nativeLocales = getPostNativeLocales(post.slug);
+const isTranslated = nativeLocales.includes(lang);
+// inLanguage reflects actual content language (VI is source; only change if translated variant exists)
+const contentLang = lang === 'vi' ? 'vi' : nativeLocales.includes(lang) ? (lang === 'ja' ? 'ja' : 'en') : 'vi';
+// ISO 8601 date string for schema (date field is YYYY-MM-DD)
+const isoDate = post.date ? `${post.date}T00:00:00+07:00` : undefined;
 
 const blogLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: post.title,
   description: post.excerpt,
-  datePublished: post.date,
-  dateModified: post.date,
+  datePublished: isoDate,
+  dateModified: isoDate,
   keywords: (post.tags ?? []).join(', '),
-  inLanguage: lang === 'vi' ? 'vi' : lang === 'ja' ? 'ja' : 'en',
+  inLanguage: contentLang,
   image: postImage,
   url: postUrl,
   author: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
@@ -55,7 +65,9 @@ const aiPlaceholder = lang === 'vi' ? 'Hỏi về bài viết này…' : lang ==
   image={post.coverImage ?? undefined}
   schema={blogLd}
   ogType="article"
-  articleMeta={{ publishedTime: post.date, tags: post.tags ?? [] }}
+  articleMeta={{ publishedTime: isoDate, tags: post.tags ?? [] }}
+  noindex={!isTranslated}
+  availableLocales={nativeLocales}
 >
   <div class="read-progress" id="read-progress"></div>
 

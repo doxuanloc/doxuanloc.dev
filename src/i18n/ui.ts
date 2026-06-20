@@ -107,6 +107,7 @@ export const ui = {
     // Blog
     "blog.eyebrow": "Writing · auto-updated",
     "blog.title": "Blog",
+    "blog.description": "{n} posts on production systems, AI agents, architecture, and cost optimisation — written and auto-updated daily.",
     "blog.sub":
       "{n} posts — written by Grok with focus on production systems, architecture, and AI integration.",
     "blog.empty":
@@ -229,6 +230,7 @@ export const ui = {
 
     "blog.eyebrow": "Viết lách · tự cập nhật",
     "blog.title": "Blog",
+    "blog.description": "{n} bài viết về hệ thống production, AI agent, kiến trúc và tối ưu chi phí — được Grok tạo và cập nhật mỗi ngày.",
     "blog.sub":
       "{n} bài viết — được Grok tạo ra mỗi ngày với trọng tâm là hệ thống production, kiến trúc và tích hợp AI.",
     "blog.empty": "Chưa có bài viết. Pipeline sẽ tự động sinh bài đầu tiên.",
@@ -345,6 +347,7 @@ export const ui = {
 
     "blog.eyebrow": "執筆 · 毎日自動更新",
     "blog.title": "ブログ",
+    "blog.description": "{n}件の記事 — 生産システム、AIエージェント、アーキテクチャ、コスト最適化について。毎日自動更新。",
     "blog.sub":
       "{n}件の記事 — Grokが毎日生成し、生産システム、アーキテクチャ、AI統合に焦点を当てています。",
     "blog.empty":

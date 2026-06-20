@@ -8,7 +8,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const posts = getBlogListing();
 ---
-<Base title={t('blog.title')} description={t('blog.title')}>
+<Base title={t('blog.title')} description={t('blog.description', { n: posts.length })}>
   <section class="blog-section">
     <div class="container blog-layout">
       <div data-reveal>

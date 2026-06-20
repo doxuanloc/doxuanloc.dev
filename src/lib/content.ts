@@ -230,6 +230,33 @@ export function getAllFinanceNews(): (FinanceNewsItem & { date: string })[] {
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
+/** Trả về danh sách locale có nội dung THẬT (không phải fallback VI) cho slug đó.
+ *  Dùng cho hreflang integrity và noindex decision ở [slug].astro. */
+export function getPostNativeLocales(slug: string): Lang[] {
+  // Check daily content
+  for (const m of Object.values(dailyModules)) {
+    const d: any = (m as any).default ?? m;
+    if (!isDaily(d)) continue;
+    if (d.blog?.slug === slug) {
+      const locales: Lang[] = ['vi'];
+      if ((d as any)['blog.en']?.slug) locales.push('en');
+      if ((d as any)['blog.ja']?.slug) locales.push('ja');
+      return locales;
+    }
+  }
+  // Check essays
+  for (const m of Object.values(essayModules)) {
+    const e: any = (m as any).default ?? m;
+    if (e?.blog?.slug === slug) {
+      const locales: Lang[] = ['vi'];
+      if ((e as any)['blog.en']?.slug) locales.push('en');
+      if ((e as any)['blog.ja']?.slug) locales.push('ja');
+      return locales;
+    }
+  }
+  return ['vi'];
+}
+
 /** expUpdate gần nhất (nếu có) để show trên trang Experience. */
 export function getLatestExpUpdate() {
   for (const d of getDailyContent()) {
