@@ -7,8 +7,30 @@ import BlogCoverVisual from '../../components/BlogCoverVisual.astro';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const posts = getBlogListing();
+
+const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
+const blogPath = localizedPath('/blog', lang);
+const blogUrl = `${siteOrigin}${blogPath}`;
+
+const collectionLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `Blog — Do Xuan Loc`,
+  description: t('blog.description', { n: posts.length }),
+  url: blogUrl,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: posts.length,
+    itemListElement: posts.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${siteOrigin}${localizedPath(`/blog/${p.slug}`, lang)}`,
+      name: p.title,
+    })),
+  },
+};
 ---
-<Base title={t('blog.title')} description={t('blog.description', { n: posts.length })}>
+<Base title={t('blog.title')} description={t('blog.description', { n: posts.length })} schema={collectionLd}>
   <section class="blog-section">
     <div class="container blog-layout">
       <div data-reveal>
@@ -30,7 +52,7 @@ const posts = getBlogListing();
             >
               <span class="je-dot" aria-hidden="true"></span>
               <time class="je-date mono" datetime={p.date}>{p.date}</time>
-              <BlogCoverVisual slug={p.slug} coverKeywords={p.coverKeywords} coverImage={p.coverImage} size="thumb" class="je-thumb" />
+              <BlogCoverVisual slug={p.slug} coverKeywords={p.coverKeywords} coverImage={p.coverImage} alt={p.title} size="thumb" class="je-thumb" />
               <div class="je-body">
                 <div class="je-title">{p.title}</div>
                 <p class="je-excerpt">{p.excerpt}</p>

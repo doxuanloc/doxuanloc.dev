@@ -48,8 +48,24 @@ const blogLd = {
   image: postImage,
   url: postUrl,
   author: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
-  publisher: { '@type': 'Person', name: profile.identity.name, url: `${siteOrigin}/` },
+  publisher: {
+    '@type': 'Organization',
+    name: profile.identity.nameEn,
+    url: `${siteOrigin}/`,
+    logo: { '@type': 'ImageObject', url: `${siteOrigin}/favicon-512.png`, width: 512, height: 512 },
+  },
   mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+};
+
+const blogListPath = localizedPath('/blog', lang);
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: lang === 'vi' ? 'Trang chủ' : 'Home', item: `${siteOrigin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteOrigin}${blogListPath}` },
+    { '@type': 'ListItem', position: 3, name: post.title, item: postUrl },
+  ],
 };
 
 const aiPrompts = lang === 'vi'
@@ -63,7 +79,7 @@ const aiPlaceholder = lang === 'vi' ? 'Hỏi về bài viết này…' : lang ==
   title={post.title}
   description={post.excerpt}
   image={post.coverImage ?? undefined}
-  schema={blogLd}
+  schema={[blogLd, breadcrumbLd]}
   ogType="article"
   articleMeta={{ publishedTime: isoDate, tags: post.tags ?? [] }}
   noindex={!isTranslated}
@@ -80,7 +96,7 @@ const aiPlaceholder = lang === 'vi' ? 'Hỏi về bài viết này…' : lang ==
       </a>
 
       {/* Cover visual */}
-      <BlogCoverVisual slug={post.slug} coverKeywords={post.coverKeywords} coverImage={post.coverImage} size="header" />
+      <BlogCoverVisual slug={post.slug} coverKeywords={post.coverKeywords} coverImage={post.coverImage} alt={post.title} size="header" />
 
       {/* Article header */}
       <header class="article-header" data-reveal>

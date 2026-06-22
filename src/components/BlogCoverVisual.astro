@@ -8,11 +8,13 @@ interface Props {
   slug: string;
   coverKeywords?: string[];
   coverImage?: string | null;
+  /** Alt text for the cover image when coverImage is set. Omit for decorative-only. */
+  alt?: string;
   size?: 'thumb' | 'header';
   class?: string;
 }
 
-const { slug, coverKeywords = [], coverImage, size = 'thumb', class: cls = '' } = Astro.props;
+const { slug, coverKeywords = [], coverImage, alt = '', size = 'thumb', class: cls = '' } = Astro.props;
 
 // Deterministic hash from slug → drives visual variation
 function hashStr(s: string): number {
@@ -36,11 +38,11 @@ const kw = coverKeywords[0] ?? '';
 
 <div
   class:list={['bcv', `bcv--${size}`, `bcv--c${combo}`, cls]}
-  aria-hidden="true"
+  aria-hidden={coverImage ? undefined : "true"}
   style={`--angle:${angle}deg;--r1:${r1}%;--r2:${r2}%;--ox:${orbX}%;--oy:${orbY}%`}
 >
   {coverImage ? (
-    <img src={coverImage} alt="" loading="lazy" decoding="async" class="bcv-img" />
+    <img src={coverImage} alt={alt} loading="lazy" decoding="async" class="bcv-img" />
   ) : (
     <>
       <span class="bcv-grid"></span>

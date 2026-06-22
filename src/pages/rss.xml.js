@@ -28,6 +28,6 @@ export function GET(context) {
     description: profile.summary,
     site,
     items,
-    customData: `<language>vi</language>`,
+    customData: `<language>vi</language><managingEditor>${profile.identity.email} (${profile.identity.nameEn})</managingEditor>`,
   });
 }
