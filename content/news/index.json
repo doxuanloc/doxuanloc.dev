@@ -1,8 +1,33 @@
 {
-  "updatedAt": "2026-06-19",
-  "totalDays": 13,
+  "updatedAt": "2026-06-22",
+  "totalDays": 14,
   "totalEssays": 2,
   "posts": [
+    {
+      "date": "2026-06-22",
+      "slug": "2026-06-22-su-that-ai-training-chi-chiem-2-phan-tram",
+      "title": "Sự Thật Ít Ai Nói Về AI: Huấn Luyện Model Chỉ Chiếm 2% Công Việc ML",
+      "excerpt": "Nhiều người nghĩ làm AI chủ yếu là train model trên GPU. Thực tế huấn luyện chỉ ~2% — phần lớn thời gian nằm ở ontology, data cleaning và evaluation ML.",
+      "tags": [
+        "machine learning",
+        "ml ontology",
+        "data cleaning",
+        "ml evaluation",
+        "mlops",
+        "ai engineering",
+        "training data"
+      ],
+      "readingTimeMin": 4,
+      "coverImage": null,
+      "coverKeywords": [
+        "ontology",
+        "data cleaning",
+        "ml evaluation",
+        "gpu myth",
+        "ground truth"
+      ],
+      "isEssay": false
+    },
     {
       "date": "2026-06-19",
       "slug": "2026-06-19-tu-host-open-source-llm-cho-ai-agent-trade-off",
@@ -18,7 +43,7 @@
         "cost optimization"
       ],
       "readingTimeMin": 7,
-      "coverImage": null,
+      "coverImage": "/images/blog/2026-06-19-tu-host-open-source-llm-cho-ai-agent-trade-off.png",
       "coverKeywords": [
         "ai",
         "agent",
@@ -197,6 +222,18 @@
     }
   ],
   "newsIndex": [
+    {
+      "date": "2026-06-22",
+      "newsCount": 6,
+      "financeCount": 4,
+      "topTags": [
+        "security",
+        "anthropic",
+        "ai",
+        "gold",
+        "macro"
+      ]
+    },
     {
       "date": "2026-06-19",
       "newsCount": 5,

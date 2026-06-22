@@ -1,0 +1,281 @@
+{
+  "date": "2026-06-22",
+  "generatedBy": "Grok content-engine",
+  "version": 1,
+  "news": [
+    {
+      "title": "MosaicLeaks: Deep-research agent lộ dữ liệu nội bộ qua web query log",
+      "summary": "ServiceNow công bố MosaicLeaks: deep-research agent kết hợp tài liệu nội bộ + web search dễ lộ thông tin qua log truy vấn — hiệu ứng mosaic. Train chỉ tăng accuracy làm leakage tăng 34%→51.7%; PA-DR giảm xuống 9.9%. Góc nhìn: Prompt 'đừng leak' gần như vô dụng — query observability và privacy-aware training là security primitive, không phải add-on.",
+      "source": "https://huggingface.co/blog/ServiceNow/mosaicleaks",
+      "tags": [
+        "ai agent",
+        "privacy",
+        "rag",
+        "security",
+        "deep-research"
+      ],
+      "importance": 5
+    },
+    {
+      "title": "Nobel laureate John Jumper rời DeepMind sang Anthropic",
+      "summary": "Nobel Hóa học John Jumper rời Google DeepMind sang Anthropic sau gần 9 năm dẫn AlphaFold. Bloomberg cho biết ông tham gia nhóm coding tools Google khó bán enterprise; tuần này Noam Shazeer cũng rời sang OpenAI. Góc nhìn: Cuộc chiến nhân tài AI đang dịch từ model sang agent/coding stack — build-vs-buy API càng khó khi top researcher chuyển camp.",
+      "source": "https://techcrunch.com/2026/06/20/nobel-laureate-john-jumper-is-leaving-deepmind-for-rival-anthropic/",
+      "tags": [
+        "anthropic",
+        "ai talent",
+        "coding",
+        "llm",
+        "openai"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "sqlite-utils 4.0rc1: migrations và nested transactions cho SQLite production",
+      "summary": "sqlite-utils 4.0rc1 (21/6): migrations tích hợp sqlite-migrate, db.atomic() nested transaction, breaking changes upsert/view API. Simon Willison kêu gọi test trước stable. Góc nhìn: Tooling SQLite production-grade giúp agent/RAG lưu state nhẹ mà không phụ thuộc DB nặng — đúng hướng cho pipeline dữ liệu nhỏ, idempotent.",
+      "source": "https://simonwillison.net/2026/Jun/21/sqlite-utils-40rc1/",
+      "tags": [
+        "sqlite",
+        "python",
+        "developer-tools",
+        "migrations",
+        "data"
+      ],
+      "importance": 3
+    },
+    {
+      "title": "iOS 27: Apple Intelligence nhúng vào workflow thực, không chỉ Siri chat",
+      "summary": "iOS 27 nhúng Apple Intelligence vào app sẵn có: chia bill qua ảnh hóa đơn, tự đổi password bị breach, gợi ý Messages/Calendar, vibe-coding Shortcuts. Siri AI vẫn headline nhưng giá trị thực nằm ở tác vụ ngầm on-device. Góc nhìn: Consumer AI thắng bằng workflow nhỏ, không chatbot — lesson cho B2B agent: giảm friction, không thêm UI.",
+      "source": "https://techcrunch.com/2026/06/21/beyond-siri-here-are-the-practical-ai-features-coming-to-your-iphone-in-ios-27/",
+      "tags": [
+        "apple",
+        "ios",
+        "ai",
+        "productivity",
+        "on-device"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "Robotaxi index: Baidu dẫn đầu, Waymo recall 4000 xe vì construction zone",
+      "summary": "Autnmy AI Road to Autonomy Index: Baidu Apollo Go dẫn robotaxi, Waymo #2, Pony.ai/WeRide tiếp theo; cập nhật 12h từ dữ liệu công khai. Đồng thời Waymo recall ~4000 xe vì lao vào khu construction highway, fix chưa xong. Góc nhìn: Bảng xếp hạng scale ≠ safety — mở rộng nhanh mà edge case chưa fix là rủi ro vận hành thật.",
+      "source": "https://techcrunch.com/2026/06/21/techcrunch-mobility-a-new-robotaxi-scorecard-shows-chinas-dominance/",
+      "tags": [
+        "robotaxi",
+        "autonomous",
+        "waymo",
+        "china",
+        "safety"
+      ],
+      "importance": 4
+    },
+    {
+      "title": "Chính quyền Mỹ buộc Anthropic gỡ Claude Fable 5/Mythos 5 vì export control",
+      "summary": "Chính quyền Mỹ buộc Anthropic gỡ Claude Fable 5/Mythos 5 vì lệnh export control; báo cáo liên quan jailbreak guardrail. Cybersecurity experts ký thư phản đối, cho rằng gỡ model làm yếu phòng thủ mạng. Góc nhìn: Policy và perception đang quyết định model availability nhiều hơn benchmark — team cần multi-vendor fallback, không single-provider.",
+      "source": "https://techcrunch.com/2026/06/21/when-the-trump-administration-cracks-down-on-anthropic-who-benefits/",
+      "tags": [
+        "anthropic",
+        "policy",
+        "claude",
+        "security",
+        "ai"
+      ],
+      "importance": 5
+    }
+  ],
+  "blog": {
+    "slug": "2026-06-22-su-that-ai-training-chi-chiem-2-phan-tram",
+    "title": "Sự Thật Ít Ai Nói Về AI: Huấn Luyện Model Chỉ Chiếm 2% Công Việc ML",
+    "excerpt": "Nhiều người nghĩ làm AI chủ yếu là train model trên GPU. Thực tế huấn luyện chỉ ~2% — phần lớn thời gian nằm ở ontology, data cleaning và evaluation ML.",
+    "contentMarkdown": "## Ảo tưởng GPU và thực tế 2%\n\nKhi nói đến AI hay Machine Learning, đa số người hình dung kỹ sư ngồi trước rack GPU, chỉnh hyperparameter và chờ model thông minh hơn. Media nuôi dưỡng hình ảnh đó — headline luôn nhấn model mới, benchmark mới, chip mới.\n\nNhưng nếu hỏi người làm ML production, câu trả lời khá khác.\n\nTrong giới ML có câu nói nửa đùa nửa thật: **khoảng 50% công việc nằm ở evaluation, 40% ở làm sạch dữ liệu, 8% ở tích hợp hệ thống, còn training chỉ ~2%.** Con số không phải định luật, nhưng phản ánh đúng thứ tự ưu tiên thời gian của đa số đội — đặc biệt sau giai đoạn proof-of-concept.\n\nTraining vẫn quan trọng. Nhưng **phần lớn rủi ro và chi phí nằm ở chỗ khác**, và nhiều team mới đang đầu tư sai chỗ.\n\n## Model không cứu được ontology sai\n\nLý do cốt lõi: **model không học được thứ không có trong data, và không sửa định nghĩa sai từ đầu.**\n\nVí dụ tưởng chừng đơn giản: AI phân loại email spam. Trên slide là binary classification kinh điển. Thực tế, câu hỏi nhân lên:\n\n- Email quảng cáo Shopee có phải spam không?\n- Email khuyến mãi ngân hàng thì sao?\n- User đã opt-in nhận email, còn gọi spam không?\n- Email sếp đính kèm marketing — xếp vào đâu?\n\nTrước khi viết dòng training đầu tiên, con người phải tranh luận và **thống nhất quy tắc**. Tập hợp định nghĩa, ranh giới và quan hệ khái niệm đó gọi là **ontology** — \"cách chúng ta định nghĩa thế giới cho AI\".\n\nOntology sai hoặc không nhất quán, model học từ dữ liệu mâu thuẫn. Không kiến trúc nào suy luận ra đáp án đúng khi ground truth đang tranh cãi với chính mình.\n\n## Mâu thuẫn từ y tế đến xe tự lái\n\nTrong chẩn đoán ung thư, hai bác sĩ nhìn cùng ảnh X-quang: một gắn \"khối u\", một gắn \"bình thường\" — model không biết tin ai. Accuracy lúc đó chỉ đo **mức nhất quán của sự không nhất quán**.\n\nTrong xe tự lái, team phải định nghĩa rõ người đi bộ, xe đạp, xe máy, vật cản. Xe máy đôi khi label \"xe đạp\", đôi khi \"ô tô\" — perception model mạnh vẫn học thế giới mâu thuẫn. Edge case trên đường không phải surprise; là hệ quả ontology lỏng.\n\nĐó là lý do đội ML dành **nhiều thời gian tranh luận ontology**, đánh giá và sửa dữ liệu — thường nhiều hơn `model.fit()`.\n\n## Evaluation và data cleaning — 90% thời gian thực\n\nEvaluation (50%) không chỉ chạy accuracy. Đó là vòng lặp: model sai ở đâu — data noise, label sai, distribution shift, hay định nghĩa lỗi thời? Mỗi lần phân loại lỗi, team quay về sửa ontology hoặc relabel.\n\nData cleaning (40%) không chỉ drop null. Là duplicate gắn nhãn khác nhau, outlier do log sai, bias sampling, leakage train/test. **Dữ liệu \"bẩn\" ở tầng định nghĩa** tốn thời gian nhất.\n\nIntegration (8%) là nơi project thường chết: latency, monitoring drift, fallback khi uncertain, versioning label schema. Training 2% đôi khi ít drama nhất.\n\n## Production không chấm dứt ontology\n\nSau khi model production, nhãn cũ vẫn phải review. Thế giới đổi, hành vi user đổi, \"đúng\" hôm qua có thể sai hôm nay. Email marketing từng OK có thể thành spam theo quy định mới.\n\n**Công ty AI mạnh thường không thắng chỉ nhờ model tốt hơn.** Họ thắng vì data tốt hơn, label nhất quán, và **hiểu bài toán sâu hơn**.\n\n## Kết luận\n\nĐừng chỉ hỏi \"model nào mạnh nhất?\" Hãy hỏi: ontology đã thống nhất chưa? Label disagreement rate bao nhiêu? Evaluation có đo đúng thứ user care không?\n\nPhần khó nhất không nằm ở GPU hay thuật toán. Nó nằm ở câu hỏi tưởng đơn giản: **\"Rốt cuộc, thế nào mới được gọi là đúng?\"**\n\nTrain model dễ nhìn thấy. Định nghĩa \"đúng\" mới quyết định project sống hay chết.",
+    "tags": [
+      "machine learning",
+      "ml ontology",
+      "data cleaning",
+      "ml evaluation",
+      "mlops",
+      "ai engineering",
+      "training data"
+    ],
+    "readingTimeMin": 4,
+    "coverImage": "/images/blog/2026-06-22-su-that-ai-training-chi-chiem-2-phan-tram.png",
+    "coverKeywords": [
+      "ontology",
+      "data cleaning",
+      "ml evaluation",
+      "gpu myth",
+      "ground truth"
+    ],
+    "linkedinPost": "Hầu hết người ngoài ngành tưởng làm AI là ngồi trước hàng nghìn GPU, chờ model thông minh dần.\n\nCâu nói nổi tiếng trong ML: evaluation 50%, data cleaning 40%, integration 8% — training chỉ ~2%.\n\n→ Model không học được thứ không có trong data; ontology sai thì GPU mạnh cũng vô dụng\n→ Bài spam filter đơn giản cũng cần thống nhất: email Shopee, ngân hàng, sếp gửi marketing là gì?\n→ Công ty AI mạnh thắng vì hiểu bài toán và data tốt hơn, không chỉ vì model benchmark cao hơn\n\nPhần khó nhất của AI: trả lời \"thế nào mới được gọi là đúng?\"\n\nChi tiết: https://doxuanloc.space/blog/2026-06-22-su-that-ai-training-chi-chiem-2-phan-tram/\n\n#MachineLearning #DataScience #MLOps #AIEngineering",
+    "tldr": [
+      "Huấn luyện ML chỉ ~2% thời gian thực tế; evaluation 50%, data cleaning 40%, integration 8% — phản ánh đúng thứ tự ưu tiên production.",
+      "Ontology là cách định nghĩa thế giới cho AI; sai hoặc mâu thuẫn thì model mạnh cũng học từ ground truth lỗi.",
+      "Bài spam filter đơn giản cũng cần thống nhất ranh giới: Shopee, ngân hàng, opt-in, email sếp marketing.",
+      "Công ty AI mạnh thắng nhờ data và hiểu bài toán, không chỉ benchmark model; ontology drift cần review sau production.",
+      "Câu hỏi khó nhất: thế nào mới được gọi là đúng? — quyết định project sống hay chết hơn GPU."
+    ],
+    "blocks": [
+      {
+        "type": "chart",
+        "id": "ml-work-breakdown",
+        "caption": "Phân bổ thời gian công việc ML thực tế (meme nội bộ ngành)",
+        "chart": {
+          "variant": "bar",
+          "unit": "%",
+          "data": [
+            {
+              "label": "Evaluation",
+              "value": 50
+            },
+            {
+              "label": "Data cleaning",
+              "value": 40
+            },
+            {
+              "label": "Integration",
+              "value": 8
+            },
+            {
+              "label": "Training",
+              "value": 2
+            }
+          ]
+        }
+      },
+      {
+        "type": "comparison",
+        "id": "gpu-myth-vs-reality",
+        "comparison": {
+          "left": {
+            "title": "Ảo tưởng phổ biến",
+            "points": [
+              "80% thời gian train trên GPU cluster",
+              "Thắng nhờ model benchmark cao hơn",
+              "Vấn đề = chọn architecture đúng",
+              "Ship khi loss curve hội tụ"
+            ]
+          },
+          "right": {
+            "title": "Thực tế production",
+            "points": [
+              "90% thời gian ontology + data + eval",
+              "Thắng nhờ hiểu bài toán và label nhất quán",
+              "Vấn đề = định nghĩa 'đúng' mâu thuẫn",
+              "Ship khi ground truth ổn định"
+            ]
+          }
+        }
+      },
+      {
+        "type": "callout",
+        "id": "ontology-core",
+        "variant": "insight",
+        "title": "Ontology quyết định trần của model",
+        "body": "Model không học được khái niệm không có trong data và không sửa label disagreement. GPU và thuật toán chỉ tối ưu trong không gian định nghĩa đã thống nhất — ontology sai thì mọi metric chỉ đo mức nhất quán của sự mâu thuẫn."
+      },
+      {
+        "type": "flow",
+        "id": "ml-workflow-real",
+        "flow": {
+          "steps": [
+            {
+              "label": "Định nghĩa ontology",
+              "desc": "Thống nhất ranh giới, quy tắc label, edge case — trước mọi dòng code"
+            },
+            {
+              "label": "Thu thập & làm sạch",
+              "desc": "Relabel mâu thuẫn, fix bias sampling, loại leakage — ~40% thời gian"
+            },
+            {
+              "label": "Train model",
+              "desc": "Chạy experiment, tune hyperparameter — thường chỉ ~2% tổng effort"
+            },
+            {
+              "label": "Evaluation sâu",
+              "desc": "Phân loại lỗi, quay lại sửa ontology hoặc data — ~50% thời gian"
+            },
+            {
+              "label": "Integrate & monitor",
+              "desc": "Deploy, drift monitoring, review label schema khi thế giới đổi"
+            }
+          ]
+        }
+      }
+    ],
+    "interactiveBlock": "<div style=\"--bg:#04060e;--teal:#2dd4bf;--blue:#38bdf8;--purple:#a78bfa;--text:#e2e8f0;--muted:#94a3b8;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);border:1px solid rgba(45,212,191,.15);border-radius:12px;padding:20px 24px;max-width:640px;margin:0 auto;color:var(--text)\"><style>@keyframes ml-bar-grow{from{width:0;opacity:0}to{opacity:1}}@keyframes ml-fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.ml-bar-fill,.ml-row{animation:none!important;opacity:1!important;width:var(--w)!important;transform:none!important}}.ml-title{animation:ml-fade-in .5s ease both}.ml-row{animation:ml-fade-in .5s ease both}.ml-bar-fill{animation:ml-bar-grow .9s cubic-bezier(.22,1,.36,1) both}</style><p class=\"ml-title\" style=\"margin:0 0 4px;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--teal)\">ML Work Breakdown</p><p style=\"margin:0 0 18px;font-size:12px;color:var(--muted)\">Thời gian thực tế — training chỉ 2%</p><div class=\"ml-row\" style=\"animation-delay:.1s;margin-bottom:14px\"><div style=\"display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px\"><span>Evaluation</span><span style=\"color:var(--teal);font-weight:600\">50%</span></div><div style=\"height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden\"><div class=\"ml-bar-fill\" style=\"--w:50%;width:50%;height:100%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:5px;animation-delay:.15s\"></div></div></div><div class=\"ml-row\" style=\"animation-delay:.2s;margin-bottom:14px\"><div style=\"display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px\"><span>Data cleaning</span><span style=\"color:var(--blue);font-weight:600\">40%</span></div><div style=\"height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden\"><div class=\"ml-bar-fill\" style=\"--w:40%;width:40%;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:5px;animation-delay:.25s\"></div></div></div><div class=\"ml-row\" style=\"animation-delay:.3s;margin-bottom:14px\"><div style=\"display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px\"><span>Integration</span><span style=\"color:var(--purple);font-weight:600\">8%</span></div><div style=\"height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden\"><div class=\"ml-bar-fill\" style=\"--w:8%;width:8%;height:100%;background:var(--purple);border-radius:5px;animation-delay:.35s\"></div></div></div><div class=\"ml-row\" style=\"animation-delay:.4s\"><div style=\"display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px\"><span>Training</span><span style=\"color:#f472b6;font-weight:600\">2%</span></div><div style=\"height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden\"><div class=\"ml-bar-fill\" style=\"--w:2%;width:2%;min-width:4px;height:100%;background:linear-gradient(90deg,#f472b6,var(--purple));border-radius:5px;animation-delay:.45s\"></div></div></div><p style=\"margin:16px 0 0;font-size:11px;color:var(--muted);text-align:center\">GPU flashy — ontology &amp; data là phần lớn công việc thực</p></div>"
+  },
+  "financeNews": [
+    {
+      "title": "Bitcoin phục hồi trên $65.000 sau dip dưới $60.000 đầu tháng 6",
+      "summary": "Bitcoin phục hồi trên $65.000 sau khi chạm dưới $60.000 đầu tháng 6, nhờ hỗ trợ kỹ thuật và nhu cầu tổ chức/ETF (~6% supply). Corporate treasury và sovereign holdings (~2,5% supply) tăng. Góc nhìn: Dip-buy vẫn hoạt động nhưng Fed hawkish và ETF outflow khiến biến động cao — builder fintech/crypto nên thiết kế cash-flow, không all-in narrative.",
+      "source": "https://www.fxleaders.com/news/2026/06/21/bitcoin-attempts-a-comeback-as-corporate-treasury-adoption-and-btc-sovereign-interest-deepen/",
+      "tags": [
+        "bitcoin",
+        "crypto",
+        "etf",
+        "treasury"
+      ],
+      "importance": 4,
+      "category": "crypto"
+    },
+    {
+      "title": "Goldman Sachs hạ dự báo vàng 2026 từ $5.400 xuống $4.900/oz",
+      "summary": "Goldman Sachs hạ dự báo vàng cuối 2026 từ $5.400 xuống $4.900/oz, vì Fed có thể không cắt lãi suất năm nay và ETF vàng thiếu dòng mua phương Tây. CPI tháng 5 ở 4,2%. Góc nhìn: Opportunity cost của vàng tăng khi Treasury yield hấp dẫn — macro hawkish ảnh hưởng trực tiếp risk appetite cho tech/AI capex.",
+      "source": "https://www.fxleaders.com/news/2026/06/21/goldman-sachs-cuts-2026-gold-forecast-to-4900-oz-from-5400/",
+      "tags": [
+        "gold",
+        "macro",
+        "fed",
+        "inflation"
+      ],
+      "importance": 4,
+      "category": "macro"
+    },
+    {
+      "title": "Tuần earnings 22/6: Micron, FedEx, Jefferies — MU là tâm điểm AI memory",
+      "summary": "Tuần earnings 22/6: Micron (MU) báo cáo sau giờ, thị trường theo dõi giá memory và nhu cầu data center AI; FedEx, Jefferies, Levi Strauss, BlackBerry cũng công bố. Micron cap ~$1,28T. Góc nhìn: MU guidance là proxy nhu cầu AI infra thực — engineer theo dõi để calibrate cost GPU/memory, không chỉ tin headline chip mới.",
+      "source": "https://www.fxleaders.com/news/2026/06/21/forex-signals-june-22-micron-mu-fedex-jef-levi-and-blackberry-earnings-preview/",
+      "tags": [
+        "micron",
+        "earnings",
+        "nasdaq",
+        "ai-infra"
+      ],
+      "importance": 5,
+      "category": "market"
+    },
+    {
+      "title": "Vàng chịu áp lực hawkish Fed, thử vùng hỗ trợ $4.000",
+      "summary": "Vàng giảm gần $100/tuần khi USD mạnh và yield tăng sau Fed giữ lãi suất 3,5-3,75% nhưng dot plot gợi ý có thể hike 2026. Vàng vẫn trên vùng hỗ trợ $4.000. Góc nhìn: Safe-haven xoay theo geopolitics nhanh — team sản phẩm global cần hedge FX/rate scenario, không assume risk-on liên tục.",
+      "source": "https://www.fxleaders.com/news/2026/06/21/gold-heads-to-4000-on-hawkish-fed-breakdown-or-rebound/",
+      "tags": [
+        "gold",
+        "fed",
+        "macro",
+        "safe-haven"
+      ],
+      "importance": 3,
+      "category": "macro"
+    }
+  ],
+  "expUpdate": {
+    "summary": "Tập trung thiết kế agent production với query governance, privacy-aware eval và event-driven orchestration trên AWS cho workload AI có web retrieval.",
+    "skills": [
+      "Agent query governance & privacy eval",
+      "Deep-research agent architecture",
+      "AWS Bedrock AgentCore integration",
+      "Event-driven agent orchestration"
+    ],
+    "highlights": [
+      "Thiết kế pipeline deep-research agent với privacy gate ở bước Plan, log outbound query và eval leakage song song task accuracy.",
+      "Áp dụng pattern RAG + managed web grounding trên AWS Bedrock với policy kiểm soát dữ liệu gửi ra retrieval layer.",
+      "Xây dựng orchestrator event-driven (SQS, Lambda) cho multi-step agent workflow có human-in-the-loop và fail-fast trước side-effect."
+    ]
+  },
+  "linkedin": {
+    "posted": true,
+    "postedAt": "2026-06-22T05:00:41.735Z",
+    "urn": "urn:li:share:7474687787150102528",
+    "hasImage": true,
+    "imageAssetUrn": "urn:li:digitalmediaAsset:D5622AQF6aewAq_uQog"
+  }
+}
