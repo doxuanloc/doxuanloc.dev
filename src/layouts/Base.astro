@@ -50,6 +50,12 @@ const langLinks = [
 const id = profile.identity;
 const sameAs = [id.links?.linkedin, id.links?.github, id.links?.currentPortfolio].filter(Boolean);
 const ogLocale = lang === 'vi' ? 'vi_VN' : lang === 'ja' ? 'ja_JP' : 'en_US';
+// og:locale:alternate — emit alternate locales (excluding current)
+const ogLocaleMap: Record<string, string> = { en: 'en_US', vi: 'vi_VN', ja: 'ja_JP' };
+const ogLocaleAlternates = (availableLocales ?? ['en', 'vi'])
+  .filter(l => l !== lang)
+  .map(l => ogLocaleMap[l])
+  .filter(Boolean);
 const siteOrigin = (Astro.site ?? new URL('https://doxuanloc.space')).toString().replace(/\/$/, '');
 const avatarUrl = `${siteOrigin}/favicon-512.png`;
 const personLd = {
@@ -129,10 +135,12 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content={profile.identity.nameEn} />
     <meta property="og:locale" content={ogLocale} />
+    {ogLocaleAlternates.map(l => <meta property="og:locale:alternate" content={l} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImage} />
+    {id.links?.twitter && <meta name="twitter:creator" content={`@${id.links.twitter.replace(/.*\//, '')}`} />}
     <link rel="alternate" type="application/rss+xml" title={`${profile.identity.nameEn} — Blog & Tech radar`} href="/rss.xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon-512.png" type="image/png" sizes="512x512" />
