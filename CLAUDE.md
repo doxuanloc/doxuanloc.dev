@@ -26,13 +26,7 @@ File `CLAUDE.md` này được **CẢ Claude Code LẪN Grok Build** đọc (Gro
 
 **Handoff loop (liên tục cải tiến):** user nêu vấn đề → Grok đọc repo + soạn spec vào `docs/` → Claude implement → cả 2 ghi `decisions.md` → lặp lại.
 
-**Gọi Grok in-repo** (đọc file thật, KHÔNG nhúng context thủ công):
-```bash
-grok -p "đọc <files>, phân tích/spec <task>" --experimental-memory
-grok -c                       # tiếp tục session gần nhất của repo
-# KHÔNG dùng --tools: bug Grok 0.2.45 — --tools gây crash agent config conflict
-# Headless (từ Claude Code): thêm --output-format plain > /tmp/out.txt 2>/dev/null
-```
+**Grok**: CLI đã bỏ — dùng **prompt-handoff** (Claude soạn block `---GROK PROMPT---` để user paste vào grok.com). Routing đầy đủ ở global `~/.claude/CLAUDE.md`. Web research thường → **Claude WebSearch/WebFetch inline**, không cần Grok.
 
 ## Stack
 - **Framework**: Astro 5, islands architecture, View Transitions
