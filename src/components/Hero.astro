@@ -62,7 +62,13 @@ const caps = lang === 'vi' ? [
         <span class="rule-long"></span>
       </div>
 
-      <p class="hero-tagline" data-reveal style="--reveal-delay:205ms">
+      {id.subtitle && (
+        <p class="hero-subtitle" data-reveal style="--reveal-delay:180ms">
+          <span class="hero-founder-dot" aria-hidden="true"></span>{id.subtitle}
+        </p>
+      )}
+
+      <p class="hero-tagline" data-reveal style="--reveal-delay:220ms">
         {id.tagline}
       </p>
 
@@ -219,6 +225,22 @@ const caps = lang === 'vi' ? [
   .rule-long {
     display: block; flex: 1; height: 1px;
     background: linear-gradient(90deg, rgba(224,112,77,0.32), transparent);
+  }
+
+  /* ── FOUNDER SUBTITLE ───────────────────────────── */
+  .hero-subtitle {
+    display: flex; align-items: center; gap: 9px;
+    margin: 0 0 18px;
+    font-size: clamp(0.92rem, 1.7vw, 1.05rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--accent-2);
+  }
+  .hero-founder-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 8px var(--accent-2);
+    flex-shrink: 0;
   }
 
   /* ── TAGLINE ────────────────────────────────────── */

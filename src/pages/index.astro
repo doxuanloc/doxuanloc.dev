@@ -13,10 +13,12 @@ const latestPosts = getAllPosts().slice(0, 3);
 const latestNews = getAllNews().slice(0, 4);
 const skills = profile.skills as Record<string, string[]>;
 const solves: any[] = profile.solves ?? [];
+const keyFigures: any[] = profile.keyFigures ?? [];
 const journeyLen = (profile.journey ?? []).length;
 const currentFocus = (profile.roadmap ?? []).find((r: any) => r.status === 'in-progress');
 
 const solveAccents = ['#e0704d', '#ebb36b', '#7d8e7c', '#f0b232'];
+const figAccents = ['#f0b232', '#36d6c3', '#e0704d', '#b58cff'];
 
 const skillGroups = [
   { label: 'Frontend',     key: 'frontend',    c: '#ebb36b' },
@@ -54,6 +56,22 @@ const activeHubs = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map
       </ul>
     </div>
   </div>
+
+  <!-- ── KEY FIGURES ───────────────────────────── -->
+  {keyFigures.length > 0 && (
+    <section class="section-figures">
+      <div class="container">
+        <div class="figures-band">
+          {keyFigures.map((f, i) => (
+            <div class="figure-cell" data-reveal style={`--fc:${figAccents[i % figAccents.length]}; --reveal-delay:${i * 70}ms`}>
+              <span class="figure-val">{f.value}</span>
+              <span class="figure-label">{f.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- ── PROBLEMS I SOLVE ──────────────────────── -->
   <section class="section-solve">
@@ -291,6 +309,50 @@ const activeHubs = skillGroups.filter(g => (skills[g.key] ?? []).length > 0).map
 </Base>
 
 <style>
+  /* ── KEY FIGURES BAND ──────────────────── */
+  .section-figures { padding: 44px 0 8px; }
+  .figures-band {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .figure-cell {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 24px 22px;
+    background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+    position: relative;
+    transition: background 0.3s var(--ease);
+  }
+  .figure-cell::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--fc);
+    opacity: 0.55; transition: opacity 0.3s var(--ease);
+  }
+  .figure-cell:hover { background: color-mix(in srgb, var(--fc) 7%, var(--bg-card)); }
+  .figure-cell:hover::before { opacity: 1; }
+  .figure-val {
+    font-family: 'Tektur', sans-serif;
+    font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 700; line-height: 1;
+    color: var(--fc);
+    text-shadow: 0 0 22px color-mix(in srgb, var(--fc) 30%, transparent);
+  }
+  .figure-label {
+    font-size: 0.8rem; line-height: 1.4; color: var(--text-dim);
+  }
+  @media (max-width: 760px) {
+    .figures-band { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 400px) {
+    .figures-band { grid-template-columns: 1fr; }
+    .figure-cell { padding: 18px 18px; flex-direction: row; align-items: baseline; gap: 14px; }
+    .figure-val { font-size: 1.8rem; flex: 0 0 auto; min-width: 52px; }
+  }
+
   /* ── MANIFESTO (Primary Directives) ────── */
   .manifesto {
     padding: 72px 0 68px;
