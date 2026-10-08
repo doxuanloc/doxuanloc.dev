@@ -1,79 +1,71 @@
 ---
 import Base from '../layouts/Base.astro';
 import ExperienceCard from '../components/ExperienceCard.astro';
-import { getProfile, getLatestExpUpdate } from '../lib/content';
-import { getLangFromUrl, useTranslations } from '../i18n/ui';
-
+import { getProfile } from '../lib/content';
+import { getPortfolioCopy } from '../lib/portfolio';
+import { getLangFromUrl } from '../i18n/ui';
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const profile = getProfile(lang);
+const portfolio = getPortfolioCopy(lang);
+const copy = portfolio.experience;
 const experience = profile.experience ?? [];
 const personal = profile.personalProjects ?? [];
 const education = profile.education ?? [];
-const expUpdate = getLatestExpUpdate();
 ---
-<Base title={t('exp.title')} description={profile.summary}>
-  <section style="padding-top:56px">
+<Base title={copy.eyebrow} description={copy.summary}>
+  <section class="experience-intro">
     <div class="container">
-      <p class="eyebrow">{t('exp.eyebrow')}</p>
-      <h1 class="section-title" style="font-size:2rem">{t('exp.title')}</h1>
-      <p class="section-sub">{t('exp.sub', { n: profile.identity.yearsExperience })}</p>
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1>{copy.title}</h1>
+      <p class="intro-summary">{copy.summary}</p>
+    </div>
+  </section>
 
-      {expUpdate && (
-        <div class="card" style="border-color:var(--accent-2);margin-bottom:28px">
-          <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
-            <span class="chip accent">Skill snapshot · {expUpdate.date}</span>
-            <span class="muted" style="font-size:.85rem">{t('exp.byGrok')}</span>
-          </div>
-          {expUpdate.summary && <p style="margin:0 0 .6em">{expUpdate.summary}</p>}
-          {expUpdate.skills && expUpdate.skills.length > 0 && (
-            <div class="chips" style="margin-bottom:10px">
-              {expUpdate.skills.map((s: string) => <span class="chip">{s}</span>)}
-            </div>
-          )}
-          {expUpdate.highlights && expUpdate.highlights.length > 0 && (
-            <ul style="margin:0;padding-left:18px;color:#cfd6ea">
-              {expUpdate.highlights.map((h: string) => <li>{h}</li>)}
-            </ul>
-          )}
-        </div>
-      )}
-
-      <div class="grid" style="gap:22px">
-        {experience.map((e: any) => (
-          <ExperienceCard
-            company={e.company}
-            role={e.role}
-            location={e.location}
-            start={e.start}
-            end={e.end}
-            current={e.current}
-            projects={e.projects}
-          />
+  <section class="focus-section">
+    <div class="container focus-layout">
+      <div class="focus-heading">
+        <p class="eyebrow">{copy.focusLabel}</p>
+        <h2>{copy.focusTitle}</h2>
+        <p>{copy.focusSummary}</p>
+      </div>
+      <div class="focus-grid">
+        {portfolio.recentFocus.map((focus, index) => (
+          <article class="focus-item">
+            <span class="focus-index mono" aria-hidden="true">0{index + 1}</span>
+            <h3>{focus.title}</h3>
+            <p>{focus.description}</p>
+          </article>
         ))}
       </div>
     </div>
   </section>
 
+  <section class="career-section">
+    <div class="container">
+      <h2 class="eyebrow">{copy.careerTitle}</h2>
+      <div class="career-timeline">
+        {experience.map((e: any) => <ExperienceCard {...e} />)}
+      </div>
+    </div>
+  </section>
+
   {personal.length > 0 && (
-    <section style="padding-top:0">
+    <section class="side-section">
       <div class="container">
-        <p class="eyebrow">{t('exp.side.eyebrow')}</p>
-        <h2 class="section-title">{t('exp.side.title')}</h2>
-        <div class="grid grid-2" style="margin-top:22px">
+        <p class="eyebrow">{copy.sideEyebrow}</p>
+        <h2 class="section-title">{copy.sideTitle}</h2>
+        <div class="independent-grid">
           {personal.map((p: any) => (
-            <article class="card">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-                <strong>{p.name}</strong>
-                <span class="mono muted" style="font-size:.78rem">{p.period}</span>
-              </div>
-              <p class="muted" style="margin:.5em 0">{p.summary}</p>
-              <div class="chips" style="margin-bottom:10px">{(p.stack ?? []).map((s: string) => <span class="chip">{s}</span>)}</div>
-              <div style="display:flex;gap:14px;flex-wrap:wrap">
-                {Object.entries(p.links ?? {}).map(([k, v]) => (
-                  <a href={v as string} target="_blank" rel="noopener" class="mono" style="font-size:.8rem">{k} ↗</a>
-                ))}
-              </div>
+            <article class="independent-card">
+              <p class="mono project-period">{p.period}</p>
+              <h3>{p.name}</h3>
+              <p class="project-summary">{p.summary}</p>
+              <div class="chips">{(p.stack ?? []).map((s: string) => <span class="chip">{s}</span>)}</div>
+              {Object.keys(p.links ?? {}).length > 0 && (
+                <div class="project-links">
+                  {Object.entries(p.links ?? {}).map(([k, v]) => <a href={v as string} target="_blank" rel="noopener noreferrer">{k} <span aria-hidden="true">↗</span></a>)}
+                </div>
+              )}
             </article>
           ))}
         </div>
@@ -82,21 +74,70 @@ const expUpdate = getLatestExpUpdate();
   )}
 
   {education.length > 0 && (
-    <section style="padding-top:0">
+    <section class="education-section">
       <div class="container">
-        <p class="eyebrow">{t('exp.edu.eyebrow')}</p>
-        <h2 class="section-title">{t('exp.edu.title')}</h2>
-        <div class="grid grid-2" style="margin-top:22px">
+        <p class="eyebrow">{copy.educationEyebrow}</p>
+        <h2 class="section-title">{copy.educationTitle}</h2>
+        <div class="education-grid">
           {education.map((ed: any) => (
-            <div class="card">
-              <strong>{ed.school}</strong>
-              {ed.org && <p class="muted" style="margin:.2em 0 0;font-size:.85rem">{ed.org}</p>}
-              <p style="margin:.4em 0 0;color:var(--accent-2)">{ed.degree}</p>
-              <p class="mono muted" style="margin:.2em 0 0;font-size:.82rem">{ed.period}</p>
-            </div>
+            <article class="education-card">
+              <p class="mono project-period">{ed.period}</p>
+              <h3>{ed.school}</h3>
+              {ed.org && <p class="education-org">{ed.org}</p>}
+              <p class="education-degree">{ed.degree}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
   )}
 </Base>
+<script>
+  function openLinkedProject() {
+    if (!window.location.hash) return;
+    let id: string;
+    try {
+      id = decodeURIComponent(window.location.hash.slice(1));
+    } catch {
+      return;
+    }
+    const project = document.getElementById(id);
+    if (!project?.classList.contains('exp-project')) return;
+    const details = project.querySelector('details');
+    if (details) details.open = true;
+    project.scrollIntoView({ block: 'start', behavior: 'instant' });
+  }
+  document.addEventListener('astro:page-load', openLinkedProject);
+  window.addEventListener('hashchange', openLinkedProject);
+  openLinkedProject();
+</script>
+<style>
+  .experience-intro { padding: clamp(64px, 9vw, 120px) 0 68px; }
+  .experience-intro h1 { max-width: 850px; font-size: clamp(2.5rem, 5.7vw, 5rem); line-height: 1.13; letter-spacing: -.055em; margin: 20px 0 24px; }
+  .intro-summary { color: var(--text-dim); max-width: 600px; line-height: 1.8; font-size: 1.05rem; }
+  .focus-section { padding: 60px 0; background: color-mix(in srgb, var(--text) 2%, transparent); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .focus-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(30px, 5vw, 72px); }
+  .focus-heading h2 { font-size: clamp(1.6rem, 2.6vw, 2.35rem); letter-spacing: -.04em; line-height: 1.3; margin: 16px 0; }
+  .focus-heading > p:last-child { color: var(--text-dim); line-height: 1.85; font-size: .9rem; max-width: 390px; }
+  .focus-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .focus-index { color: var(--accent); font-size: .7rem; }
+  .focus-item h3 { font-size: 1rem; margin: 11px 0; letter-spacing: -.02em; }
+  .focus-item p { color: var(--text-dim); line-height: 1.8; margin: 0; font-size: .85rem; }
+  .career-section { padding: 76px 0 40px; }
+  .career-timeline { margin-top: 28px; }
+  .side-section { padding: 40px 0 72px; }
+  .independent-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; margin-top: 32px; }
+  .independent-card { border-top: 1px solid var(--border); padding-top: 24px; }
+  .project-period { font-size: .74rem; color: var(--text-dim); margin: 0 0 14px; }
+  .independent-card h3, .education-card h3 { margin: 0; font-size: 1.1rem; line-height: 1.5; letter-spacing: -.02em; }
+  .project-summary { color: var(--text-dim); line-height: 1.8; font-size: .87rem; margin: 13px 0 18px; }
+  .project-links { display: flex; gap: 18px; margin-top: 16px; font-size: .8rem; }
+  .project-links a { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; }
+  .education-section { padding: 56px 0 90px; border-top: 1px solid var(--border); }
+  .education-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 32px; }
+  .education-card { padding-top: 20px; border-top: 1px solid var(--border); }
+  .education-org { margin: 6px 0; color: var(--text-dim); font-size: .85rem; }
+  .education-degree { color: var(--accent); font-size: .9rem; margin: 12px 0 0; }
+  @media (max-width: 800px) { .focus-layout { grid-template-columns: 1fr; } .focus-heading > p:last-child { max-width: 580px; } }
+  @media (max-width: 600px) { .experience-intro { padding: 52px 0 44px; } .focus-section { padding: 36px 0; } .focus-grid { grid-template-columns: 1fr; gap: 26px; } .career-section { padding-top: 44px; } .independent-grid, .education-grid { grid-template-columns: 1fr; } .side-section { padding-bottom: 44px; } .education-section { padding: 40px 0 60px; } }
+</style>

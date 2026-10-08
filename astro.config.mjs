@@ -27,7 +27,11 @@ function readEssayDir() {
 const allDailyContent = readNewsDir();
 const allEssays = readEssayDir();
 
-// Slugs that have real EN translation → eligible for EN sitemap entries
+const jaBlogSlugs = new Set([
+  ...allDailyContent.filter(d => d['blog.ja']?.slug).map(d => d['blog.ja'].slug),
+  ...allEssays.filter(e => e['blog.ja']?.slug).map(e => e['blog.ja'].slug),
+]);
+
 const enBlogSlugs = new Set([
   ...allDailyContent.filter(d => d['blog.en']?.slug).map(d => d['blog.en'].slug),
   ...allEssays.filter(e => e['blog.en']?.slug).map(e => e['blog.en'].slug),
@@ -47,17 +51,18 @@ export default defineConfig({
     format: 'directory',
   },
   i18n: {
-    locales: ['en', 'vi'],
+    locales: ['en', 'vi', 'ja'],
     defaultLocale: 'en',
     routing: { prefixDefaultLocale: false },
   },
   integrations: [
     sitemap({
-      i18n: { defaultLocale: 'en', locales: { en: 'en', vi: 'vi' } },
-      // Drop EN blog post URLs with no real EN translation
+      i18n: { defaultLocale: 'en', locales: { en: 'en', vi: 'vi', ja: 'ja' } },
+      // Index only blog locales with a native translation.
       filter: (page) => {
         const m = page.match(/\/blog\/([^/]+)\/?$/);
         if (!m) return true;
+        if (page.includes('/ja/blog/')) return jaBlogSlugs.has(m[1]);
         const isEnPath = !page.includes('/vi/blog/');
         if (isEnPath) return enBlogSlugs.has(m[1]);
         return true;

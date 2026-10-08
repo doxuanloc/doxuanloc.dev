@@ -1,0 +1,74 @@
+---
+interface Props { lang: 'en' | 'vi' | 'ja'; }
+const { lang } = Astro.props;
+const copy = {
+  en: { hint: 'Drag to rotate · Select a perspective', pause: 'Pause motion', play: 'Resume motion', title: 'An explorable engineering system', layers: ['Interface', 'Inference', 'Evidence'], tag: 'A living architecture / concept study' },
+  vi: { hint: 'Kéo để xoay · Chọn một góc nhìn', pause: 'Dừng chuyển động', play: 'Tiếp tục chuyển động', title: 'Hệ thống kỹ thuật có thể khám phá', layers: ['Giao diện', 'Suy luận', 'Bằng chứng'], tag: 'Kiến trúc sống / minh họa ý tưởng' },
+  ja: { hint: 'ドラッグで回転 · 視点を選択', pause: '動きを停止', play: '動きを再開', title: '探索できる技術システム', layers: ['接点', '推論', '証拠'], tag: '動くアーキテクチャ / コンセプト' },
+}[lang];
+const faces = ['front','back','right','left','top','bottom'];
+---
+<div class="hero-scene" data-scene data-running="true" role="group" aria-label={copy.title}>
+  <div class="scene-aura" aria-hidden="true"></div>
+  <div class="scene-stars" aria-hidden="true">{Array.from({length:16},(_,i)=><i style={`--i:${i};--x:${(i*37)%100}%;--y:${(i*61)%100}%`}></i>)}</div>
+  <div class="scene-stage" aria-hidden="true">
+    <div class="scene-floor"></div>
+    <div class="scene-camera">
+      <div class="scene-orbit orbit-a"><i></i></div>
+      <div class="scene-orbit orbit-b"><i></i></div>
+      <div class="scene-orbit orbit-c"><i></i></div>
+      <div class="core-float"><div class="core-rotor">
+        <div class="core-cube">{faces.map((face,i)=><div class:list={['cube-face',`face-${face}`]}><div class="face-grid"></div><span class="face-index">0{i+1}</span><span class="face-brand">L11</span><span class="face-corner"></span></div>)}</div>
+        <div class="inner-cube">{faces.map(face=><div class:list={['inner-face',`face-${face}`]}></div>)}</div>
+      </div></div>
+      <div class="architecture-layers">{copy.layers.map((layer,i)=><div class:list={['architecture-layer',`layer-${i}`]}><span class="layer-index">0{i+1}</span><div class="layer-signal">{Array.from({length:5},(_,n)=><i style={`--n:${n}`}></i>)}</div><span>{layer}</span><span class="layer-corner"></span></div>)}</div>
+      <div class="scene-trace"><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+  <div class="scene-controls"><span>{copy.hint}</span><button type="button" hidden data-motion-toggle data-pause-label={copy.pause} data-play-label={copy.play} aria-label={copy.pause} aria-pressed="false"><span class="pause-icon" aria-hidden="true">Ⅱ</span></button></div>
+  <p class="scene-caption mono">{copy.tag}</p>
+</div>
+<style>
+  .hero-scene { --scene-size: 174px; --scene-half: 87px; --scene-accent: #a9caff; height: 490px; position: relative; isolation: isolate; user-select: none; }
+  .scene-aura { position: absolute; inset: 20% 0 10%; background: radial-gradient(ellipse,#4875ba22,transparent 68%); pointer-events: none; }
+  .scene-stage { position: absolute; inset: 0 0 50px; perspective: 900px; perspective-origin: 50% 40%; overflow: hidden; cursor: grab; touch-action: pan-y; }
+  .scene-stage:active { cursor: grabbing; }
+  .scene-camera { position: absolute; left: 50%; top: 43%; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(calc(var(--look-y,0) * -12deg)) rotateY(calc(var(--look-x,0) * 16deg)) rotateZ(calc(var(--scroll-depth,0) * -10deg)); transition: transform .65s cubic-bezier(.2,.8,.2,1); }
+  .scene-stage.is-dragging .scene-camera { transition: none; }
+  .scene-floor { position: absolute; width: 560px; height: 340px; left: 50%; top: 58%; transform: translateX(-50%) rotateX(76deg); background-image: linear-gradient(#84acf71c 1px,transparent 1px),linear-gradient(90deg,#84acf71c 1px,transparent 1px); background-size: 28px 28px; mask-image: radial-gradient(ellipse,#000 5%,transparent 68%); }
+  .core-float { transform-style: preserve-3d; animation: scene-breathe 6s ease-in-out infinite; }
+  .core-rotor { width: var(--scene-size); height: var(--scene-size); position: absolute; margin: calc(var(--scene-half) * -1); transform-style: preserve-3d; animation: core-turn 24s linear infinite; }
+  .core-cube,.inner-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .cube-face { position: absolute; width: 100%; height: 100%; border: 1px solid #c6dcffaa; background: linear-gradient(135deg,#426391a8,#163054b3 60%,#284973aa); box-shadow: inset 0 0 30px #a9caff18; transition: transform 1.2s cubic-bezier(.2,.8,.2,1),opacity .8s,background .8s; backface-visibility: visible; }
+  .face-front { transform: translateZ(var(--scene-half)); }.face-back { transform: rotateY(180deg) translateZ(var(--scene-half)); }.face-right { transform: rotateY(90deg) translateZ(var(--scene-half)); }.face-left { transform: rotateY(-90deg) translateZ(var(--scene-half)); }.face-top { transform: rotateX(90deg) translateZ(var(--scene-half)); }.face-bottom { transform: rotateX(-90deg) translateZ(var(--scene-half)); }
+  .face-grid { position: absolute; inset: 12px; border: 1px solid #b7d4ff33; background-image: linear-gradient(#a9caff12 1px,transparent 1px),linear-gradient(90deg,#a9caff12 1px,transparent 1px); background-size: 20px 20px; }
+  .face-index { position: absolute; top: 20px; left: 20px; font: 9px var(--mono); color: #dce9ff; }.face-brand { position: absolute; inset: 0; display: grid; place-items: center; font: 500 42px var(--font); color: #e7f1ff; text-shadow: 0 0 24px #adceff55; opacity: .8; }
+  .face-corner { position: absolute; bottom: 16px; right: 16px; width: 15px; height: 15px; border-bottom: 1px solid #d3e5ff; border-right: 1px solid #d3e5ff; }
+  .inner-cube { inset: 32%; --scene-half: 31px; transform: rotateX(30deg) rotateZ(30deg); }
+  .inner-face { position: absolute; inset: 0; border: 1px solid #d7fff0aa; background: #adcdbb30; box-shadow: inset 0 0 15px #adcdbb20; }
+  .scene-orbit { position: absolute; width: 350px; height: 350px; left: -175px; top: -175px; border: 1px solid #94b7f24d; border-radius: 50%; transform-style: preserve-3d; transition: width .8s,height .8s,left .8s,top .8s; }
+  .orbit-a { animation: orbit-a 19s linear infinite; }.orbit-b { width: 410px; height: 410px; left: -205px; top: -205px; border-color: #8ca4d33d; animation: orbit-b 26s linear infinite; }.orbit-c { width: 290px; height: 290px; left: -145px; top: -145px; border: 1px dashed #adcdbb44; animation: orbit-c 31s linear infinite; }
+  .scene-orbit i { position: absolute; left: 50%; top: -4px; width: 7px; height: 7px; border-radius: 50%; background: #d1e1ff; box-shadow: 0 0 16px #a9caffcc; }
+  .architecture-layers { position: absolute; width: 210px; height: 150px; left: -105px; top: -75px; transform-style: preserve-3d; transform: rotateX(57deg) rotateZ(-36deg); pointer-events: none; }
+  .architecture-layer { position: absolute; inset: 0; border: 1px solid #afd0ff99; background: #203656e8; transform: translateZ(0); opacity: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; font-size: 13px; color: #dbe9ff; transition: transform 1.2s cubic-bezier(.2,.8,.2,1),opacity .8s; }
+  .layer-index { font: 10px var(--mono); color: #a8c3ec; }.layer-corner { position: absolute; bottom: 15px; right: 15px; width: 7px; height: 7px; background: #acd6cb; box-shadow: 0 0 12px #9ef7dd55; }
+  .layer-signal { display: flex; gap: 8px; }.layer-signal i { height: 3px; width: 22px; background: #abcfff; opacity: .6; animation: layer-signal 2s ease-in-out infinite; animation-delay: calc(var(--n) * .2s); }
+  .scene-trace { position: absolute; width: 270px; height: 270px; left: -135px; top: -135px; border: 1px solid #b8edd822; border-radius: 50%; transform: rotateX(55deg); opacity: 0; transition: opacity .8s; }
+  .scene-trace i { position: absolute; width: 9px; height: 9px; border: 1px solid #b8edd8; background: #294d47; transform: rotate(45deg); box-shadow: 0 0 15px #adcdbb55; }.scene-trace i:nth-child(1) { top: -4px; left: 50%; }.scene-trace i:nth-child(2) { right: -4px; top: 50%; }.scene-trace i:nth-child(3) { bottom: -4px; left: 50%; }.scene-trace i:nth-child(4) { left: -4px; top: 50%; }
+  :global(.hero-art[data-lens="1"]) .cube-face { opacity: .08; }
+  :global(.hero-art[data-lens="1"]) .face-front { transform: translateZ(135px); }:global(.hero-art[data-lens="1"]) .face-back { transform: rotateY(180deg) translateZ(135px); }:global(.hero-art[data-lens="1"]) .face-right { transform: rotateY(90deg) translateZ(135px); }:global(.hero-art[data-lens="1"]) .face-left { transform: rotateY(-90deg) translateZ(135px); }:global(.hero-art[data-lens="1"]) .face-top { transform: rotateX(90deg) translateZ(135px); }:global(.hero-art[data-lens="1"]) .face-bottom { transform: rotateX(-90deg) translateZ(135px); }
+  :global(.hero-art[data-lens="1"]) .architecture-layer { opacity: 1; }:global(.hero-art[data-lens="1"]) .layer-0 { transform: translateZ(95px); }:global(.hero-art[data-lens="1"]) .layer-1 { transform: translateZ(0); }:global(.hero-art[data-lens="1"]) .layer-2 { transform: translateZ(-95px); }
+  :global(.hero-art[data-lens="2"]) .cube-face { background: #1f504128; border-color: #b8edd8aa; }:global(.hero-art[data-lens="2"]) .face-grid { opacity: .2; }:global(.hero-art[data-lens="2"]) .face-brand { opacity: .15; }:global(.hero-art[data-lens="2"]) .scene-trace { opacity: 1; }
+  .scene-stars { position: absolute; inset: 12% 4% 20%; overflow: hidden; pointer-events: none; }.scene-stars i { position: absolute; left: var(--x); top: var(--y); height: 2px; width: 2px; background: #adcaff; box-shadow: 0 0 8px #adcaff; animation: star-drift 5s ease-in-out infinite; animation-delay: calc(var(--i) * -.43s); }
+  .scene-controls { position: absolute; bottom: 28px; left: 0; right: 0; display: flex; justify-content: center; gap: 12px; align-items: center; color: #b6c5dc; font-size: 11px; }.scene-controls button { min-width: 40px; min-height: 40px; background: #1c2736; color: #d7e6ff; border: 1px solid #526580; border-radius: 50%; cursor: pointer; }.scene-caption { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; color: #8597b3; font-size: 9px; letter-spacing: .08em; margin: 0; }
+  .hero-scene[data-running="false"] *, :global(html[data-motion="paused"]) .hero-scene * { animation-play-state: paused !important; }
+  @keyframes core-turn { from { transform: rotateX(-20deg) rotateY(25deg) rotateZ(-8deg); } to { transform: rotateX(340deg) rotateY(385deg) rotateZ(-8deg); } }
+  @keyframes scene-breathe { 50% { transform: translateY(-16px); } }
+  @keyframes orbit-a { from { transform: rotateX(69deg) rotateY(20deg) rotateZ(0deg); } to { transform: rotateX(69deg) rotateY(20deg) rotateZ(360deg); } }
+  @keyframes orbit-b { from { transform: rotateX(-40deg) rotateY(65deg) rotateZ(0deg); } to { transform: rotateX(-40deg) rotateY(65deg) rotateZ(-360deg); } }
+  @keyframes orbit-c { from { transform: rotateX(20deg) rotateY(-36deg) rotateZ(0deg); } to { transform: rotateX(20deg) rotateY(-36deg) rotateZ(360deg); } }
+  @keyframes star-drift { 0%,100% { opacity: .15; transform: translateY(10px); } 50% { opacity: .8; transform: translateY(-10px); } }
+  @keyframes layer-signal { 50% { opacity: .25; transform: scaleX(.6); } }
+  @media (max-width: 760px) { .hero-scene { height: 410px; --scene-size: 140px; --scene-half: 70px; }.scene-stage { perspective: 780px; }.scene-camera { top: 46%; transform: scale(.84) rotateX(calc(var(--look-y,0) * -12deg)) rotateY(calc(var(--look-x,0) * 16deg)); }.scene-controls { font-size: 10px; }.scene-caption { font-size: 8px; } }
+  @media (prefers-reduced-motion: reduce) { .hero-scene * { animation: none !important; transition: none !important; }.core-rotor { transform: rotateX(-20deg) rotateY(25deg) rotateZ(-8deg); }.orbit-a { transform: rotateX(69deg) rotateY(20deg); }.orbit-b { transform: rotateX(-40deg) rotateY(65deg); }.orbit-c { transform: rotateX(20deg) rotateY(-36deg); } }
+</style>

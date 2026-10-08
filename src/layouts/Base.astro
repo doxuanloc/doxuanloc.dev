@@ -1,7 +1,12 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
-import SiteBackground from '../components/SiteBackground.astro';
+import '../styles/renewal.css';
+import '@fontsource/be-vietnam-pro/400.css';
+import '@fontsource/be-vietnam-pro/500.css';
+import '@fontsource/be-vietnam-pro/600.css';
+import '@fontsource/be-vietnam-pro/700.css';
+import '@fontsource/jetbrains-mono/400.css';
 import { getProfile } from '../lib/content';
 import { getLangFromUrl, useTranslations, localizedPath } from '../i18n/ui';
 import type { Lang } from '../i18n/ui';
@@ -24,7 +29,7 @@ interface Props {
   /** Locale có nội dung thật. Nếu set, chỉ emit hreflang cho các locale này. Mặc định: all. */
   availableLocales?: Lang[];
 }
-const { title, description, image, schema, ogType = 'website', articleMeta, animatedBg = true, noindex = false, availableLocales } = Astro.props;
+const { title, description, image, schema, ogType = 'website', articleMeta, animatedBg = false, noindex = false, availableLocales } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const profile = getProfile(lang);
@@ -41,11 +46,12 @@ const ogImage = image
 const altEn = new URL(basePath, site).href;
 const altVi = new URL('/vi' + (basePath === '/' ? '' : basePath), site).href;
 const altJa = new URL('/ja' + (basePath === '/' ? '' : basePath), site).href;
-const langLinks = [
-  { code: 'en', label: 'EN', href: basePath },
-  { code: 'vi', label: 'VI', href: '/vi' + (basePath === '/' ? '' : basePath) },
-  { code: 'ja', label: 'JA', href: '/ja' + (basePath === '/' ? '' : basePath) },
-] as const;
+const languagePath = /^\/404(?:\.html)?$/.test(basePath) ? '/' : basePath;
+const langLinks = ([
+  { code: 'en', label: 'EN', href: languagePath },
+  { code: 'vi', label: 'VI', href: '/vi' + (languagePath === '/' ? '' : languagePath) },
+  { code: 'ja', label: 'JA', href: '/ja' + (languagePath === '/' ? '' : languagePath) },
+] as const).filter(link => !availableLocales || availableLocales.includes(link.code));
 
 const id = profile.identity;
 const sameAs = [id.links?.linkedin, id.links?.github, id.links?.currentPortfolio].filter(Boolean);
@@ -83,21 +89,15 @@ const websiteLd = {
 const jsonLdBlocks = [personLd, websiteLd, ...(Array.isArray(schema) ? schema : schema ? [schema] : [])];
 
 const nav = [
-  { p: '/', label: t('nav.home') },
-  { p: '/journey', label: t('nav.journey') },
+  { p: '/', label: lang === 'vi' ? 'Dự án' : lang === 'ja' ? 'プロジェクト' : 'Work' },
   { p: '/experience', label: t('nav.experience') },
   { p: '/blog', label: t('nav.blog') },
-  { p: '/news', label: t('nav.news') },
   { p: '/about', label: t('nav.about') },
 ].map((n) => ({ href: localizedPath(n.p, lang), label: n.label, logical: n.p }));
 function current(logical: string) {
   if (logical === '/') return basePath === '/';
   return basePath === logical || basePath.startsWith(logical + '/');
 }
-const glyphs: Record<string, string> = {
-  '/': '⌂', '/journey': '◎', '/experience': '✴', '/blog': '◈', '/news': '✦', '/about': '◉',
-};
-function glyphFor(p: string) { return glyphs[p] ?? '·'; }
 ---
 <!doctype html>
 <html lang={lang}>
@@ -107,14 +107,8 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
     <meta name="author" content={profile.identity.nameEn} />
-    <meta name="theme-color" content="#0b0907" />
+    <meta name="theme-color" content="#101113" />
     {noindex && <meta name="robots" content="noindex, follow" />}
-    {basePath === '/' && (
-      <link rel="preload" as="image" href="/images/hero-astronaut.webp" fetchpriority="high" />
-    )}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Tektur:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
     <link rel="canonical" href={canonical} />
     {(!availableLocales || availableLocales.includes('en')) && <link rel="alternate" hreflang="en" href={altEn} />}
     {(!availableLocales || availableLocales.includes('vi')) && <link rel="alternate" hreflang="vi" href={altVi} />}
@@ -149,31 +143,11 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
       <script type="application/ld+json" set:html={JSON.stringify(block)} />
     ))}
     <ClientRouter />
-    <script is:inline>
-      (function(){
-        function doy(){var n=new Date(),s=new Date(Date.UTC(n.getUTCFullYear(),0,0));return Math.floor((n-s)/864e5);}
-        var p=new URLSearchParams(location.search).get('palette');
-        document.documentElement.dataset.palette=p!=null?String(parseInt(p,10)%5):String(doy()%5);
-      })();
-    </script>
   </head>
   <body>
-    <div class="space-bg" aria-hidden="true">
-      <span class="milky"></span>
-      <span class="planet"></span>
-      <span class="flare" style="top:16%;left:78%"></span>
-      <span class="flare" style="top:62%;left:14%"></span>
-      <span class="flare" style="top:38%;left:46%"></span>
-      <span class="flare" style="top:80%;left:70%"></span>
-      <span class="shoot"></span>
-      <span class="shoot s2"></span>
-    </div>
-    {animatedBg && <SiteBackground />}
-    <div class="noise" aria-hidden="true"></div>
     <a href="#main" class="skip-link">{t('skip')}</a>
     <header class="site-header">
       <div class="header-blur" aria-hidden="true"></div>
-      <span class="header-scanline" aria-hidden="true"></span>
       <div class="container nav">
         <a class="brand" href={localizedPath('/', lang)}>
           <img src="/images/logo.png" alt="" class="brand-logo" width="28" height="28" aria-hidden="true" />
@@ -182,14 +156,14 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
         <div class="nav-right">
           <nav id="main-nav" aria-label="Main">
             <div class="drawer-header" aria-hidden="true">
-              <span class="drawer-title">MENU</span>
+              <span class="drawer-title">{lang === 'vi' ? 'Khám phá' : lang === 'ja' ? 'メニュー' : 'Explore'}</span>
             </div>
             <ul>
               {nav.map((n) => (
-                <li><a href={n.href} aria-current={current(n.logical) ? 'page' : undefined} data-glyph={glyphFor(n.logical)}>{n.label}</a></li>
+                <li><a href={n.href} aria-current={current(n.logical) ? 'page' : undefined} >{n.label}</a></li>
               ))}
             </ul>
-            <div class="drawer-footer" aria-hidden="true">
+            <div class="drawer-footer">
               <div class="lang-switch-3">
                 {langLinks.map((l) => (
                   <a href={l.href} class:list={['ls3-item', l.code === lang ? 'on' : '']} data-astro-reload>{l.label}</a>
@@ -197,18 +171,13 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
               </div>
               <span class="drawer-site mono">doxuanloc.space</span>
             </div>
-            <span class="drawer-lines" aria-hidden="true"><span></span><span></span></span>
-            <span class="drawer-bracket tl" aria-hidden="true"></span>
-            <span class="drawer-bracket tr" aria-hidden="true"></span>
-            <span class="drawer-bracket bl" aria-hidden="true"></span>
-            <span class="drawer-bracket br" aria-hidden="true"></span>
           </nav>
           <div class="lang-switch-3" aria-label="Language">
             {langLinks.map((l) => (
               <a href={l.href} class:list={['ls3-item', l.code === lang ? 'on' : '']} data-astro-reload>{l.label}</a>
             ))}
           </div>
-          <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav" type="button">
+          <button class="nav-toggle" aria-label={lang === 'vi' ? 'Mở menu' : lang === 'ja' ? 'メニューを開く' : 'Open menu'} data-open-label={lang === 'vi' ? 'Mở menu' : lang === 'ja' ? 'メニューを開く' : 'Open menu'} data-close-label={lang === 'vi' ? 'Đóng menu' : lang === 'ja' ? 'メニューを閉じる' : 'Close menu'} aria-expanded="false" aria-controls="main-nav" type="button">
             <span></span><span></span><span></span>
           </button>
         </div>
@@ -226,11 +195,13 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
           <div style="font-weight:600;color:var(--text)">{profile.identity.nameEn}<span style="color:var(--accent)">.</span></div>
           <div class="muted" style="margin-top:4px">{profile.identity.title}</div>
           <div class="mono" style="margin-top:10px;font-size:.78rem;color:var(--text-mute)">
-            {t('footer.tagline')}
+            {lang === 'vi' ? 'Kỹ thuật thực tế. Quyết định có cơ sở.' : lang === 'ja' ? '実践的な開発。根拠ある判断。' : 'Practical engineering. Considered decisions.'}
           </div>
         </div>
         <nav aria-label="Footer">
           {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+          <a href={localizedPath('/journey', lang)}>{t('nav.journey')}</a>
+          <a href={localizedPath('/news', lang)}>{t('nav.news')}</a>
         </nav>
         <div class="social">
           {id.links?.linkedin && (
@@ -254,100 +225,60 @@ function glyphFor(p: string) { return glyphs[p] ?? '·'; }
     </footer>
 
     <script>
-      // Scroll-reveal: IntersectionObserver toggles .in (1 lần / phần tử).
-      function setupReveal() {
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const els = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.in)');
-        if (reduce) { els.forEach((e) => e.classList.add('in')); return; }
-        const io = new IntersectionObserver((entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-          }
-        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-        els.forEach((e) => io.observe(e));
-      }
-      // Reading progress (chỉ chạy nếu trang có thanh #read-progress).
-      function updateProgress() {
-        const bar = document.getElementById('read-progress');
-        if (!bar) return;
-        const h = document.documentElement;
-        const max = h.scrollHeight - h.clientHeight;
-        bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
-      }
-      window.addEventListener('scroll', updateProgress, { passive: true });
-
-      // Parallax sao theo chuột (desktop, không reduced-motion) — đặt --par-x/--par-y.
-      const fine = window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (fine) {
-        let ptick = false;
-        window.addEventListener('mousemove', (e) => {
-          if (ptick) return; ptick = true;
-          requestAnimationFrame(() => {
-            const x = (e.clientX / window.innerWidth - 0.5) * -2;
-            const y = (e.clientY / window.innerHeight - 0.5) * -2;
-            const r = document.documentElement.style;
-            r.setProperty('--par-x', x.toFixed(3));
-            r.setProperty('--par-y', y.toFixed(3));
-            ptick = false;
-          });
-        }, { passive: true });
-      }
-
-      // Tilt 3D nhẹ cho [data-tilt] (magnetic) — RAF-throttled per element.
-      function setupTilt() {
-        if (!fine) return;
-        document.querySelectorAll<HTMLElement>('[data-tilt]:not([data-tilt-on])').forEach((el) => {
-          el.setAttribute('data-tilt-on', '');
-          let rect: DOMRect | null = null;
-          let ptick = false;
-          let lastE: MouseEvent | null = null;
-          el.addEventListener('mouseenter', () => { rect = el.getBoundingClientRect(); });
-          el.addEventListener('mousemove', (e) => {
-            lastE = e;
-            if (ptick) return; ptick = true;
-            requestAnimationFrame(() => {
-              if (!lastE) { ptick = false; return; }
-              const r = rect ?? el.getBoundingClientRect();
-              const rx = (((lastE.clientY - r.top) / r.height) - 0.5) * -7;
-              const ry = (((lastE.clientX - r.left) / r.width) - 0.5) * 7;
-              el.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px)`;
-              ptick = false;
-            });
-          });
-          el.addEventListener('mouseleave', () => { el.style.transform = ''; rect = null; });
-        });
-      }
-
-      // Drawer nav (mobile) — slides from right with overlay + ESC + scroll lock.
-      function setupNav() {
-        const toggle  = document.querySelector<HTMLButtonElement>('.nav-toggle');
-        const nav     = document.getElementById('main-nav');
+      let cleanup: (() => void) | undefined;
+      function setupNavigation() {
+        cleanup?.();
+        const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+        const nav = document.getElementById('main-nav');
         const overlay = document.getElementById('nav-overlay');
         if (!toggle || !nav) return;
-
-        function openNav() {
+        const controller = new AbortController();
+        const options = { signal: controller.signal };
+        const background = [...document.querySelectorAll<HTMLElement>('main, footer, .brand, .nav-right > .lang-switch-3')];
+        function close(restoreFocus = false) {
+          nav!.classList.remove('open');
+          overlay?.classList.remove('open');
+          toggle!.setAttribute('aria-expanded', 'false');
+          toggle!.setAttribute('aria-label', toggle!.dataset.openLabel ?? 'Open menu');
+          document.body.style.overflow = '';
+          background.forEach(el => el.inert = false);
+          if (restoreFocus) toggle!.focus();
+        }
+        toggle.addEventListener('click', () => {
+          if (nav.classList.contains('open')) { close(true); return; }
           nav.classList.add('open');
           overlay?.classList.add('open');
           toggle.setAttribute('aria-expanded', 'true');
-          toggle.setAttribute('aria-label', 'Close menu');
+          toggle.setAttribute('aria-label', toggle.dataset.closeLabel ?? 'Close menu');
           document.body.style.overflow = 'hidden';
-        }
-        function closeNav() {
-          nav.classList.remove('open');
-          overlay?.classList.remove('open');
-          toggle.setAttribute('aria-expanded', 'false');
-          toggle.setAttribute('aria-label', 'Open menu');
-          document.body.style.overflow = '';
-        }
-
-        toggle.addEventListener('click', () => nav.classList.contains('open') ? closeNav() : openNav());
-        overlay?.addEventListener('click', closeNav);
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
-        nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+          background.forEach(el => el.inert = true);
+          requestAnimationFrame(() => nav.querySelector<HTMLAnchorElement>('a')?.focus());
+        }, options);
+        overlay?.addEventListener('click', () => close(true), options);
+        document.addEventListener('keydown', event => {
+          if (!nav.classList.contains('open')) return;
+          if (event.key === 'Escape') { event.preventDefault(); close(true); }
+          if (event.key === 'Tab') {
+            const controls = [...nav.querySelectorAll<HTMLElement>('a, button'), toggle].filter(el => el.getClientRects().length > 0);
+            const position = controls.indexOf(document.activeElement as HTMLElement);
+            if (event.shiftKey && position <= 0) { event.preventDefault(); controls.at(-1)?.focus(); }
+            else if (!event.shiftKey && position === controls.length - 1) { event.preventDefault(); controls[0]?.focus(); }
+          }
+        }, options);
+        nav.querySelectorAll('a').forEach(anchor => anchor.addEventListener('click', () => close(), options));
+        window.addEventListener('resize', () => { if (window.innerWidth > 900) close(); }, options);
+        const bar = document.getElementById('read-progress');
+        const updateProgress = () => {
+          if (!bar) return;
+          const height = document.documentElement.scrollHeight - window.innerHeight;
+          bar.style.width = `${height > 0 ? window.scrollY / height * 100 : 0}%`;
+        };
+        updateProgress();
+        window.addEventListener('scroll', updateProgress, { ...options, passive: true });
+        cleanup = () => { close(); controller.abort(); };
       }
-
-      // astro:page-load chạy cả lần đầu + sau mỗi View Transition.
-      document.addEventListener('astro:page-load', () => { setupReveal(); updateProgress(); setupTilt(); setupNav(); });
+      document.addEventListener('astro:page-load', setupNavigation);
+      document.addEventListener('astro:before-swap', () => cleanup?.());
     </script>
   </body>
 </html>

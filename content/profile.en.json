@@ -1,12 +1,12 @@
 {
-  "$comment": "Portfolio data v5 — Principal & Founder | Do Xuan Loc | 2026-07 (EN, also serves JA). Evidence-forward, safe-public: no client/JP-parent names, no internal figures; only self-verifiable numbers (Valixara, this site, independent builds).",
-  "version": 5,
+  "$comment": "Portfolio data v6 — October 2026. Public-safe skills update; existing roles, dates, and links retained.",
+  "version": 6,
   "identity": {
     "name": "Đỗ Xuân Lộc",
     "nameEn": "Do Xuan Loc",
     "title": "Principal Full-Stack & AI Engineer",
     "subtitle": "Founder & CEO, Valixara · Solutions Architect (AI)",
-    "tagline": "I build systems that prove what they did — deterministic guardrails around probabilistic models, cost and latency as design axes, and every non-trivial decision backed by evidence.",
+    "tagline": "I build production AI systems with reliability, security, and operating cost in mind.",
     "location": "Ho Chi Minh City, Vietnam",
     "yearsExperience": 4,
     "email": "locvkv1234@gmail.com",
@@ -17,7 +17,7 @@
       "github": "https://github.com/doxuanloc"
     }
   },
-  "summary": "An engineer who builds systems that prove what they did: production AI, serverless platforms, and developer tooling. My through-line is wrapping probabilistic models (LLMs) in deterministic guardrails — the LLM may explain, but code must decide; treating cost and latency as design axes rather than afterthoughts; and logging every non-trivial decision with its rejected alternatives and a falsifiable 'wrong-if-X' test. As the founder of Valixara, I pursue a single thesis: AI that acts must be able to prove what it did.",
+  "summary": "Full-stack and AI engineer, founder of Valixara. I connect product experience, cloud architecture, and AI evaluation to practical workflows. Recent work spans recording and transcription quality, security verification, photo and listing-copy operations, and developer tools with explicit permissions and careful information handling.",
   "keyFigures": [
     { "value": "4+", "label": "years building production systems" },
     { "value": "96", "label": "native Rust commands — Valixara cockpit (solo)" },
@@ -129,7 +129,11 @@
       "DevSecOps",
       "Observability (X-Ray / CloudWatch)",
       "ADR / decision rigor",
-      "Least-privilege & data classification"
+      "Least-privilege & data classification",
+      "Recording & transcription evaluation",
+      "Speaker-role evaluation",
+      "Evidence-based security verification",
+      "Agent tool permissions & log privacy"
     ]
   },
   "experience": [
@@ -142,15 +146,22 @@
       "current": true,
       "projects": [
         {
-          "name": "Accountability Cockpit for Coding Agents",
-          "summary": "A local-first desktop cockpit that gives an autonomous coding agent verifiable accountability — a tamper-evident index of everything the agent actually did on the machine.",
+          "id": "agent-tooling",
+          "name": "Xem IDE · v1.0.3",
+          "summary": "A macOS workspace for projects, AI sessions, and an inspectable action history. Built for working across repositories without losing context.",
           "highlights": [
-            "Designed an append-only, hash-chained action ledger anchored to observed effects (post-write file hashes, per-run git-HEAD delta) rather than parsed command strings — because a fully-bypassed agent can make the command lie",
-            "A 5-band honesty model with an explicit 'opaque' verdict: an effect it can't derive is flagged, never silently marked safe",
-            "Ships two signed macOS apps from one codebase via build-time tree-shaking; a single git tag triggers CI that builds both",
-            "Root-caused a memory blowup to an 8-second re-parse of a 53 MB transcript, fixed with byte-offset bookmarks (RSS held flat); collapsed the git scanner from 5 calls/repo to 2 and parallelized it — ~40 repos went 3s → 150–300ms"
+            "Multi-pane workbench combines project context, AI conversations, and repository work in one desktop workspace.",
+            "Restores conversation history when continuing a session, so the visible UI retains context alongside the agent.",
+            "Keeps project knowledge in workspace Markdown and uses SQLite as a derived local index.",
+            "Records AI actions in an append-only hash-chained ledger; file access is scoped to workspace roots."
           ],
-          "stack": ["Rust", "Tauri 2", "React 19", "TypeScript", "SQLite (WAL)", "96 native Rust commands"]
+          "stack": [
+            "Rust",
+            "Tauri 2",
+            "React 19",
+            "TypeScript",
+            "SQLite (WAL)"
+          ]
         },
         {
           "name": "Project-Intelligence Knowledge Platform",
@@ -173,14 +184,23 @@
       "current": true,
       "projects": [
         {
+          "id": "production-ai",
           "name": "Call Recording Intelligence Pipeline",
           "summary": "Turns call recordings into searchable Japanese summaries + a structured analytics warehouse, so purchasing staff stop re-listening to whole calls for context.",
           "highlights": [
             "Built an event-driven pipeline (S3 → SQS → SageMaker async → SNS → batch) running self-hosted Whisper Large-v3 + NeMo diarization plus structured extraction — insourcing ML deleted external AI-vendor dependencies, a privacy win for a business handling customer PII",
             "Cut LLM cost with in-context batching (Pydantic-array output ≈ 80% fewer prompt tokens) and treated the model as untrusted: rejecting transcripts whose timestamp count drifts outside a bounded ratio",
-            "Decomposed a large monolith into least-privilege read/write/feedback microservices; documented the async-202-poll pattern with its real gotchas (SQS visibility buffer, DynamoDB eventual-consistency)"
+            "Decomposed a large monolith into least-privilege read/write/feedback microservices; documented the async-202-poll pattern with its real gotchas (SQS visibility buffer, DynamoDB eventual-consistency)",
+            "Recent focus: recording compatibility, transcription quality, hallucination checks, diarization, and speaker-role evaluation across the actual workflow."
           ],
-          "stack": ["Python 3.11", "AWS SAM", "SageMaker", "S3 Tables / Iceberg", "React 19", "X-Ray"]
+          "stack": [
+            "Python 3.11",
+            "AWS SAM",
+            "SageMaker",
+            "S3 Tables / Iceberg",
+            "React 19",
+            "X-Ray"
+          ]
         },
         {
           "name": "Omnichannel Trade-In AI Agent",
@@ -203,14 +223,23 @@
           "stack": ["Python 3.13", "AWS SAM", "Lex V2 (ja_JP)", "Bedrock (Claude Haiku)", "DynamoDB Streams → Kinesis → S3"]
         },
         {
+          "id": "security-engineering",
           "name": "AI-Assisted Security Review Harness",
           "summary": "An AI security-review harness where only findings backed by machine-verifiable proof block CI — verdicts are assigned by code, not by an LLM.",
           "highlights": [
             "The centerpiece is a pure-Python proof gate that recomputes every verdict and discards whatever an LLM set: a SAST static trace alone returns 'unconfirmable' and must escalate to a live PoC",
             "Chose LangGraph over CrewAI because CrewAI 'trusts the LLM's word' with no place for a non-LLM decision node",
-            "Drove cost to a <50k-tokens/scan target by letting scanners do the heavy lifting; reports signed with in-toto/DSSE"
+            "Drove cost to a <50k-tokens/scan target by letting scanners do the heavy lifting; reports signed with in-toto/DSSE",
+            "Recent focus: trace findings to reproducible evidence and assess release risks before recommending engineering actions."
           ],
-          "stack": ["LangGraph", "LiteLLM", "Semgrep", "Trivy", "Gitleaks", "Nuclei"]
+          "stack": [
+            "LangGraph",
+            "LiteLLM",
+            "Semgrep",
+            "Trivy",
+            "Gitleaks",
+            "Nuclei"
+          ]
         },
         {
           "name": "Listing Photo & Copy Generation",
@@ -218,7 +247,8 @@
           "highlights": [
             "Photo pipeline: a custom-trained BiRefNet matting model behind a Florence-2 VLM pre-filter that decides whether removal is even needed; GPU endpoints autoscale on SQS queue depth and stop when idle",
             "Reserved concurrency matches an external API's RPM ceiling (backpressure, not crashes)",
-            "Copy pipeline: JSON-schema-constrained Gemini output (Zod → responseSchema → re-validate) with content-hash prompt caching and in-flight dedupe"
+            "Copy pipeline: JSON-schema-constrained Gemini output (Zod → responseSchema → re-validate) with content-hash prompt caching and in-flight dedupe",
+            "Recent focus: photo and copy workflows, data synchronization, storage lifecycles, and cloud cost control."
           ],
           "stack": ["Next.js 15", "AWS SAM", "SageMaker async", "BiRefNet / Florence-2", "S3 → SNS → SQS + DLQ", "TypeScript"]
         },

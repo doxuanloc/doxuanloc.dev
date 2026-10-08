@@ -1,0 +1,95 @@
+---
+import type { Lang } from '../i18n/ui';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const copy = {
+  en: { tabs: ['Workspace', 'Sessions', 'AI ledger'], demo: 'Interactive study · demo data', label: 'Explore Xem IDE', workspace: 'One desk. Multiple contexts.', workspaceText: 'Keep a conversation, repository, and project notes in view.', sessions: 'Pick up where you left off.', sessionsText: 'Conversation history travels with the session.', ledger: 'Follow the action trail.', ledgerText: 'Inspect recorded actions and their hash-chain history.', conversation: 'Conversation', repository: 'Repository', knowledge: 'Project knowledge', task: 'Refine the workspace layout', reply: 'Review the change alongside the project notes.', previous: 'Previous conversation', resume: 'Continue with context', read: 'Read context', edit: 'Edit workspace', review: 'Review changes', illustrative: 'Illustrative interface; no live project data.' },
+  vi: { tabs: ['Workspace', 'Phiên', 'Nhật ký AI'], demo: 'Demo tương tác · dữ liệu mẫu', label: 'Khám phá Xem IDE', workspace: 'Một bàn làm việc. Nhiều ngữ cảnh.', workspaceText: 'Giữ hội thoại, repository và ghi chú dự án trong tầm nhìn.', sessions: 'Tiếp tục từ nơi đã dừng.', sessionsText: 'Lịch sử hội thoại đi cùng phiên làm việc.', ledger: 'Theo dấu hành động.', ledgerText: 'Đối chiếu hành động đã ghi và lịch sử hash-chain.', conversation: 'Hội thoại', repository: 'Repository', knowledge: 'Tri thức dự án', task: 'Tinh chỉnh bố cục workspace', reply: 'Review thay đổi cùng ghi chú của dự án.', previous: 'Hội thoại trước', resume: 'Tiếp tục cùng ngữ cảnh', read: 'Đọc ngữ cảnh', edit: 'Sửa workspace', review: 'Review thay đổi', illustrative: 'Giao diện minh họa; dùng dữ liệu mẫu.' },
+  ja: { tabs: ['Workspace', 'セッション', 'AI操作台帳'], demo: 'インタラクティブデモ · サンプルデータ', label: 'Xem IDEを体験', workspace: '一つの作業画面。複数の文脈。', workspaceText: '会話、リポジトリ、プロジェクトノートを並べて確認。', sessions: '前回の続きから。', sessionsText: '会話履歴をセッションとともに保持。', ledger: '操作の軌跡をたどる。', ledgerText: '記録した操作とハッシュチェーン履歴を確認。', conversation: '会話', repository: 'リポジトリ', knowledge: 'プロジェクト知識', task: 'ワークスペースの配置を改善', reply: '変更とプロジェクトノートを並べてレビュー。', previous: '前回の会話', resume: '文脈を保って再開', read: '文脈を読む', edit: '画面を編集', review: '変更をレビュー', illustrative: 'サンプルデータを使ったインターフェースのイメージ。' },
+}[lang];
+const panels = [copy.workspace, copy.sessions, copy.ledger];
+const descriptions = [copy.workspaceText, copy.sessionsText, copy.ledgerText];
+---
+<div class="xem-preview" data-xem-preview>
+  <div class="xem-demo-label mono"><span class="demo-dot"></span>{copy.demo}</div>
+  <div class="xem-window">
+    <div class="xem-titlebar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="xem-wordmark">Xem</span><span class="xem-version mono">v1.0.3</span></div>
+    <div class="xem-tabs" role="tablist" aria-label={copy.label} hidden>
+      {copy.tabs.map((name, i) => <button type="button" role="tab" id={`xem-tab-${i}`} aria-controls={`xem-panel-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{name}</button>)}
+    </div>
+    {panels.map((title, i) => (
+      <div class="xem-panel" id={`xem-panel-${i}`} role="tabpanel" aria-labelledby={`xem-tab-${i}`} hidden={i !== 0}>
+        <div class="demo-surface" aria-hidden="true">
+          {i === 0 && <div class="workspace-panes">
+            <div class="demo-pane chat-pane"><span class="pane-label">{copy.conversation}</span><span class="chat-line user-line">{copy.task}</span><span class="chat-line agent-line">{copy.reply}</span><span class="typing-dots"><i></i><i></i><i></i></span></div>
+            <div class="demo-pane code-pane"><span class="pane-label">{copy.repository}</span><code><span class="muted">workspace.ts</span><br/><span class="code-purple">const</span> context = {'{'}<br/>&nbsp; project: <span class="code-amber">"demo"</span>,<br/>&nbsp; panes: <span class="code-blue">4</span><br/>{'}'}</code></div>
+            <div class="demo-pane"><span class="pane-label">Diff</span><div class="diff-line">+ preserveContext()</div><div class="diff-line">+ restoreConversation()</div><div class="ghost-line"></div></div>
+            <div class="demo-pane"><span class="pane-label">{copy.knowledge}</span><div class="note-heading">docs / dossier.md</div><div class="note-line"></div><div class="note-line short"></div><div class="note-line"></div></div>
+          </div>}
+          {i === 1 && <div class="sessions-demo"><div class="session-path mono">demo / workspace</div><div class="session-row"><span class="session-mark">↳</span><div>{copy.task}<small>{copy.previous}</small></div><span class="session-end">↗</span></div><div class="history-thread"><span>{copy.task}</span><span>{copy.reply}</span></div><div class="resume-bar"><span class="resume-dot"></span>{copy.resume}<span>→</span></div></div>}
+          {i === 2 && <div class="ledger-demo"><div class="ledger-heading mono"><span>ACTION HISTORY</span><span>SHA-256</span></div>{[copy.read, copy.edit, copy.review].map((label, index) => <div class="ledger-row"><span class="chain-node">{index + 1}</span><div>{label}<small class="mono">{['context.md', 'workspace.ts', 'git diff'][index]}</small></div><span class="hash-chip mono">{['a7f…2c9', 'b4e…8a1', 'c2d…5f0'][index]}</span></div>)}<div class="chain-line" aria-hidden="true"></div></div>}
+        </div>
+        <div class="xem-panel-caption"><p class="panel-title">{title}</p><p>{descriptions[i]}</p></div>
+      </div>
+    ))}
+  </div>
+  <p class="xem-disclaimer">{copy.illustrative}</p>
+</div>
+<script>
+  function setupXemPreview() {
+    document.querySelectorAll<HTMLElement>('[data-xem-preview]').forEach(preview => {
+      if (preview.dataset.ready) return;
+      preview.dataset.ready = 'true';
+      const tabs = [...preview.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      const panels = [...preview.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+      preview.querySelector<HTMLElement>('[role="tablist"]')!.hidden = false;
+      function select(index: number, focus = false) {
+        tabs.forEach((tab, i) => { tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; });
+        panels.forEach((panel, i) => panel.hidden = i !== index);
+        if (focus) tabs[index].focus();
+      }
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => select(index));
+        tab.addEventListener('keydown', event => {
+          const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length : event.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length : event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : null;
+          if (next !== null) { event.preventDefault(); select(next, true); }
+        });
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', setupXemPreview);
+</script>
+<style>
+  .xem-preview { --amber: #f5a524; background: radial-gradient(ellipse at 40% 10%, #f5a52419, transparent 65%), #111214; padding: 30px; display: flex; flex-direction: column; justify-content: center; min-width: 0; min-height: 480px; }
+  .xem-demo-label { display: flex; align-items: center; gap: 8px; font-size: .62rem; color: #b4aaa0; letter-spacing: .035em; margin-bottom: 22px; }
+  .demo-dot { width: 5px; height: 5px; background: var(--amber); border-radius: 50%; }
+  .xem-window { background: #1a1b1e; border: 1px solid #ffffff17; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 60px #0006; transform: perspective(1200px) rotateY(-4deg) rotateX(3deg); transition: transform .5s; }
+  .xem-preview:focus-within .xem-window, .xem-preview:hover .xem-window { transform: perspective(1200px) rotateY(0) rotateX(0); }
+  .xem-titlebar { display: flex; align-items: center; padding: 15px; gap: 14px; border-bottom: 1px solid #ffffff0b; }
+  .window-dots { display: flex; gap: 4px; }.window-dots i { width: 5px; height: 5px; background: #5b5b61; border-radius: 50%; }
+  .xem-wordmark { font-size: 1rem; color: #f2eee8; }.xem-version { margin-left: auto; font-size: .6rem; color: #a99980; }
+  .xem-tabs { display: flex; padding: 7px 10px; gap: 3px; border-bottom: 1px solid #ffffff0b; }.xem-tabs[hidden] { display: none; }
+  .xem-tabs button { background: transparent; border: 0; font: inherit; font-size: .68rem; color: #a8a8af; padding: 10px 9px; border-radius: 5px; cursor: pointer; min-height: 40px; }
+  .xem-tabs button[aria-selected="true"] { background: #f5a52418; color: var(--amber); }.xem-tabs button:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
+  .xem-panel[hidden] { display: none; }.xem-panel { animation: panel-enter .35s ease both; }
+  .demo-surface { height: 222px; margin: 12px; overflow: hidden; }
+  .workspace-panes { height: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 1.25fr 1fr; gap: 7px; }
+  .demo-pane { background: #101114; border: 1px solid #ffffff0a; border-radius: 5px; padding: 10px; min-width: 0; overflow: hidden; }
+  .pane-label { display: block; font-size: .55rem; color: #9999a3; margin-bottom: 10px; }
+  .chat-line { display: block; font-size: .55rem; line-height: 1.6; padding: 5px; border-radius: 4px; }.user-line { color: #cfb48d; background: #f5a5240e; margin-bottom: 5px; }.agent-line { color: #b7bdc8; }
+  .typing-dots { display: flex; gap: 3px; padding: 5px; }.typing-dots i { width: 3px; height: 3px; background: var(--amber); border-radius: 50%; animation: dot-pulse 1.8s infinite; }.typing-dots i:nth-child(2) { animation-delay: .2s; }.typing-dots i:nth-child(3) { animation-delay: .4s; }
+  code { font-family: var(--mono); color: #bebfc9; font-size: .55rem; line-height: 1.8; }.muted { color: #626570; }.code-purple { color: #ba9cdf; }.code-amber { color: #e8b869; }.code-blue { color: #96b9e8; }
+  .diff-line { color: #97cba7; font: .52rem/1.9 var(--mono); background: #80bf9710; white-space: nowrap; }.ghost-line, .note-line { background: #ffffff0c; height: 3px; margin-top: 8px; width: 85%; }.note-heading { font: .54rem var(--mono); color: #b8b8c4; }.note-line.short { width: 55%; }
+  .xem-panel-caption { padding: 4px 18px 20px; }.xem-panel-caption .panel-title { font-size: .85rem; line-height: 1.5; font-weight: 600; color: #e8e6e3; margin: 0 0 5px; }.xem-panel-caption p { color: #9c9ca7; font-size: .68rem; line-height: 1.7; margin: 0; }
+  .xem-disclaimer { font-size: .6rem; color: #87817a; line-height: 1.65; margin: 18px 0 0; }
+  .sessions-demo, .ledger-demo { position: relative; padding: 12px; height: 100%; background: #111215; border-radius: 5px; }.session-path { color: #767983; font-size: .58rem; margin-bottom: 14px; }.session-row { display: flex; gap: 10px; align-items: center; font-size: .68rem; color: #e1d9cd; }.session-mark { color: var(--amber); }.session-row small, .ledger-row small { display: block; font-size: .53rem; color: #888a95; margin-top: 5px; }.session-end { margin-left: auto; color: #717581; }
+  .history-thread { display: grid; gap: 8px; border-left: 1px solid #f5a52433; padding: 12px 0 12px 17px; margin: 12px 0 0 4px; }.history-thread span { font-size: .59rem; line-height: 1.6; color: #a4a8b5; }.resume-bar { display: flex; align-items: center; gap: 7px; font-size: .6rem; color: #dfba7c; border-top: 1px solid #ffffff09; padding-top: 10px; }.resume-bar > span:last-child { margin-left: auto; }.resume-dot { width: 4px; height: 4px; background: var(--amber); border-radius: 50%; }
+  .ledger-heading { display: flex; justify-content: space-between; color: #85828c; font-size: .52rem; margin-bottom: 12px; }.ledger-row { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; padding: 12px 0; font-size: .65rem; color: #d2d3da; }.chain-node { display: grid; place-items: center; border: 1px solid #b78234; border-radius: 50%; width: 20px; height: 20px; background: #171719; color: var(--amber); font: .55rem var(--mono); flex-shrink: 0; }.hash-chip { margin-left: auto; font-size: .52rem; color: #a5895d; }.chain-line { position: absolute; left: 22px; top: 48px; bottom: 28px; border-left: 1px solid #b7823466; }
+  @keyframes panel-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes dot-pulse { 50% { opacity: .25; } }
+  :global(html[data-motion="paused"]) .typing-dots i { animation-play-state: paused; }
+  .xem-preview[data-motion-visible="false"] .typing-dots i { animation-play-state: paused; }
+  @media (max-width: 760px) { .xem-preview { min-height: 450px; padding: 24px; }.xem-window { transform: none; } }
+  @media (max-width: 380px) { .xem-preview { padding: 18px; }.xem-tabs { padding-inline: 6px; }.xem-tabs button { padding-inline: 7px; }.demo-surface { margin: 9px; }.demo-pane { padding: 7px; }.chat-line { padding: 3px; } }
+  @media (prefers-reduced-motion: reduce) { .xem-window { transform: none; transition: none; }.xem-panel, .typing-dots i { animation: none; } }
+</style>

@@ -1,0 +1,902 @@
+{
+  "$comment": "ポートフォリオデータ v6 — 2026年10月。公開用のスキル更新。既存の役職、日付、リンクを維持。",
+  "version": 6,
+  "identity": {
+    "name": "Đỗ Xuân Lộc",
+    "nameEn": "Do Xuan Loc",
+    "title": "プリンシパル・フルスタック／AIエンジニア",
+    "subtitle": "Valixara 創業者・CEO · AIソリューションアーキテクト",
+    "tagline": "信頼性、セキュリティ、運用コストを考慮した本番AIシステムを構築しています。",
+    "location": "ベトナム・ホーチミン市",
+    "yearsExperience": 4,
+    "email": "locvkv1234@gmail.com",
+    "phone": "0886659358",
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/do-xuan-loc-278121245/",
+      "currentPortfolio": "https://doxuanloc.space",
+      "github": "https://github.com/doxuanloc"
+    }
+  },
+  "summary": "フルスタック／AIエンジニア、Valixaraの創業者。プロダクト体験、クラウド設計、AI評価を実際の業務フローにつなげています。最近は録音と文字起こしの品質、セキュリティ検証、商品写真と説明文の運用、明示的な実行権限と慎重な情報管理を備えた開発者ツールに取り組んでいます。",
+  "keyFigures": [
+    {
+      "value": "4+",
+      "label": "本番システムの開発経験（年）"
+    },
+    {
+      "value": "96",
+      "label": "ValixaraコックピットのRustネイティブコマンド（単独開発）"
+    },
+    {
+      "value": "6",
+      "label": "本番で使用した言語：Python · TS · Rust · PHP · Go · SQL"
+    },
+    {
+      "value": "3",
+      "label": "稼働中の自主開発プロダクト"
+    }
+  ],
+  "solves": [
+    {
+      "problem": "自律的なコーディングエージェントの説明だけでは、実行したコマンドがマシン上で実際に何を変えたかを証明できません。",
+      "decision": "追記専用のSHA-256ハッシュチェーン台帳を設計。解析したコマンド文字列ではなく、書き込み後のファイルハッシュや実行ごとのgit-HEAD差分など、観測した変化を記録します。制御を迂回したエージェントは、コマンドの見かけと異なる操作ができるためです。",
+      "detail": "Pythonで試作した後、改ざん検出をユニットテストで確認し、Rustに移植。5段階の誠実性モデルに明示的な「opaque」判定を設け、導出できない変化を安全とみなさず記録します。",
+      "outcome": "主張ではなく、改ざんを検出できる監査を基盤に",
+      "stack": [
+        "Rust",
+        "Tauri 2",
+        "React 19",
+        "SQLite (WAL)",
+        "SHA-256 hash-chain"
+      ]
+    },
+    {
+      "problem": "中古電子機器の買取エージェントは、商品ごとに重要な仕様を判断する必要があります。制約のないLLMは、Touch-ID端末にFace-IDを聞いたり、ファンのないMacBookにファン音を聞いたりします。",
+      "decision": "LLMの柔軟性と確定的なドメイン知識を統合。モデルが商品ごとのスキーマを提案し、人手で整備したハードウェア仕様表が不可能な項目を排除します。LLMは説明し、コードが判断します。",
+      "detail": "LangGraphのスーパーバイザーと専門ノード、全工程の構造化出力とretry/backoffを採用。P99の裾の遅延（45s = 11.5× P50）を調査し、スキーマキャッシュの事前準備と外部ツールのサーキットブレーカーにつなげました。",
+      "outcome": "ハードウェアの実態に整合するデータのみを通す",
+      "stack": [
+        "LangGraph",
+        "Gemini 2.5 (multimodal)",
+        "Bedrock KB RAG",
+        "Postgres checkpointer",
+        "HITL gating"
+      ]
+    },
+    {
+      "problem": "雑音、発話の重なり、長さのばらつきがある業務通話には、STT、話者分離、要約、構造化抽出が必要です。重い同期推論は待機GPUのコストを生み、急な負荷増に弱くなります。",
+      "decision": "WhisperとNeMoの話者分離を、Lambdaで駆動するSageMaker非同期エンドポイントに内製化。外部AIベンダーへの依存をなくし、個人情報を扱うデータのプライバシーを改善しながら、実処理時にGPUを使用します。",
+      "detail": "複数の文字起こしを一度に処理するin-context batching（Pydantic配列出力でプロンプトトークンを約80%削減）と、コンテンツハッシュによるプロンプトキャッシュを採用。モデルを信用せず、タイムスタンプ数が所定の比率を外れた文字起こしを拒否します。",
+      "outcome": "待機GPUなしで突発的な負荷に対応し、外部ベンダーへの依存を削減",
+      "stack": [
+        "Whisper Large-v3",
+        "NeMo diarization",
+        "SageMaker (async)",
+        "Bedrock",
+        "Gemini",
+        "S3 Tables (Iceberg)"
+      ]
+    },
+    {
+      "problem": "AIセキュリティレビューツールは、機械で検証できる証拠がなくてもLLMに指摘を「確認済み」とさせがちです。LLMの文章による判定だけではCIを止める根拠として不十分です。",
+      "decision": "純粋なPythonによる証拠ゲートが、LLMの判定を破棄して全判定を再計算。SASTの静的トレースだけでは「unconfirmable」とし、実行可能なPoCに進めます。反証は確認より優先します。",
+      "detail": "非LLMの判断ノードが必要なためCrewAIではなくLangGraphを選択。LLMのトリアージは確定的なグラフの外に置き、CONFIRMEDのみを対象として既定で無効化。スキャナーに主要な処理を任せ、<50k-tokens/scanを目標としました。",
+      "outcome": "機械で検証できる証拠を伴う指摘のみがCIを止める",
+      "stack": [
+        "LangGraph",
+        "LiteLLM",
+        "Semgrep",
+        "Trivy",
+        "Gitleaks",
+        "in-toto / DSSE"
+      ]
+    },
+    {
+      "problem": "複数人が同時編集する訪問営業の経路スケジュールで、新しい訪問が隣接する二つの予定の間に収まるかを判断し、二重予約を防ぐ必要があります。",
+      "decision": "円錐曲線の実行可能性制約に整理。隣接予定を焦点とする楕円内（PA + PB ≤ 設定距離）の訪問だけを提案し、大圏距離から求めた移動時間で色分けします。",
+      "detail": "Server-Sent Eventsによるリアルタイム編集と先着優先、データモデル全体のundo/redoを実現するMementoパターン、Google Calendarとの双方向同期を採用。",
+      "outcome": "幾何学的に実行可能な訪問候補と二重予約の防止",
+      "stack": [
+        "Next.js",
+        "Prisma",
+        "MySQL",
+        "SSE",
+        "conic-section constraint"
+      ]
+    },
+    {
+      "problem": "複数部門で共有するデータレイクの個人情報を保護し、部門をまたいでトークンを結合できないようにする必要があります。不動産スキーマでは所有者の個人情報をクライアントへ渡せません。",
+      "decision": "データレイク層で列単位の個人情報削除を強制し、department:field:versionをスコープとするHMAC仮名化を採用。不動産では、所有者の個人情報がクライアントへ届かないデータ構造を設計しました。",
+      "detail": "プライバシーを後付けフィルターではなく設計そのものに組み込み、設定不備では管理ルートをフェイルセーフに遮断。独自の本番準備監査でP0の指摘が残る間は公開を見送りました。",
+      "outcome": "スキーマ層でプライバシーを強制",
+      "stack": [
+        "Lake Formation (column-level PII)",
+        "HMAC pseudonymization",
+        "Payload CMS",
+        "Supabase",
+        "S3"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "ベトナム語",
+      "level": "母語"
+    },
+    {
+      "name": "英語",
+      "level": "業務で使用可能"
+    },
+    {
+      "name": "日本語",
+      "level": "限定的な業務使用"
+    }
+  ],
+  "skills": {
+    "frontend": [
+      "React 19",
+      "Next.js",
+      "TypeScript",
+      "TailwindCSS",
+      "Tauri 2 (desktop)",
+      "Vue.js",
+      "Astro"
+    ],
+    "backend": [
+      "Node.js",
+      "NestJS",
+      "Express",
+      "FastAPI",
+      "Flask",
+      "Laravel",
+      "Rust",
+      "Go",
+      "SSE"
+    ],
+    "database": [
+      "PostgreSQL + pgvector",
+      "MySQL",
+      "MongoDB",
+      "DynamoDB",
+      "SQLite (WAL)",
+      "S3 Tables / Iceberg"
+    ],
+    "cloud_devops": [
+      "AWS (Lambda, SAM, SageMaker, DynamoDB, EventBridge, S3, Bedrock, Cognito)",
+      "Terraform",
+      "ECS / Fargate",
+      "GitHub OIDC",
+      "Docker",
+      "CI/CD",
+      "CloudFront / WAF"
+    ],
+    "ai_ml": [
+      "LangGraph",
+      "Multi-Agent Systems",
+      "RAG (pgvector / HNSW)",
+      "Claude / Bedrock",
+      "Gemini (multimodal)",
+      "Whisper + NeMo",
+      "Florence-2 / BiRefNet",
+      "Structured output (Pydantic / Zod)",
+      "Prompt caching"
+    ],
+    "practices": [
+      "確定的なガードレール",
+      "イベント駆動設計",
+      "コストと遅延の最適化",
+      "DevSecOps",
+      "可観測性（X-Ray / CloudWatch）",
+      "ADRと設計判断の記録",
+      "最小権限とデータ分類",
+      "録音と文字起こしの評価",
+      "話者の役割の評価",
+      "証拠に基づくセキュリティ検証",
+      "エージェントのツール権限とログのプライバシー"
+    ]
+  },
+  "experience": [
+    {
+      "company": "Valixara",
+      "role": "創業者・CEO · プリンシパルエンジニア",
+      "location": "リモート · ホーチミン市",
+      "start": "2025",
+      "end": null,
+      "current": true,
+      "projects": [
+        {
+          "name": "Xem IDE · v1.0.3",
+          "summary": "プロジェクト、AIセッション、確認できる操作履歴をまとめるmacOSワークスペース。複数のリポジトリを扱いながら文脈を保ちます。",
+          "highlights": [
+            "複数ペインの作業画面で、プロジェクトの文脈、AIとの会話、リポジトリの作業を一つのデスクトップ画面にまとめます。",
+            "セッション再開時に会話履歴を復元し、エージェントだけでなく画面上でも文脈を保持。",
+            "プロジェクト知識はワークスペースのMarkdownに保存し、SQLiteをローカルの派生インデックスとして使用。",
+            "AIの操作を追記専用のハッシュチェーン台帳に記録。ファイルへのアクセスをワークスペースのルートに限定。"
+          ],
+          "stack": [
+            "Rust",
+            "Tauri 2",
+            "React 19",
+            "TypeScript",
+            "SQLite (WAL)"
+          ],
+          "id": "agent-tooling"
+        },
+        {
+          "name": "プロジェクト・インテリジェンス知識基盤",
+          "summary": "企業の文脈を扱うRAGと知識グラフを備えたProject-Intelligence OS。自然言語で回答し、AIが行った操作を不変の監査証跡として記録します。",
+          "highlights": [
+            "Neo4j / PineconeではなくPostgres + pgvectorを選び、関係データとベクトルを同じストアに集約。ネイティブな結合と$0の追加インフラ負担を実現し、この選択を覆すrecall閾値も記録しました。",
+            "学習なしで逐次挿入できるHNSWをIVFFlatより優先。文書ではなくチャンクを検索単位としました。",
+            "後にコックピットへRustで再実装したハッシュチェーン基盤の原型。"
+          ],
+          "stack": [
+            "Python",
+            "Postgres + pgvector (HNSW)",
+            "Claude answerer",
+            "Structured extraction",
+            "SHA-256 audit chain"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "MarketEnterprise Vietnam",
+      "role": "テックリード · AI・システム設計",
+      "location": "ホーチミン市",
+      "start": "2023-06",
+      "end": null,
+      "current": true,
+      "projects": [
+        {
+          "name": "通話録音インテリジェンス・パイプライン",
+          "summary": "通話録音を検索可能な日本語要約と構造化分析データに変換し、仕入れ担当者が文脈確認のために通話全体を聞き直す作業を支援。",
+          "highlights": [
+            "S3 → SQS → SageMaker async → SNS → batchのイベント駆動パイプラインを構築。内製Whisper Large-v3、NeMoの話者分離、構造化抽出を実行し、顧客の個人情報を扱う業務で外部AIベンダーへの依存を削減。",
+            "in-context batching（Pydantic配列出力でプロンプトトークンを約80%削減）でLLMコストを抑制。モデルを信用せず、タイムスタンプ数が所定の比率を外れた文字起こしを拒否。",
+            "大規模モノリスを最小権限の読み込み・書き込み・フィードバックサービスへ分割。async-202-pollパターンと、SQS visibility buffer、DynamoDBの結果整合性に関する注意点を文書化。",
+            "最近の重点：録音の互換性、文字起こし品質、ハルシネーションの確認、話者分離、実際の業務フローでの話者役割の評価。"
+          ],
+          "stack": [
+            "Python 3.11",
+            "AWS SAM",
+            "SageMaker",
+            "S3 Tables / Iceberg",
+            "React 19",
+            "X-Ray"
+          ],
+          "id": "production-ai"
+        },
+        {
+          "name": "オムニチャネル買取AIエージェント",
+          "summary": "LINE / WhatsApp / Telegram / Webで中古電子機器の買取を支援するマルチエージェントシステム。固定の質問ツリーではなく、商品ごとに重要な仕様を判断します。",
+          "highlights": [
+            "LLMの柔軟性と確定的なドメイン知識を統合。モデルが商品ごとのスキーマを提案し、人手で整備したハードウェア仕様表が不可能な項目を排除。",
+            "LangGraphのスーパーバイザーと専門ノード、全工程の構造化出力とretry/backoffを採用。",
+            "P99の裾の遅延（45s = 11.5× P50）の調査を、スキーマキャッシュの事前準備とサーキットブレーカーにつなげ、支払い時にはHITLゲートを配置。"
+          ],
+          "stack": [
+            "LangGraph",
+            "Gemini 2.5 (multimodal)",
+            "Bedrock KB RAG",
+            "Postgres checkpointer",
+            "E2E AI-simulator"
+          ]
+        },
+        {
+          "name": "通話自動化プラットフォームと日本語音声ボット",
+          "summary": "複数テナント向けの発着信自動化基盤。CRMイベントによる自動発信、流量を制御した一括キャンペーン、商品登録用の日本語着信ボット。",
+          "highlights": [
+            "EventBridge → SQS → Lambdaのレート制御と、最大5回でFAILEDとなる有限リトライ状態機械で通信キャリアを保護し、顧客への繰り返し発信を抑制。",
+            "Amazon Lex V2（ja_JP）とBedrock Claude Haikuを組み合わせて質問を動的に生成。スパム、無音、通話時間のガードを追加。",
+            "無音、ブランドの誤認識、PostCode形式など実際の電話障害に対応。途中切断時には未完了の情報を保存。"
+          ],
+          "stack": [
+            "Python 3.13",
+            "AWS SAM",
+            "Lex V2 (ja_JP)",
+            "Bedrock (Claude Haiku)",
+            "DynamoDB Streams → Kinesis → S3"
+          ]
+        },
+        {
+          "name": "AI支援セキュリティレビューツール",
+          "summary": "機械で検証できる証拠を伴う指摘だけがCIを止めるセキュリティレビューツール。判定はLLMではなくコードが行います。",
+          "highlights": [
+            "純粋なPythonの証拠ゲートがLLMの設定した判定を破棄し、すべてを再計算。SASTの静的トレースだけでは「unconfirmable」とし、実行可能なPoCに進めます。",
+            "非LLMの判断ノードを配置できるLangGraphを選択。CrewAIではLLMの説明に依存する構造になっていたためです。",
+            "スキャナーに主要な処理を任せ、<50k-tokens/scanを目標としました。レポートにはin-toto/DSSEで署名。",
+            "最近の重点：指摘を再現可能な証拠まで追跡し、技術的な対応を提案する前にリリースリスクを評価。"
+          ],
+          "stack": [
+            "LangGraph",
+            "LiteLLM",
+            "Semgrep",
+            "Trivy",
+            "Gitleaks",
+            "Nuclei"
+          ],
+          "id": "security-engineering"
+        },
+        {
+          "name": "商品写真と説明文の生成",
+          "summary": "コスト上限を設けた二つの推論プロダクト。商品写真の一括背景除去と、仕様の出典を示すSEO向け日本語商品説明文。",
+          "highlights": [
+            "写真処理：独自学習したBiRefNetマッティングモデルの前段にFlorence-2 VLMフィルターを置き、背景除去の必要性を判断。GPUエンドポイントはSQSキュー深度で拡縮し、待機時には停止。",
+            "予約同時実行数を外部APIのRPM上限に合わせ、障害ではなくバックプレッシャーで負荷を制御。",
+            "説明文処理：JSON-schemaで制約したGemini出力（Zod → responseSchema → 再検証）、コンテンツハッシュのプロンプトキャッシュ、処理中リクエストの重複排除。",
+            "最近の重点：写真と説明文の業務フロー、データ同期、保存ライフサイクル、クラウドコスト管理。"
+          ],
+          "stack": [
+            "Next.js 15",
+            "AWS SAM",
+            "SageMaker async",
+            "BiRefNet / Florence-2",
+            "S3 → SNS → SQS + DLQ",
+            "TypeScript"
+          ]
+        },
+        {
+          "name": "基盤の刷新 — モノリスからマイクロサービスへ",
+          "summary": "中古品取引の大規模プラットフォームをモノリスからマイクロサービスへ再設計し、性能改善とチームごとの独立したリリースを支援。",
+          "highlights": [
+            "NX Monorepoで内部サービスと公開APIの境界を明示。慣例ではなく構造として境界を定義。",
+            "SOLIDに従うNestJSサービスと安定した契約、AWS（EC2 + CodePipeline）で環境別CI/CDを構築。",
+            "SQSとLambdaによるイベント駆動の通知設計、MySQLのクエリとインデックスの最適化。"
+          ],
+          "stack": [
+            "NX Monorepo",
+            "NestJS",
+            "Next.js",
+            "AWS (EC2, ECR, SQS, Lambda, CodePipeline)",
+            "MySQL"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "PloggMedia",
+      "role": "Web開発者（リモート）",
+      "location": "リモート",
+      "start": "2022-09",
+      "end": "2023-04",
+      "current": false,
+      "projects": [
+        {
+          "name": "Bucco（医療SaaS — フランス）",
+          "summary": "フランス市場の歯科医院をつなぐアプリケーションの保守と機能開発。",
+          "highlights": [
+            "NestJS、Vue.js、Vuetifyによるフルスタック開発。",
+            "実際のユーザーフィードバックを基にUI/UXを改善し、不具合を修正。",
+            "欧州チームとの非同期の協働スキルを習得。"
+          ],
+          "stack": [
+            "NestJS",
+            "Vue.js",
+            "Vuetify",
+            "Vuex",
+            "Docker"
+          ]
+        },
+        {
+          "name": "Synode（3D組立手順SaaS）",
+          "summary": "手作業の2D文書に代わる、インタラクティブな3D組立手順を作成・共有するSaaSを開発。",
+          "highlights": [
+            "Web上の3D表示で2D CAD文書を置き換え。",
+            "Figmaの設計を実装し、バックエンドAPIを構築。",
+            "Docker環境でThree.js、Strapi、NestJSを統合。"
+          ],
+          "stack": [
+            "NestJS",
+            "Three.js",
+            "Vuetify",
+            "Strapi",
+            "Docker"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "GenCapital",
+      "role": "フロントエンド開発者",
+      "location": "ホーチミン市",
+      "start": "2022-04",
+      "end": "2022-06",
+      "current": false,
+      "projects": [
+        {
+          "name": "暗号資産ニュース・eラーニング基盤",
+          "summary": "暗号資産市場の学習・ニュース基盤のインターフェースを開発。",
+          "highlights": [
+            "APIと連携してオンチェーンデータを表示し、技術文書を支援。",
+            "複数端末でのユーザー体験を最適化。",
+            "学習進捗を記録するモジュールを開発。"
+          ],
+          "stack": [
+            "React",
+            "UI/UX",
+            "Responsive Web"
+          ]
+        }
+      ]
+    }
+  ],
+  "personalProjects": [
+    {
+      "name": "doxuanloc.space — 自動更新ポートフォリオ",
+      "period": "2026 — 現在",
+      "teamSize": 1,
+      "summary": "コンテンツプロダクトとして運用するAstroサイト。複数AIのパイプラインが毎日の記事を公開してLinkedInへ配信し、JSON-schemaとセキュリティ検証が必須項目の欠落、出典不備、内部名称の流出でビルドを停止します。スクロール挙動は慣例ではなく、計測したカクつきを基に選択。",
+      "stack": [
+        "Astro 5",
+        "3言語 EN/VI/JA",
+        "複数AIパイプライン"
+      ],
+      "links": {
+        "live": "https://doxuanloc.space"
+      }
+    },
+    {
+      "name": "Xuân Lộc Solar — 農業向けEPCサイト",
+      "period": "2025",
+      "teamSize": 1,
+      "summary": "外観ではなく単位経済性から事業を再定位。一般的な太陽光小売から、高付加価値の農業向けEPC + O&Mへ。架空の実績カウンターを削除してストック写真を明示し、地方の高齢購入者向けにアクセシビリティ（18px/1.7、大きなタップ領域）を調整。",
+      "stack": [
+        "Vanilla HTML/SCSS",
+        "Vercel edge"
+      ],
+      "links": {}
+    },
+    {
+      "name": "BĐS Bảo Lộc — 不動産基盤",
+      "period": "2025",
+      "teamSize": 1,
+      "summary": "所有者の個人情報をクライアントへ渡さないという制約から設計したハイブリッドCMS。設定不備では管理ルートをフェイルセーフに遮断し、独自の本番準備監査でP0の指摘が残る間は公開を見送りました。",
+      "stack": [
+        "Next.js 15",
+        "Payload CMS",
+        "Supabase",
+        "S3"
+      ],
+      "links": {}
+    },
+    {
+      "name": "NauPhaChe — バーテンダー講座基盤",
+      "period": "2022-10 — 2023-11",
+      "teamSize": 2,
+      "summary": "決済、アクティベーションコードの配布、コンテンツ管理を備えた講座管理基盤の個人開発。",
+      "stack": [
+        "Next.js",
+        "Bootstrap",
+        "NestJS",
+        "MongoDB"
+      ],
+      "links": {
+        "client": "https://course-tiktok-9ge7.vercel.app/",
+        "admin": "https://dashboard-admin-course.vercel.app/"
+      }
+    },
+    {
+      "name": "MyReview — Viettel（ミャンマー）",
+      "period": "2023-03 — 2023-05",
+      "teamSize": 7,
+      "summary": "エンターテインメント基盤のWebインターフェースを開発し、Mytel通信キャリアのOTP認証を統合。",
+      "stack": [
+        "HTML5",
+        "CSS",
+        "ExpressJS",
+        "TypeScript"
+      ],
+      "links": {
+        "site": "https://myreview.asia"
+      }
+    }
+  ],
+  "education": [
+    {
+      "school": "情報技術大学（UIT）",
+      "org": "ベトナム国家大学ホーチミン市校",
+      "degree": "コンピュータ工学",
+      "period": "2018 — 2021"
+    },
+    {
+      "school": "BTEC FPT",
+      "org": "FPT Education",
+      "degree": "ソフトウェア工学",
+      "period": "2021 — 2024"
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "2026",
+      "label": "Valixara — 検証可能なAI",
+      "story": "Valixaraの中核となる、改ざん検出可能な操作台帳と不変の監査証跡を備えたProject-Intelligence OSを公開。",
+      "focus": [
+        "ハッシュチェーン監査",
+        "ローカル中心のRust/Tauri",
+        "RAGと知識グラフ",
+        "確定的なガードレール"
+      ],
+      "status": "in-progress"
+    },
+    {
+      "phase": "2026–2027",
+      "label": "規模に応じたシステム",
+      "story": "複数テナントのサーバーレス基盤で性能とコストを均衡させ、AIシステムの処理能力を拡張。",
+      "focus": [
+        "分散推論",
+        "サーバーレスAI",
+        "コストと遅延の調整",
+        "マルチテナント基盤"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase": "2027–2028",
+      "label": "設計に組み込むAIセキュリティ",
+      "story": "機械で検証できる実行可能な要件として、SDLC、サプライチェーンの完全性、ゼロトラストを整備。",
+      "focus": [
+        "機械で検証するSDLC",
+        "ゼロトラストAI",
+        "サプライチェーンの完全性",
+        "コンプライアンス"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase": "2028–2030",
+      "label": "AIソリューション設計",
+      "story": "エージェントのオーケストレーションとプラットフォーム設計を通じ、企業向けAIソリューションを形に。",
+      "focus": [
+        "企業向けRAG",
+        "エージェントのオーケストレーション",
+        "プラットフォーム設計",
+        "AIガバナンス"
+      ],
+      "status": "planned"
+    },
+    {
+      "phase": "2030+",
+      "label": "国境を越える開発",
+      "story": "語学力とリーダーシップを磨き、国境を越えてプロダクトとチームを導く。",
+      "focus": [
+        "日本語N3+",
+        "国際チーム",
+        "創業者のリーダーシップ",
+        "専門知識の発信"
+      ],
+      "status": "planned"
+    }
+  ],
+  "$comment_journey": "/journeyの基準データ。考え方の変化、習得したスキル、貢献に焦点を当てる。顧客名、日本の親会社名、内部数値を含めない。",
+  "journey": [
+    {
+      "id": "uit-foundation",
+      "year": "2018–2021",
+      "kind": "education",
+      "title": "UITで技術的な思考を身に付ける",
+      "narrative": "アルゴリズム、コンピュータアーキテクチャ、システム思考の基礎を学び、その後の大規模な課題への土台を形成。",
+      "bullets": [
+        "ベトナム国家大学ホーチミン市校でコンピュータ工学を専攻",
+        "システム設計とアルゴリズムに注力",
+        "BTEC FPTでWebプログラミングを学び始める"
+      ],
+      "tags": [
+        "Computer Engineering",
+        "Algorithms",
+        "Systems"
+      ],
+      "imageConcept": "夕暮れの大学図書館、開いたノートPC、本と志。",
+      "codename": "ORIGIN-01 // SYSTEMS-THINK",
+      "chapter": "origins",
+      "arc": "foundation",
+      "order": 10
+    },
+    {
+      "id": "btec-practical",
+      "year": "2021–2022",
+      "kind": "education",
+      "title": "実践的な開発環境へ",
+      "narrative": "実践プロジェクトに参加し、理論からソフトウェア開発の工程とチームでの作業へ。",
+      "bullets": [
+        "BTEC FPTでソフトウェア工学を学ぶ",
+        "標準工程に沿ってチームプロジェクトを実施",
+        "最初の専門職への足掛かり"
+      ],
+      "tags": [
+        "Software Engineering",
+        "Teamwork"
+      ],
+      "imageConcept": "実験室、コードが映る画面、レビューする学生。",
+      "codename": "ORIGIN-02 // PRACTICAL-BRIDGE",
+      "chapter": "origins",
+      "arc": "foundation",
+      "connectsTo": [
+        "uit-foundation"
+      ],
+      "order": 11
+    },
+    {
+      "id": "first-frontend-ship",
+      "year": "2022",
+      "kind": "frontend",
+      "title": "初めてのプロダクト開発",
+      "narrative": "オンチェーンデータ、技術文書、直接のフィードバックを通じてユーザー体験を改善。",
+      "bullets": [
+        "暗号資産とeラーニング基盤のReactJS画面を開発",
+        "APIデータを処理し、技術コンテンツを執筆",
+        "ユーザー行動を基にUI/UXを改善"
+      ],
+      "tags": [
+        "ReactJS",
+        "On-chain",
+        "UI/UX"
+      ],
+      "imageConcept": "夜のサイゴンに光るReact画面と青い暗号資産チャート。",
+      "codename": "FORGE-01 // FIRST-USERS",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": [
+        "btec-practical"
+      ],
+      "order": 20
+    },
+    {
+      "id": "threejs-saas",
+      "year": "2022–2023",
+      "kind": "fullstack",
+      "title": "3D SaaSの開発に参加",
+      "narrative": "フルスタックを担当し、Webの3D描画を通じて業務要件を具体的な解決策に変換。",
+      "bullets": [
+        "NestJS、Vue、Three.js、Dockerを使用",
+        "製造技術者向けの3D手順ツールを開発",
+        "図面から業務フローに沿ったバックエンドAPIを設計"
+      ],
+      "tags": [
+        "Three.js",
+        "NestJS",
+        "Full-Stack",
+        "Docker"
+      ],
+      "imageConcept": "回転する3Dモデル、青い光、フロントとバックの二画面。",
+      "codename": "FORGE-02 // 3D-SHIP",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": [
+        "first-frontend-ship"
+      ],
+      "order": 21
+    },
+    {
+      "id": "personal-platforms",
+      "year": "2022–2023",
+      "kind": "personal",
+      "title": "個人開発を通じて学ぶ",
+      "narrative": "個人プロジェクトで認証、決済、システム管理の課題に直接取り組む。",
+      "bullets": [
+        "講座基盤を開発（Next.js、NestJS、MongoDB）",
+        "MyReviewでSMS OTPログインを統合",
+        "プロダクト開発の全工程を学ぶ"
+      ],
+      "tags": [
+        "Next.js",
+        "Billing",
+        "Ownership"
+      ],
+      "imageConcept": "管理画面とSMS決済画面、自主開発の雰囲気。",
+      "codename": "FORGE-03 // SIDE-QUESTS",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": [
+        "threejs-saas"
+      ],
+      "order": 22
+    },
+    {
+      "id": "plogg-bucco",
+      "year": "2022–2023",
+      "kind": "fullstack",
+      "title": "リモートでの協働",
+      "narrative": "国際チームとの遠隔作業で、柔軟な不具合対応とフィードバックに基づく改善を習得。",
+      "bullets": [
+        "Docker環境でNestJSとVue.jsを使用",
+        "不具合に対応し、機能を迅速に公開",
+        "欧州チームとの非同期協働を改善"
+      ],
+      "tags": [
+        "Vue.js",
+        "Remote",
+        "Healthcare"
+      ],
+      "imageConcept": "診療所と予約画面、白と青緑の照明。",
+      "codename": "FORGE-04 // REMOTE-SHIP",
+      "chapter": "forge",
+      "arc": "build",
+      "connectsTo": [
+        "personal-platforms"
+      ],
+      "order": 23
+    },
+    {
+      "id": "me-join",
+      "year": "2023-06",
+      "kind": "transition",
+      "title": "企業システムの設計へ",
+      "narrative": "MarketEnterpriseに参加し、小規模チームから日本のreCommerceグループ向け大規模システムへ。継続性を重視。",
+      "bullets": [
+        "NX Monorepoとマイクロサービス設計を学ぶ",
+        "複数環境のCI/CDを活用",
+        "機能完成から保守性と拡張性へ考え方を転換"
+      ],
+      "tags": [
+        "Transition",
+        "Monorepo",
+        "Enterprise"
+      ],
+      "imageConcept": "多数のサービスが並ぶ大きな設計図、開発現場の雰囲気。",
+      "codename": "TRANSIT-01 // SCALE-UP",
+      "chapter": "systems",
+      "arc": "scale",
+      "connectsTo": [
+        "plogg-bucco",
+        "threejs-saas"
+      ],
+      "order": 30
+    },
+    {
+      "id": "modernize",
+      "year": "2023–2024",
+      "kind": "fullstack",
+      "title": "reCommerce基盤を再構成",
+      "narrative": "中古品取引の大規模モノリスを独立サービスへ分割し、結合を蓄積せずチームごとの公開を可能に。",
+      "bullets": [
+        "Monorepo上にNestJSマイクロサービスを実装",
+        "データベースとAWS上の運用を最適化",
+        "通知システムにイベント駆動設計を適用"
+      ],
+      "tags": [
+        "NX",
+        "Microservices",
+        "AWS",
+        "Japan"
+      ],
+      "imageConcept": "企業用画面上に光る複雑なAWS構成図。",
+      "codename": "SYSTEMS-01 // STRANGLER",
+      "chapter": "systems",
+      "arc": "scale",
+      "connectsTo": [
+        "me-join"
+      ],
+      "order": 31
+    },
+    {
+      "id": "mmt-event-driven",
+      "year": "2023–2024",
+      "kind": "fullstack",
+      "title": "イベント駆動のコミュニケーション自動化",
+      "narrative": "複数のデータ源を同期し、社内運用を支えるコミュニケーション自動化ツールを開発。",
+      "bullets": [
+        "AWS SAM、Lambda、EventBridgeを活用",
+        "SMS、Line、SlackなどのAPIとWebhookを接続",
+        "担当者向けの操作ダッシュボードを開発"
+      ],
+      "tags": [
+        "Event-Driven",
+        "SAM",
+        "Webhooks"
+      ],
+      "imageConcept": "イベントバスの図、多くの矢印、運用画面。",
+      "codename": "SYSTEMS-02 // EVENT-BUS",
+      "chapter": "systems",
+      "arc": "scale",
+      "connectsTo": [
+        "modernize"
+      ],
+      "order": 32
+    },
+    {
+      "id": "first-rag",
+      "year": "2024",
+      "kind": "ai",
+      "title": "社内業務へのAI活用",
+      "narrative": "LLMを統合して専門文書の検索ツールを構築。「AIに事実を作らせないには」という問いへの第一歩。",
+      "bullets": [
+        "RAGと埋め込みによるデータ抽出",
+        "情報保護のためモデルをローカルに配置",
+        "AIのハルシネーションを抑制"
+      ],
+      "tags": [
+        "RAG",
+        "Embeddings",
+        "Local LLM"
+      ],
+      "imageConcept": "紫と青のニューラルネットワーク、光の川のようなデータ。",
+      "codename": "INTEL-01 // RAG-FIRST",
+      "chapter": "intelligence",
+      "arc": "ai",
+      "connectsTo": [
+        "mmt-event-driven"
+      ],
+      "order": 40
+    },
+    {
+      "id": "ai-pipeline-prod",
+      "year": "2024–現在",
+      "kind": "ai",
+      "title": "確定的なガードレールを備える本番AI",
+      "narrative": "マルチエージェント、音声分析、セキュリティレビューを実システムへ。確率的モデルを確定的なガードレールで包み、コストを設計制約とする。",
+      "bullets": [
+        "LangGraphマルチエージェントと構造化出力、LLMを信用しない設計",
+        "SageMaker asyncで待機GPUを削減、セキュリティ判定はコードの証拠ゲートで",
+        "X-Rayの可観測性とリクエスト経路のコスト管理"
+      ],
+      "tags": [
+        "LangGraph",
+        "Guardrails",
+        "Cost",
+        "Observability"
+      ],
+      "imageConcept": "ニューラルネットワークとイベントの矢印、監視HUD。",
+      "codename": "INTEL-02 // GUARDRAILS",
+      "chapter": "intelligence",
+      "arc": "ai",
+      "connectsTo": [
+        "first-rag",
+        "mmt-event-driven"
+      ],
+      "order": 41
+    },
+    {
+      "id": "valixara-founder",
+      "year": "2025–現在",
+      "kind": "ai",
+      "title": "Valixaraを創業",
+      "narrative": "AIが行動するなら、何をしたか証明できるべき。その考えを、改ざん検出可能な操作記録という一つの基盤から、設計、実装、プロダクトへ展開。",
+      "bullets": [
+        "Rust + Tauri 2、96のネイティブコマンドを備えるローカル中心のコックピット。観測した変化を基にハッシュチェーン台帳を記録",
+        "Project-Intelligence OS：RAGと知識グラフ、不変の監査証跡（Postgres + pgvector、HNSW）",
+        "創業者・CEOとして方向性を定め、プリンシパルエンジニアとして開発"
+      ],
+      "tags": [
+        "Valixara",
+        "Founder",
+        "Rust",
+        "Verifiable AI"
+      ],
+      "imageConcept": "Valixaraの星座ロゴ、光るハッシュチェーン台帳、創業期の空間。",
+      "photo": "/images/journey/ai-solutions-architect.webp",
+      "codename": "FOUNDER-01 // PROVE-IT",
+      "chapter": "horizon",
+      "arc": "founder",
+      "connectsTo": [
+        "ai-pipeline-prod"
+      ],
+      "order": 45
+    },
+    {
+      "id": "horizon-lead",
+      "year": "2026+",
+      "kind": "future",
+      "title": "検証可能なAIを、より大きな規模へ",
+      "narrative": "Valixaraの開発を続けながら設計力と語学力を磨き、国境を越えて検証可能なAIと設計段階からのセキュリティを提供。",
+      "bullets": [
+        "検証可能なAI基盤を企業向けRAGとエージェントのオーケストレーションへ拡張",
+        "設計に組み込むSDLCのセキュリティとクラウドコスト管理を強化",
+        "日本のパートナーとの協働に向けてJLPT N3+を目指す"
+      ],
+      "tags": [
+        "AI Architecture",
+        "Founder",
+        "JP N3+"
+      ],
+      "imageConcept": "現在と検証可能なAIの未来をつなぐ光の橋。",
+      "codename": "HORIZON-01 // PROVE-AT-SCALE",
+      "chapter": "horizon",
+      "arc": "founder",
+      "connectsTo": [
+        "valixara-founder"
+      ],
+      "order": 50
+    }
+  ]
+}

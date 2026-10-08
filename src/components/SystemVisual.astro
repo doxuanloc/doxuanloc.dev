@@ -1,0 +1,92 @@
+---
+interface Props { kind?: 'hero' | 'agent' | 'voice' | 'security'; lang?: 'en' | 'vi' | 'ja'; }
+const { kind = 'hero', lang = 'en' } = Astro.props;
+const labels = {
+  en: { caption: 'Concept illustration', agent: ['Action', 'Observation', 'History'], voice: ['Audio', 'Inference', 'Context'], security: ['Finding', 'Evidence', 'Decision'], hero: ['Interface', 'Intelligence', 'Integrity'] },
+  vi: { caption: 'Minh họa ý tưởng', agent: ['Hành động', 'Quan sát', 'Lịch sử'], voice: ['Âm thanh', 'Suy luận', 'Ngữ cảnh'], security: ['Finding', 'Bằng chứng', 'Quyết định'], hero: ['Giao diện', 'Trí tuệ', 'Kiểm chứng'] },
+  ja: { caption: 'コンセプト図', agent: ['操作', '観測', '履歴'], voice: ['音声', '推論', '文脈'], security: ['指摘', '証拠', '判断'], hero: ['接点', '知能', '信頼'] },
+}[lang];
+const heights = Array.from({ length: 46 }, (_, i) => 8 + Math.abs(Math.sin(i * 1.7) * Math.cos(i * .29)) * 90);
+---
+<div class:list={['system-art', `art-${kind}`]}>
+  <div class="art-grid" aria-hidden="true"></div>
+  {kind === 'hero' || kind === 'agent' ? (
+    <svg class="orbit-art" viewBox="0 0 520 460" fill="none" aria-hidden="true">
+      <g class="orbit-lines" stroke="#aac8ff">
+        <ellipse cx="260" cy="224" rx="190" ry="67" transform="rotate(-28 260 224)" opacity=".36" />
+        <ellipse cx="260" cy="224" rx="190" ry="67" transform="rotate(28 260 224)" opacity=".36" />
+        <ellipse cx="260" cy="224" rx="178" ry="86" transform="rotate(90 260 224)" opacity=".22" />
+        <circle cx="260" cy="224" r="142" stroke-dasharray="2 9" opacity=".32" />
+        <circle cx="260" cy="224" r="201" opacity=".09" />
+      </g>
+      <g class="art-core">
+        <path d="m260 152 67 38v76l-67 39-67-39v-76z" fill="#182d4b" stroke="#92b8f5" stroke-width="1.2" />
+        <path d="m193 190 67 39 67-39M260 229v76" stroke="#92b8f5" stroke-width="1.2" />
+        <path d="m260 168 52 30-52 30-52-30z" fill="#2f4f7a" />
+        <path d="m207 207 38 22v51l-38-22z" fill="#223d61" />
+        <path d="m274 229 39-22v51l-39 22z" fill="#102239" />
+      </g>
+      <g fill="#d5e4ff">
+        <circle cx="102" cy="276" r="5" /><circle cx="409" cy="274" r="5" /><circle cx="260" cy="49" r="5" />
+      </g>
+      <g stroke="#87a5d2" opacity=".4"><path d="M96 282 61 319H27M415 280l32 34h42M266 47h43l24-22" /></g>
+      <g class="core-dots" fill="#adcdbb"><circle cx="375" cy="157" r="3" /><circle cx="161" cy="116" r="3" /><circle cx="252" cy="365" r="3" /></g>
+    </svg>
+  ) : kind === 'voice' ? (
+    <div class="voice-art" aria-hidden="true">
+      <div class="waveform">{heights.map((height, i) => <i style={`--height:${height}px;--delay:${i * 30}ms`}></i>)}</div>
+      <div class="transcript-lines"><span></span><span></span><span></span></div>
+      <svg viewBox="0 0 310 36" fill="none"><path d="M5 18h111l18-10 20 20 18-20 18 10h115" stroke="#aac8ff" stroke-width="1.5"/><circle cx="5" cy="18" r="4" fill="#adcdbb"/><circle cx="305" cy="18" r="4" fill="#aac8ff"/></svg>
+    </div>
+  ) : (
+    <div class="security-art" aria-hidden="true"><span class="security-scan"></span>
+      <svg viewBox="0 0 360 300" fill="none">
+        <g stroke="#7195c8" opacity=".3"><path d="M40 62h98M40 150h92M40 238h98M222 62h98M228 150h92M222 238h98"/><circle cx="40" cy="62" r="5"/><circle cx="40" cy="150" r="5"/><circle cx="40" cy="238" r="5"/><circle cx="320" cy="62" r="5"/><circle cx="320" cy="150" r="5"/><circle cx="320" cy="238" r="5"/></g>
+        <path d="M180 30 254 66v80c0 53-42 96-74 118-32-22-74-65-74-118V66z" fill="#192d46" stroke="#aac8ff" stroke-width="1.2"/>
+        <path d="m180 53 54 27v65c0 39-27 72-54 94-27-22-54-55-54-94V80z" stroke="#6485b3" stroke-dasharray="3 5"/>
+        <path d="m153 145 19 19 36-40" stroke="#adcdbb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  )}
+  <div class="art-nodes" aria-hidden="true">{labels[kind].map((label, i) => <span><i></i>{label}<small>0{i + 1}</small></span>)}</div>
+  <p class="art-caption mono">{labels.caption}</p>
+</div>
+<style>
+  .system-art { position: relative; isolation: isolate; overflow: hidden; width: 100%; min-width: 0; min-height: 330px; display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; background: #141a24; }
+  .art-grid { position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(#8badde08 1px, transparent 1px), linear-gradient(90deg, #8badde08 1px, transparent 1px); background-size: 38px 38px; mask-image: radial-gradient(ellipse at center, #000, transparent 75%); }
+  .orbit-art { display: block; width: 100%; height: 340px; }
+  .art-hero { background: transparent; min-height: 470px; }
+  .art-hero .orbit-art { height: 420px; }
+  .art-nodes { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: -20px; padding: 0 22px; min-width: 0; }
+  .art-nodes span { display: flex; align-items: center; gap: 7px; background: #1d2736; border: 1px solid #3a4b65; padding: 8px 10px; border-radius: 6px; font-size: 12px; color: #d6e2f4; white-space: nowrap; }
+  .art-nodes i { height: 4px; width: 4px; border-radius: 50%; background: #a5c6f9; }
+  .art-nodes small { color: #9bacc4; font-size: 8px; }
+  .art-caption { font-size: 11px; color: #a3aec0; text-align: center; margin: 20px 0 14px; letter-spacing: .08em; }
+  .voice-art { padding: 46px 46px 30px; min-width: 0; }
+  .waveform { height: 120px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .waveform i { width: 4px; height: var(--height); background: #aac8ff; border-radius: 5px; opacity: .8; }
+  .waveform i:nth-child(3n) { background: #adcdbb; }
+  .transcript-lines { display: grid; gap: 9px; padding: 12px 24px 22px; }
+  .transcript-lines span { height: 5px; background: #738caf; border-radius: 2px; opacity: .3; }
+  .transcript-lines span:nth-child(2) { width: 80%; }.transcript-lines span:nth-child(3) { width: 55%; }
+  .voice-art svg { display: block; width: 100%; height: 36px; }
+  .security-art svg { display: block; width: 100%; height: 285px; }
+  .art-core { transform-origin: 260px 224px; animation: core-float 8s ease-in-out infinite; }
+  @keyframes core-float { 50% { transform: translateY(-8px); } }
+  @media (max-width: 600px) { .art-hero { min-height: 335px; }.art-hero .orbit-art { height: 300px; }.system-art { min-height: 310px; }.art-nodes { gap: 7px; padding-inline: 10px; }.art-nodes span { padding: 7px; font-size: 11px; }.voice-art { padding-inline: 25px; }.orbit-art { height: 290px; } }
+  @media (max-width: 420px) { .art-nodes small { display: none; }.art-nodes span { gap: 5px; }.waveform { gap: 3px; } }
+  .orbit-lines { transform-origin: 260px 224px; animation: diagram-orbit 36s linear infinite; }
+  .core-dots { animation: signal-pulse 3s ease-in-out infinite; }
+  .waveform i { animation: waveform-flow 2.6s ease-in-out infinite; animation-delay: calc(var(--delay) * -1); transform-origin: center; }
+  .transcript-lines span { transform-origin: left; animation: transcript-flow 4s ease-in-out infinite; }
+  .transcript-lines span:nth-child(2) { animation-delay: .25s; }.transcript-lines span:nth-child(3) { animation-delay: .5s; }
+  .security-art { position: relative; }
+  .security-scan { position: absolute; left: 14%; right: 14%; top: 14%; height: 1px; background: linear-gradient(90deg,transparent,#b6e8db,transparent); box-shadow: 0 0 15px #adcdbb77; animation: proof-scan 4s ease-in-out infinite; }
+  @keyframes diagram-orbit { to { transform: rotate(360deg); } }
+  @keyframes waveform-flow { 0%,100% { transform: scaleY(.45); opacity: .45; } 50% { transform: scaleY(1); opacity: 1; } }
+  @keyframes signal-pulse { 50% { opacity: .3; } }
+  @keyframes transcript-flow { 0%,100% { transform: scaleX(.65); opacity: .15; } 50% { transform: scaleX(1); opacity: .5; } }
+  @keyframes proof-scan { 0%,100% { top: 14%; opacity: .2; } 50% { top: 85%; opacity: .85; } }
+  @media (prefers-reduced-motion: reduce) { .system-art * { animation: none !important; } }
+
+</style>

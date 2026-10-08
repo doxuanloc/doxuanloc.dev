@@ -1,92 +1,68 @@
 ---
-interface Project { name: string; summary: string; highlights?: string[]; stack?: string[]; }
-interface Props {
-  company: string;
-  role: string;
-  location?: string;
-  start: string;
-  end?: string | null;
-  current?: boolean;
-  projects?: Project[];
-}
 import { getLangFromUrl } from '../i18n/ui';
+import { getPortfolioCopy } from '../lib/portfolio';
+interface Project { id?: string; name: string; summary: string; highlights?: string[]; stack?: string[]; }
+interface Props { company: string; role: string; location?: string; start: string; end?: string | null; current?: boolean; projects?: Project[]; }
 const { company, role, location, start, end, current, projects = [] } = Astro.props;
-const present = getLangFromUrl(Astro.url) === 'vi' ? 'nay' : 'Present';
+const lang = getLangFromUrl(Astro.url);
+const copy = getPortfolioCopy(lang).experience;
 function fmt(d?: string | null) {
   if (!d) return '';
   const [y, m] = d.split('-');
-  return m ? `${m}/${y}` : y;
+  return m ? (lang === 'ja' ? `${y}年${Number(m)}月` : `${m}/${y}`) : y;
 }
-const period = `${fmt(start)} — ${current ? present : fmt(end)}`;
+const period = `${fmt(start)} — ${current ? copy.present : fmt(end)}`;
 ---
-<article class="exp-card card">
+<article class="exp-card">
   <header class="exp-header">
+    <div class="exp-marker" aria-hidden="true"></div>
     <div>
+      <p class="exp-period mono">{period}</p>
       <h3 class="exp-company">{company}</h3>
       <p class="exp-role">{role}</p>
-    </div>
-    <div class="exp-meta mono muted">
-      {period}{location ? <><br />{location}</> : null}
+      {location && <p class="exp-location">{location}</p>}
     </div>
   </header>
-
   <div class="exp-projects">
     {projects.map((p) => (
-      <div class="exp-project">
-        <strong>{p.name}</strong>
-        <p class="muted exp-summary">{p.summary}</p>
+      <section class="exp-project" id={p.id}>
+        <h4>{p.name}</h4>
+        <p class="exp-summary">{p.summary}</p>
         {p.highlights && p.highlights.length > 0 && (
-          <ul class="exp-highlights">
-            {p.highlights.map((h) => <li>{h}</li>)}
-          </ul>
+          <details class="exp-details">
+            <summary>{copy.projectDetails}<span class="detail-plus" aria-hidden="true">+</span></summary>
+            <ul class="exp-highlights">{p.highlights.map((h) => <li>{h}</li>)}</ul>
+            {p.stack && p.stack.length > 0 && <div class="chips">{p.stack.map((s) => <span class="chip">{s}</span>)}</div>}
+          </details>
         )}
-        {p.stack && p.stack.length > 0 && (
-          <div class="chips">{p.stack.map((s) => <span class="chip">{s}</span>)}</div>
-        )}
-      </div>
+      </section>
     ))}
   </div>
 </article>
-
 <style>
-  .exp-card { padding: 26px; }
-  .exp-header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
-  .exp-company { margin: 0; font-size: 1.2rem; }
-  .exp-role { margin: 0.2em 0 0; color: var(--accent); }
-  .exp-meta { font-size: 0.85rem; text-align: right; }
-  .exp-projects { margin-top: 18px; display: grid; gap: 16px; }
-  .exp-project { border-left: 2px solid var(--border); padding-left: 16px; }
-  .exp-summary { margin: 0.3em 0 0.5em; }
-  .exp-highlights { margin: 0.2em 0 0.6em; padding-left: 18px; color: #cfd6ea; font-size: 0.95rem; }
-
-  /* Tablet */
-  @media (max-width: 768px) {
-    .exp-card { padding: 22px; }
-    .exp-company { font-size: 1.12rem; }
-    .exp-meta { font-size: 0.82rem; }
-  }
-
-  /* Mobile */
-  @media (max-width: 600px) {
-    .exp-card { padding: 18px; }
-    .exp-header { gap: 8px; }
-    .exp-company { font-size: 1.05rem; }
-    .exp-role { font-size: 0.92rem; }
-    .exp-meta { font-size: 0.78rem; }
-    .exp-projects { margin-top: 14px; gap: 14px; }
-    .exp-project { padding-left: 12px; }
-    .exp-highlights { font-size: 0.9rem; padding-left: 16px; }
-  }
-
-  /* Small phones */
-  @media (max-width: 400px) {
-    .exp-card { padding: 14px 16px; }
-    .exp-header { flex-direction: column; gap: 4px; }
-    .exp-meta { text-align: left; }
-    .exp-company { font-size: 1rem; }
-    .exp-role { font-size: 0.88rem; }
-    .exp-projects { margin-top: 12px; gap: 12px; }
-    .exp-project { padding-left: 10px; }
-    .exp-highlights { font-size: 0.85rem; padding-left: 14px; }
-  }
+  .exp-card { position: relative; display: grid; grid-template-columns: minmax(200px, .8fr) minmax(0, 1.8fr); gap: clamp(28px, 5vw, 70px); padding: 48px 0; border-top: 1px solid var(--border); }
+  .exp-header { position: relative; padding-left: 26px; }
+  .exp-marker { position: absolute; top: 7px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 8%, transparent); }
+  .exp-period { color: var(--text-dim); font-size: .76rem; margin: 0 0 14px; }
+  .exp-company { font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.25; margin: 0; letter-spacing: -.035em; }
+  .exp-role { color: var(--text); font-size: .9rem; margin: 12px 0 7px; line-height: 1.6; }
+  .exp-location { margin: 0; color: var(--text-dim); font-size: .8rem; }
+  .exp-projects { display: grid; gap: 28px; }
+  .exp-project { scroll-margin-top: 116px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+  .exp-project:last-child { border: 0; padding-bottom: 0; }
+  .exp-project:target { background: color-mix(in srgb, var(--accent) 4%, transparent); outline: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); outline-offset: 14px; border-radius: 8px; }
+  h4 { margin: 0; font-size: 1.08rem; font-weight: 600; letter-spacing: -.02em; }
+  .exp-summary { margin: 10px 0 16px; color: var(--text-dim); font-size: .92rem; line-height: 1.85; }
+  .exp-details summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; cursor: pointer; color: var(--accent); font-size: .8rem; list-style: none; min-height: 44px; }
+  .exp-details summary::-webkit-details-marker { display: none; }
+  .exp-details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+  .detail-plus { font-size: 1.3rem; font-weight: 300; transition: transform .2s ease; }
+  details[open] .detail-plus { transform: rotate(45deg); }
+  .exp-highlights { margin: 12px 0 20px; padding-left: 19px; color: var(--text-dim); font-size: .86rem; line-height: 1.8; }
+  .exp-highlights li + li { margin-top: 10px; }
+  .exp-highlights li::marker { color: var(--accent); }
+  .chips { gap: 6px; }
+  .chip { font-size: .7rem; }
+  @media (max-width: 700px) { .exp-card { grid-template-columns: 1fr; gap: 28px; padding: 32px 0; } .exp-projects { gap: 24px; } .exp-header { padding-left: 22px; } .exp-period { margin-bottom: 9px; } }
+  @media (prefers-reduced-motion: reduce) { .detail-plus { transition: none; } }
 </style>
